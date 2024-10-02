@@ -1,0 +1,122 @@
+package Services
+
+import (
+	"fmt"
+	"supercook/Dto"
+	"supercook/Models"
+	"supercook/Repositories"
+)
+
+type AlimentoInteface interface {
+	ObtenerAlimentos() []*Dto.AlimentoDto
+}
+type AlimentoService struct {
+	AlimentoRepositorio Repositories.AlimentoRepositorioInterface
+}
+
+func NuevoAlimentoService(alimentoRepositorio Repositories.AlimentoRepositorioInterface) *AlimentoService {
+	return &AlimentoService{
+		AlimentoRepositorio: alimentoRepositorio,
+	}
+}
+func (service *AlimentoService) ObtenerAlimentos() []*Dto.AlimentoDto {
+	alimentos, _ := service.AlimentoRepositorio.ObtenerAlimentos()
+	var alimentosDto []*Dto.AlimentoDto
+	for _, alimento := range alimentos {
+		alimentosDto = append(alimentosDto, convertirAlimento(alimento))
+	}
+	return alimentosDto
+}
+func (service *AlimentoService) ObtenerAlimentoPorID(id string) *Dto.AlimentoDto {
+	alimento, _ := service.AlimentoRepositorio.ObtenerAlimentoPorID(id)
+	return convertirAlimento(alimento)
+}
+func (service *AlimentoService) CrearAlimento(alimento *Dto.AlimentoDto) *Dto.Resultado {
+	resultado := Dto.Resultado{}
+	resultado.ListaMensaje = alimento.ValidarAlimentoDto()
+	if len(resultado.ListaMensaje) > 0 {
+		resultado.BoolResultado = false
+		return &resultado
+	} else {
+		alimentoModel := Models.Alimento{
+			Nombre:          alimento.Nombre,
+			PrecioUnitario:  alimento.PrecioUnitario,
+			Stock:           alimento.Stock,
+			CantMininaStock: alimento.CantMininaStock,
+			TipoAlimento:    Models.TipoAlimento(alimento.TipoAlimento),
+			MomentoDelDia:   convertirMomentoaModel(alimento.MomentoDelDia),
+		}
+		_, err := service.AlimentoRepositorio.CrearAlimento(alimentoModel)
+		if err != nil {
+			resultado.BoolResultado = false
+			resultado.ListaMensaje = append(resultado.ListaMensaje, "Error al crear alimento.")
+		} else {
+			resultado.BoolResultado = true
+			resultado.ListaMensaje = append(resultado.ListaMensaje, fmt.Sprintf("Alimento creado con éxito con las siguientes características: Nombre = %s, Precio Unitario = %.2f, Stock = %d, Cantidad Mínima de Stock = %d, Tipo de Alimento = %d, Momento del Día = %v", alimento.Nombre, alimento.PrecioUnitario, alimento.Stock, alimento.CantMininaStock, alimento.TipoAlimento, alimento.MomentoDelDia))
+		}
+	}
+	return &resultado
+}
+func (service *AlimentoService) ActualizarAlimento(id string, alimento *Dto.AlimentoDto) *Dto.Resultado {
+	resultado := Dto.Resultado{}
+	resultado.ListaMensaje = alimento.ValidarAlimentoDto()
+	if len(resultado.ListaMensaje) > 0 {
+		resultado.BoolResultado = false
+		return &resultado
+	} else {
+		alimentoModel := Models.Alimento{
+			Nombre:          alimento.Nombre,
+			PrecioUnitario:  alimento.PrecioUnitario,
+			Stock:           alimento.Stock,
+			CantMininaStock: alimento.CantMininaStock,
+			TipoAlimento:    Models.TipoAlimento(alimento.TipoAlimento),
+			MomentoDelDia:   convertirMomentoaModel(alimento.MomentoDelDia),
+		}
+		_, err := service.AlimentoRepositorio.ActualizarAlimento(id, alimentoModel)
+		if err != nil {
+			resultado.BoolResultado = false
+			resultado.ListaMensaje = append(resultado.ListaMensaje, "Error al actualizar alimento.")
+		} else {
+			resultado.BoolResultado = true
+			resultado.ListaMensaje = append(resultado.ListaMensaje, fmt.Sprintf("Alimento actualizado con éxito con las siguientes características: Nombre = %s, Precio Unitario = %.2f, Stock = %d, Cantidad Mínima de Stock = %d, Tipo de Alimento = %d, Momento del Día = %v", alimento.Nombre, alimento.PrecioUnitario, alimento.Stock, alimento.CantMininaStock, alimento.TipoAlimento, alimento.MomentoDelDia))
+		}
+	}
+	return &resultado
+}
+func (service *AlimentoService) EliminarAlimento(id string) *Dto.Resultado {
+	resultado := Dto.Resultado{}
+	_, err := service.AlimentoRepositorio.EliminarAlimento(id)
+	if err != nil {
+		resultado.BoolResultado = false
+		resultado.ListaMensaje = append(resultado.ListaMensaje, "Error al eliminar alimento.")
+	} else {
+		resultado.BoolResultado = true
+		resultado.ListaMensaje = append(resultado.ListaMensaje, "Alimento eliminado con éxito.")
+	}
+	return &resultado
+}
+func convertirAlimento(alimento Models.Alimento) *Dto.AlimentoDto {
+	alimentoDto := Dto.AlimentoDto{
+		Nombre:          alimento.Nombre,
+		PrecioUnitario:  alimento.PrecioUnitario,
+		Stock:           alimento.Stock,
+		CantMininaStock: alimento.CantMininaStock,
+		TipoAlimento:    Dto.TipoAlimento(alimento.TipoAlimento),
+		MomentoDelDia:   convertirMomentosADto(alimento.MomentoDelDia),
+	}
+	return &alimentoDto
+}
+func convertirMomentosADto(momentoLista []Models.Momento) []Dto.Momento {
+	var dtoMomentoLista []Dto.Momento
+	for _, momento := range momentoLista {
+		dtoMomentoLista = append(dtoMomentoLista, Dto.Momento(momento))
+	}
+	return dtoMomentoLista
+}
+func convertirMomentoaModel(momentoLista []Dto.Momento) []Models.Momento {
+	var modelMomentoLista []Models.Momento
+	for _, momento := range momentoLista {
+		modelMomentoLista = append(modelMomentoLista, Models.Momento(momento))
+	}
+	return modelMomentoLista
+}

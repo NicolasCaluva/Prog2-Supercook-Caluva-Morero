@@ -5,7 +5,7 @@ import (
 )
 
 type DB interface {
-	Connect() error
-	Disconnect() error
-	GetClient() *mongo.Client
+	Conectar() error
+	Desconectar() error
+	ObtenerCliente() *mongo.Client
 }

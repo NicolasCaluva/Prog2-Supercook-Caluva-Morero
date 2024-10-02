@@ -9,21 +9,25 @@ import (
 	"supercook/Utils"
 )
 
-type AlimentoRepositoryInterface interface {
+type AlimentoRepositorioInterface interface {
 	ObtenerAlimentos() ([]Models.Alimento, error)
+	ObtenerAlimentoPorID(id string) (Models.Alimento, error)
+	CrearAlimento(alimento Models.Alimento) (*mongo.InsertOneResult, error)
+	ActualizarAlimento(id string, alimento Models.Alimento) (*mongo.UpdateResult, error)
+	EliminarAlimento(id string) (*mongo.DeleteResult, error)
 }
 
-type AlimentoRepository struct {
+type AlimentoRepositorio struct {
 	db DB
 }
 
-func NuevoAlimentoRepository(db DB) *AlimentoRepository {
-	return &AlimentoRepository{
+func NuevoAlimentoRepositorio(db DB) *AlimentoRepositorio {
+	return &AlimentoRepositorio{
 		db: db,
 	}
 }
-func (repository AlimentoRepository) ObtenerAlimentos() ([]Models.Alimento, error) {
-	coleccion := repository.db.GetClient().Database("mongodb-SuperCook").Collection("alimento")
+func (repositorio AlimentoRepositorio) ObtenerAlimentos() ([]Models.Alimento, error) {
+	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
 	filtro := bson.M{}
 	cursor, err := coleccion.Find(context.TODO(), filtro)
 	defer cursor.Close(context.Background())
@@ -38,8 +42,8 @@ func (repository AlimentoRepository) ObtenerAlimentos() ([]Models.Alimento, erro
 	}
 	return alimentos, err
 }
-func (repository AlimentoRepository) ObtenerAlimentoPorID(id string) (Models.Alimento, error) {
-	coleccion := repository.db.GetClient().Database("mongodb-SuperCook").Collection("alimento")
+func (repositorio AlimentoRepositorio) ObtenerAlimentoPorID(id string) (Models.Alimento, error) {
+	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
 	IdObjeto := Utils.GetObjectIDFromStringID(id)
 	filtro := bson.M{"_id": IdObjeto}
 	cursor, err := coleccion.Find(context.TODO(), filtro)
@@ -53,13 +57,13 @@ func (repository AlimentoRepository) ObtenerAlimentoPorID(id string) (Models.Ali
 	}
 	return alimento, err
 }
-func (repository AlimentoRepository) CrearAlimento(alimento Models.Alimento) (*mongo.InsertOneResult, error) {
-	coleccion := repository.db.GetClient().Database("mongodb-SuperCook").Collection("alimento")
+func (repositorio AlimentoRepositorio) CrearAlimento(alimento Models.Alimento) (*mongo.InsertOneResult, error) {
+	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
 	resultado, err := coleccion.InsertOne(context.TODO(), alimento)
 	return resultado, err
 }
-func (repository AlimentoRepository) ActualizarAlimento(id string, alimento Models.Alimento) (*mongo.UpdateResult, error) {
-	coleccion := repository.db.GetClient().Database("mongodb-SuperCook").Collection("alimento")
+func (repositorio AlimentoRepositorio) ActualizarAlimento(id string, alimento Models.Alimento) (*mongo.UpdateResult, error) {
+	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
 	filtro := bson.M{"_id": alimento.ID}
 	entidad := bson.M{
 		"$set": bson.M{
@@ -74,8 +78,8 @@ func (repository AlimentoRepository) ActualizarAlimento(id string, alimento Mode
 	resultado, err := coleccion.UpdateOne(context.TODO(), filtro, entidad)
 	return resultado, err
 }
-func (repository AlimentoRepository) EliminarAlimento(id string) (*mongo.DeleteResult, error) {
-	coleccion := repository.db.GetClient().Database("mongodb-SuperCook").Collection("alimento")
+func (repositorio AlimentoRepositorio) EliminarAlimento(id string) (*mongo.DeleteResult, error) {
+	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
 	filtro := bson.M{"_id": id}
 	resultado, err := coleccion.DeleteOne(context.TODO(), filtro)
 	return resultado, err

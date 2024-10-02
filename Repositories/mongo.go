@@ -8,21 +8,21 @@ import (
 )
 
 type MongoDB struct {
-	Client *mongo.Client
+	Cliente *mongo.Client
 }
 
-func NewMongoDB() *MongoDB {
+func NuevaMongoDB() *MongoDB {
 	instancia := &MongoDB{}
-	instancia.Connect()
+	instancia.Conectar()
 
 	return instancia
 }
 
-func (mongoDB *MongoDB) GetClient() *mongo.Client {
-	return mongoDB.Client
+func (mongoDB *MongoDB) ObtenerCliente() *mongo.Client {
+	return mongoDB.Cliente
 }
 
-func (mongoDB *MongoDB) Connect() error {
+func (mongoDB *MongoDB) Conectar() error {
 	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
 
 	client, err := mongo.Connect(context.Background(), clientOptions)
@@ -36,11 +36,11 @@ func (mongoDB *MongoDB) Connect() error {
 		return err
 	}
 
-	mongoDB.Client = client
+	mongoDB.Cliente = client
 
 	return nil
 }
 
-func (mongoDB *MongoDB) Disconnect() error {
-	return mongoDB.Client.Disconnect(context.Background())
+func (mongoDB *MongoDB) Desconectar() error {
+	return mongoDB.Cliente.Disconnect(context.Background())
 }
