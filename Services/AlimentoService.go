@@ -9,6 +9,10 @@ import (
 
 type AlimentoInteface interface {
 	ObtenerAlimentos() []*Dto.AlimentoDto
+	ObtenerAlimentoPorID(id string) *Dto.AlimentoDto
+	CrearAlimento(alimento *Dto.AlimentoDto) *Dto.Resultado
+	ActualizarAlimento(id string, alimento *Dto.AlimentoDto) *Dto.Resultado
+	EliminarAlimento(id string) *Dto.Resultado
 }
 type AlimentoService struct {
 	AlimentoRepositorio Repositories.AlimentoRepositorioInterface

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="origin">
+    <title>Alimentos</title>
+</head>
+<body>
+    <h1>Listado de alimentos</h1>
+
+    <ul id="alimentos-list"></ul>
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const alimentosList = document.getElementById('alimentos-list');
+
+        fetch('http://localhost:8080/alimentos')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(alimento => {
+                    const li = document.createElement('li');
+                    li.textContent = alimento.nombre;
+                    alimentosList.appendChild(li);
+                });
+            });
+    });
+</script>
+</html>
