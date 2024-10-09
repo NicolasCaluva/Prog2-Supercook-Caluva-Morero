@@ -17,6 +17,7 @@ func main() {
 	router = gin.Default()
 	dependencias()
 	rutas()
+	router.Run(":8080")
 }
 
 func rutas() {
@@ -27,7 +28,6 @@ func rutas() {
 	router.POST("/alimentos", alimentoHandler.CrearAlimento)
 	router.PUT("/alimentos/:id", alimentoHandler.ActualizarAlimento)
 	router.DELETE("/alimentos/:id", alimentoHandler.EliminarAlimento)
-	router.Run(":8080")
 }
 
 func dependencias() {

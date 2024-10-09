@@ -26,11 +26,15 @@ func NuevoAlimentoRepositorio(db DB) *AlimentoRepositorio {
 		db: db,
 	}
 }
+
 func (repositorio AlimentoRepositorio) ObtenerAlimentos() ([]Models.Alimento, error) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
 	filtro := bson.M{}
+
 	cursor, err := coleccion.Find(context.TODO(), filtro)
+
 	defer cursor.Close(context.Background())
+
 	var alimentos []Models.Alimento
 	for cursor.Next(context.Background()) {
 		var alimento Models.Alimento
@@ -42,6 +46,7 @@ func (repositorio AlimentoRepositorio) ObtenerAlimentos() ([]Models.Alimento, er
 	}
 	return alimentos, err
 }
+
 func (repositorio AlimentoRepositorio) ObtenerAlimentoPorID(id string) (Models.Alimento, error) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
 	IdObjeto := Utils.GetObjectIDFromStringID(id)
@@ -57,11 +62,13 @@ func (repositorio AlimentoRepositorio) ObtenerAlimentoPorID(id string) (Models.A
 	}
 	return alimento, err
 }
+
 func (repositorio AlimentoRepositorio) CrearAlimento(alimento Models.Alimento) (*mongo.InsertOneResult, error) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
 	resultado, err := coleccion.InsertOne(context.TODO(), alimento)
 	return resultado, err
 }
+
 func (repositorio AlimentoRepositorio) ActualizarAlimento(id string, alimento Models.Alimento) (*mongo.UpdateResult, error) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
 	filtro := bson.M{"_id": alimento.ID}
@@ -78,6 +85,7 @@ func (repositorio AlimentoRepositorio) ActualizarAlimento(id string, alimento Mo
 	resultado, err := coleccion.UpdateOne(context.TODO(), filtro, entidad)
 	return resultado, err
 }
+
 func (repositorio AlimentoRepositorio) EliminarAlimento(id string) (*mongo.DeleteResult, error) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
 	filtro := bson.M{"_id": id}
