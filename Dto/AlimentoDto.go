@@ -7,6 +7,7 @@ type AlimentoDto struct {
 	CantMininaStock int
 	TipoAlimento    TipoAlimento
 	MomentoDelDia   []Momento
+	IDUsuario       int
 }
 
 func (a *AlimentoDto) ValidarAlimentoDto() []string {

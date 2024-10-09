@@ -5,6 +5,7 @@ import (
 	"supercook/Dto"
 	"supercook/Models"
 	"supercook/Repositories"
+	"time"
 )
 
 type AlimentoInteface interface {
@@ -23,8 +24,8 @@ func NuevoAlimentoService(alimentoRepositorio Repositories.AlimentoRepositorioIn
 		AlimentoRepositorio: alimentoRepositorio,
 	}
 }
-func (service *AlimentoService) ObtenerAlimentos() []*Dto.AlimentoDto {
-	alimentos, _ := service.AlimentoRepositorio.ObtenerAlimentos()
+func (service *AlimentoService) ObtenerAlimentos(filtro [3]string) []*Dto.AlimentoDto {
+	alimentos, _ := service.AlimentoRepositorio.ObtenerAlimentos(filtro)
 	var alimentosDto []*Dto.AlimentoDto
 	for _, alimento := range alimentos {
 		alimentosDto = append(alimentosDto, convertirAlimento(alimento))
@@ -49,6 +50,7 @@ func (service *AlimentoService) CrearAlimento(alimento *Dto.AlimentoDto) *Dto.Re
 			CantMininaStock: alimento.CantMininaStock,
 			TipoAlimento:    Models.TipoAlimento(alimento.TipoAlimento),
 			MomentoDelDia:   convertirMomentoaModel(alimento.MomentoDelDia),
+			FechaCreacion:   time.Now(),
 		}
 		_, err := service.AlimentoRepositorio.CrearAlimento(alimentoModel)
 		if err != nil {
@@ -69,12 +71,13 @@ func (service *AlimentoService) ActualizarAlimento(id string, alimento *Dto.Alim
 		return &resultado
 	} else {
 		alimentoModel := Models.Alimento{
-			Nombre:          alimento.Nombre,
-			PrecioUnitario:  alimento.PrecioUnitario,
-			Stock:           alimento.Stock,
-			CantMininaStock: alimento.CantMininaStock,
-			TipoAlimento:    Models.TipoAlimento(alimento.TipoAlimento),
-			MomentoDelDia:   convertirMomentoaModel(alimento.MomentoDelDia),
+			Nombre:             alimento.Nombre,
+			PrecioUnitario:     alimento.PrecioUnitario,
+			Stock:              alimento.Stock,
+			CantMininaStock:    alimento.CantMininaStock,
+			TipoAlimento:       Models.TipoAlimento(alimento.TipoAlimento),
+			MomentoDelDia:      convertirMomentoaModel(alimento.MomentoDelDia),
+			FechaActualizacion: time.Now(),
 		}
 		_, err := service.AlimentoRepositorio.ActualizarAlimento(id, alimentoModel)
 		if err != nil {
