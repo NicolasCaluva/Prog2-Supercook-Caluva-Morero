@@ -9,7 +9,7 @@ import (
 )
 
 type AlimentoInteface interface {
-	ObtenerAlimentos() []*Dto.AlimentoDto
+	ObtenerAlimentos(filtro *[3]string) []*Dto.AlimentoDto
 	ObtenerAlimentoPorID(id string) *Dto.AlimentoDto
 	CrearAlimento(alimento *Dto.AlimentoDto) *Dto.Resultado
 	ActualizarAlimento(id string, alimento *Dto.AlimentoDto) *Dto.Resultado
@@ -24,8 +24,8 @@ func NuevoAlimentoService(alimentoRepositorio Repositories.AlimentoRepositorioIn
 		AlimentoRepositorio: alimentoRepositorio,
 	}
 }
-func (service *AlimentoService) ObtenerAlimentos(filtro [3]string) []*Dto.AlimentoDto {
-	alimentos, _ := service.AlimentoRepositorio.ObtenerAlimentos(filtro)
+func (service *AlimentoService) ObtenerAlimentos(filtro *[3]string) []*Dto.AlimentoDto {
+	alimentos, _ := service.AlimentoRepositorio.ObtenerAlimentos(*filtro)
 	var alimentosDto []*Dto.AlimentoDto
 	for _, alimento := range alimentos {
 		alimentosDto = append(alimentosDto, convertirAlimento(alimento))

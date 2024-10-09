@@ -17,7 +17,12 @@ func NuevoAlimentoHandler(alimentoService Services.AlimentoInteface) *AlimentoHa
 	}
 }
 func (handler *AlimentoHandler) ObtenerAlimentos(c *gin.Context) {
-	alimentos := handler.AlimentoService.ObtenerAlimentos()
+	filtro := [3]string{
+		c.Query("momentoDelDia"),
+		c.Query("tipoAlimento"),
+		c.Query("nombre"),
+	}
+	alimentos := handler.AlimentoService.ObtenerAlimentos(&filtro)
 	c.JSON(http.StatusOK, alimentos)
 }
 
