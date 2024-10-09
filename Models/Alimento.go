@@ -7,7 +7,7 @@ type Alimento struct {
 	Nombre          string             `bson:"nombre"`
 	PrecioUnitario  float64            `bson:"precioUnitario"`
 	Stock           int                `bson:"stock"`
-	CantMininaStock int                `bson:"cantMininaStock"`
+	CantMinimaStock int                `bson:"cantMinimaStock"`
 	TipoAlimento    TipoAlimento       `bson:"tipoAlimento"`
 	MomentoDelDia   []Momento          `bson:"momentoDelDia"`
 }

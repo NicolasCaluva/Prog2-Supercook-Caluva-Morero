@@ -46,7 +46,7 @@ func (service *AlimentoService) CrearAlimento(alimento *Dto.AlimentoDto) *Dto.Re
 			Nombre:          alimento.Nombre,
 			PrecioUnitario:  alimento.PrecioUnitario,
 			Stock:           alimento.Stock,
-			CantMininaStock: alimento.CantMininaStock,
+			CantMinimaStock: alimento.CantMinimaStock,
 			TipoAlimento:    Models.TipoAlimento(alimento.TipoAlimento),
 			MomentoDelDia:   convertirMomentoaModel(alimento.MomentoDelDia),
 		}
@@ -56,7 +56,7 @@ func (service *AlimentoService) CrearAlimento(alimento *Dto.AlimentoDto) *Dto.Re
 			resultado.ListaMensaje = append(resultado.ListaMensaje, "Error al crear alimento.")
 		} else {
 			resultado.BoolResultado = true
-			resultado.ListaMensaje = append(resultado.ListaMensaje, fmt.Sprintf("Alimento creado con éxito con las siguientes características: Nombre = %s, Precio Unitario = %.2f, Stock = %d, Cantidad Mínima de Stock = %d, Tipo de Alimento = %d, Momento del Día = %v", alimento.Nombre, alimento.PrecioUnitario, alimento.Stock, alimento.CantMininaStock, alimento.TipoAlimento, alimento.MomentoDelDia))
+			resultado.ListaMensaje = append(resultado.ListaMensaje, fmt.Sprintf("Alimento creado con éxito con las siguientes características: Nombre = %s, Precio Unitario = %.2f, Stock = %d, Cantidad Mínima de Stock = %d, Tipo de Alimento = %d, Momento del Día = %v", alimento.Nombre, alimento.PrecioUnitario, alimento.Stock, alimento.CantMinimaStock, alimento.TipoAlimento, alimento.MomentoDelDia))
 		}
 	}
 	return &resultado
@@ -72,7 +72,7 @@ func (service *AlimentoService) ActualizarAlimento(id string, alimento *Dto.Alim
 			Nombre:          alimento.Nombre,
 			PrecioUnitario:  alimento.PrecioUnitario,
 			Stock:           alimento.Stock,
-			CantMininaStock: alimento.CantMininaStock,
+			CantMinimaStock: alimento.CantMinimaStock,
 			TipoAlimento:    Models.TipoAlimento(alimento.TipoAlimento),
 			MomentoDelDia:   convertirMomentoaModel(alimento.MomentoDelDia),
 		}
@@ -82,7 +82,7 @@ func (service *AlimentoService) ActualizarAlimento(id string, alimento *Dto.Alim
 			resultado.ListaMensaje = append(resultado.ListaMensaje, "Error al actualizar alimento.")
 		} else {
 			resultado.BoolResultado = true
-			resultado.ListaMensaje = append(resultado.ListaMensaje, fmt.Sprintf("Alimento actualizado con éxito con las siguientes características: Nombre = %s, Precio Unitario = %.2f, Stock = %d, Cantidad Mínima de Stock = %d, Tipo de Alimento = %d, Momento del Día = %v", alimento.Nombre, alimento.PrecioUnitario, alimento.Stock, alimento.CantMininaStock, alimento.TipoAlimento, alimento.MomentoDelDia))
+			resultado.ListaMensaje = append(resultado.ListaMensaje, fmt.Sprintf("Alimento actualizado con éxito con las siguientes características: Nombre = %s, Precio Unitario = %.2f, Stock = %d, Cantidad Mínima de Stock = %d, Tipo de Alimento = %d, Momento del Día = %v", alimento.Nombre, alimento.PrecioUnitario, alimento.Stock, alimento.CantMinimaStock, alimento.TipoAlimento, alimento.MomentoDelDia))
 		}
 	}
 	return &resultado
@@ -104,7 +104,7 @@ func convertirAlimento(alimento Models.Alimento) *Dto.AlimentoDto {
 		Nombre:          alimento.Nombre,
 		PrecioUnitario:  alimento.PrecioUnitario,
 		Stock:           alimento.Stock,
-		CantMininaStock: alimento.CantMininaStock,
+		CantMinimaStock: alimento.CantMinimaStock,
 		TipoAlimento:    Dto.TipoAlimento(alimento.TipoAlimento),
 		MomentoDelDia:   convertirMomentosADto(alimento.MomentoDelDia),
 	}

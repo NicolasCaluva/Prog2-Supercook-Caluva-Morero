@@ -77,7 +77,7 @@ func (repositorio AlimentoRepositorio) ActualizarAlimento(id string, alimento Mo
 			"nombre":          alimento.Nombre,
 			"precioUnitario":  alimento.PrecioUnitario,
 			"stock":           alimento.Stock,
-			"cantMininaStock": alimento.CantMininaStock,
+			"cantMinimaStock": alimento.CantMinimaStock,
 			"tipoAlimento":    alimento.TipoAlimento,
 			"momentoDelDia":   alimento.MomentoDelDia,
 		},
