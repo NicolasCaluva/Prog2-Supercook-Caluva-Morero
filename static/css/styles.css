@@ -1,0 +1,6 @@
+.bg-custom-border {
+    border-radius: 1rem;
+    background: #e0e0e0;
+    box-shadow:  15px 15px 30px #707070,
+    -15px -15px 30px #ffffff;
+}
