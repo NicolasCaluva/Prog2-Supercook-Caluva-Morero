@@ -10,6 +10,12 @@
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 <body>
+
+<a href="../usuarios/login.html">Login</a>
+<a href="../usuarios/register.html">Registro</a>
+
+<a href="alimentos-lista.html"></a>
+
 <div class="container w-100 min-vh-100">
     <h1>Listado de alimentos</h1>
 
@@ -62,57 +68,5 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const listaAlimentos = document.getElementById('lista-alimentos');
-
-        fetch('http://localhost:8080/alimentos')
-            .then(response => response.json())
-            .then(data => {
-                data.forEach(alimento => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                            <td>${alimento.Nombre}</td>
-                            <td>${alimento.PrecioUnitario}</td>
-                            <td>${alimento.Stock}</td>
-                            <td>${alimento.CantMinimaStock}</td>
-                            <td>${alimento.TipoAlimento}</td>
-                            <td>${alimento.MomentoDelDia}</td>
-                        `;
-                    const botonEditar = document.createElement('button');
-                    const iconoEditar = document.createElement('i');
-                    iconoEditar.setAttribute('class', 'fa-solid fa-pencil');
-
-                    Object.assign(botonEditar, {
-                        className: 'btn btn-primary',
-                        type: 'button',
-                        'data-bs-toggle': 'modal',
-                        'data-bs-target': '#cargarAlimento'
-                    });
-                    botonEditar.appendChild(iconoEditar);
-
-                    const botonEliminar = document.createElement('button');
-                    const iconoEliminar = document.createElement('i');
-
-                    Object.assign(botonEliminar, {
-                        className: 'btn btn-danger',
-                        type: 'button',
-                    });
-                    iconoEliminar.setAttribute('class', 'fa-solid fa-trash');
-                    botonEliminar.appendChild(iconoEliminar);
-
-                    const tdBotones = document.createElement('td');
-
-                    tdBotones.appendChild(botonEditar);
-                    tdBotones.appendChild(botonEliminar);
-                    tdBotones.setAttribute('class', 'd-flex gap-2')
-                    tr.appendChild(tdBotones);
-                    listaAlimentos.appendChild(tr);
-                });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    });
-</script>
+<script src="/static/js/alimentos.js"></script>
 </html>

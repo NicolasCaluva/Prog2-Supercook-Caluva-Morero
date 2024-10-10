@@ -17,17 +17,19 @@ func main() {
 	router = gin.Default()
 	dependencias()
 	rutas()
+	router.Static("/static", "./static")
 	router.Run(":8080")
 }
 
 func rutas() {
 	router.Use(Middlewares.CorsMiddleware())
 
-	router.GET("/alimentos", alimentoHandler.ObtenerAlimentos)
-	router.GET("/alimentos/:id", alimentoHandler.ObtenerAlimentoPorID)
-	router.POST("/alimentos", alimentoHandler.CrearAlimento)
-	router.PUT("/alimentos/:id", alimentoHandler.ActualizarAlimento)
-	router.DELETE("/alimentos/:id", alimentoHandler.EliminarAlimento)
+	router.GET("/alimentos/", alimentoHandler.ObtenerAlimentos)
+	router.GET("/alimentos/:id/", alimentoHandler.ObtenerAlimentoPorID)
+	router.POST("/alimentos/", alimentoHandler.CrearAlimento)
+	router.PUT("/alimentos/:id/", alimentoHandler.ActualizarAlimento)
+	router.DELETE("/alimentos/:id/", alimentoHandler.EliminarAlimento)
+
 }
 
 func dependencias() {

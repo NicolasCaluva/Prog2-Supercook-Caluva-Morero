@@ -10,8 +10,8 @@ import (
 )
 
 type AlimentoRepositorioInterface interface {
-	ObtenerAlimentos() ([]Models.Alimento, error)
-	ObtenerAlimentoPorID(id string) (Models.Alimento, error)
+	ObtenerAlimentos(filtro [3]string, idUsuario int) ([]Models.Alimento, error)
+	ObtenerAlimentoPorID(idAlimento string, idUsuario int) (Models.Alimento, error)
 	CrearAlimento(alimento Models.Alimento) (*mongo.InsertOneResult, error)
 	ActualizarAlimento(id string, alimento Models.Alimento) (*mongo.UpdateResult, error)
 	EliminarAlimento(id string) (*mongo.DeleteResult, error)
@@ -27,12 +27,26 @@ func NuevoAlimentoRepositorio(db DB) *AlimentoRepositorio {
 	}
 }
 
-func (repositorio AlimentoRepositorio) ObtenerAlimentos() ([]Models.Alimento, error) {
+func (repositorio AlimentoRepositorio) ObtenerAlimentos(filtro [3]string, idUsuario int) ([]Models.Alimento, error) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
-	filtro := bson.M{}
 
-	cursor, err := coleccion.Find(context.TODO(), filtro)
+	filtroBson := bson.M{}
 
+	filtroBson["idUsuario"] = idUsuario
+	if filtro[0] != "" {
+		filtroBson["momentoDelDia"] = bson.M{"$regex": filtro[0], "$options": "i"}
+	}
+	if filtro[1] != "" {
+		filtroBson["tipoAlimento"] = bson.M{"$regex": filtro[1], "$options": "i"}
+	}
+	if filtro[2] != "" {
+		filtroBson["nombre"] = bson.M{"$regex": filtro[2], "$options": "i"}
+	}
+
+	cursor, err := coleccion.Find(context.TODO(), filtroBson)
+	if err != nil {
+		return nil, err
+	}
 	defer cursor.Close(context.Background())
 
 	var alimentos []Models.Alimento
@@ -47,16 +61,18 @@ func (repositorio AlimentoRepositorio) ObtenerAlimentos() ([]Models.Alimento, er
 	return alimentos, err
 }
 
-func (repositorio AlimentoRepositorio) ObtenerAlimentoPorID(id string) (Models.Alimento, error) {
+func (repositorio AlimentoRepositorio) ObtenerAlimentoPorID(idAlimento string, idUsuario int) (Models.Alimento, error) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
-	IdObjeto := Utils.GetObjectIDFromStringID(id)
+	IdObjeto := Utils.GetObjectIDFromStringID(idAlimento)
 	filtro := bson.M{"_id": IdObjeto}
+	filtro["idUsuario"] = idUsuario
 	cursor, err := coleccion.Find(context.TODO(), filtro)
 	defer cursor.Close(context.Background())
 	var alimento Models.Alimento
 	for cursor.Next(context.Background()) {
 		err := cursor.Decode(&alimento)
 		if err != nil {
+
 			fmt.Printf("Error: %v\n", err)
 		}
 	}
@@ -74,12 +90,14 @@ func (repositorio AlimentoRepositorio) ActualizarAlimento(id string, alimento Mo
 	filtro := bson.M{"_id": alimento.ID}
 	entidad := bson.M{
 		"$set": bson.M{
-			"nombre":          alimento.Nombre,
-			"precioUnitario":  alimento.PrecioUnitario,
-			"stock":           alimento.Stock,
-			"cantMinimaStock": alimento.CantMinimaStock,
-			"tipoAlimento":    alimento.TipoAlimento,
-			"momentoDelDia":   alimento.MomentoDelDia,
+			"nombre":             alimento.Nombre,
+			"precioUnitario":     alimento.PrecioUnitario,
+			"stock":              alimento.Stock,
+			"cantMininaStock":    alimento.CantMininaStock,
+			"tipoAlimento":       alimento.TipoAlimento,
+			"momentoDelDia":      alimento.MomentoDelDia,
+			"fechaActualizacion": alimento.FechaActualizacion,
+			"fechaCreacion":      alimento.FechaCreacion,
 		},
 	}
 	resultado, err := coleccion.UpdateOne(context.TODO(), filtro, entidad)

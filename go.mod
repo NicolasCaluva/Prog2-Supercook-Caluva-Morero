@@ -4,6 +4,7 @@ go 1.23.0
 
 require (
 	github.com/gin-gonic/gin v1.10.0
+	github.com/maxilovera/go-crud-example v0.0.0-20231007000653-732e15831176
 	go.mongodb.org/mongo-driver v1.17.1
 )
 

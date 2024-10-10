@@ -5,15 +5,17 @@ import (
 	"supercook/Dto"
 	"supercook/Models"
 	"supercook/Repositories"
+	"time"
 )
 
 type AlimentoInteface interface {
-	ObtenerAlimentos() []*Dto.AlimentoDto
-	ObtenerAlimentoPorID(id string) *Dto.AlimentoDto
+	ObtenerAlimentos(filtro *[3]string, idUsuario *int) []*Dto.AlimentoDto
+	ObtenerAlimentoPorID(id *string, idUsuario *int) *Dto.AlimentoDto
 	CrearAlimento(alimento *Dto.AlimentoDto) *Dto.Resultado
-	ActualizarAlimento(id string, alimento *Dto.AlimentoDto) *Dto.Resultado
-	EliminarAlimento(id string) *Dto.Resultado
+	ActualizarAlimento(id *string, alimento *Dto.AlimentoDto) *Dto.Resultado
+	EliminarAlimento(id *string) *Dto.Resultado
 }
+
 type AlimentoService struct {
 	AlimentoRepositorio Repositories.AlimentoRepositorioInterface
 }
@@ -23,18 +25,21 @@ func NuevoAlimentoService(alimentoRepositorio Repositories.AlimentoRepositorioIn
 		AlimentoRepositorio: alimentoRepositorio,
 	}
 }
-func (service *AlimentoService) ObtenerAlimentos() []*Dto.AlimentoDto {
-	alimentos, _ := service.AlimentoRepositorio.ObtenerAlimentos()
+
+func (service *AlimentoService) ObtenerAlimentos(filtro *[3]string, idUsuario *int) []*Dto.AlimentoDto {
+	alimentos, _ := service.AlimentoRepositorio.ObtenerAlimentos(*filtro, *idUsuario)
 	var alimentosDto []*Dto.AlimentoDto
 	for _, alimento := range alimentos {
 		alimentosDto = append(alimentosDto, convertirAlimento(alimento))
 	}
 	return alimentosDto
 }
-func (service *AlimentoService) ObtenerAlimentoPorID(id string) *Dto.AlimentoDto {
-	alimento, _ := service.AlimentoRepositorio.ObtenerAlimentoPorID(id)
+
+func (service *AlimentoService) ObtenerAlimentoPorID(idAlimento *string, idUsuario *int) *Dto.AlimentoDto {
+	alimento, _ := service.AlimentoRepositorio.ObtenerAlimentoPorID(*idAlimento, *idUsuario)
 	return convertirAlimento(alimento)
 }
+
 func (service *AlimentoService) CrearAlimento(alimento *Dto.AlimentoDto) *Dto.Resultado {
 	resultado := Dto.Resultado{}
 	resultado.ListaMensaje = alimento.ValidarAlimentoDto()
@@ -46,9 +51,10 @@ func (service *AlimentoService) CrearAlimento(alimento *Dto.AlimentoDto) *Dto.Re
 			Nombre:          alimento.Nombre,
 			PrecioUnitario:  alimento.PrecioUnitario,
 			Stock:           alimento.Stock,
-			CantMinimaStock: alimento.CantMinimaStock,
+			CantMininaStock: alimento.CantMinimaStock,
 			TipoAlimento:    Models.TipoAlimento(alimento.TipoAlimento),
 			MomentoDelDia:   convertirMomentoaModel(alimento.MomentoDelDia),
+			FechaCreacion:   time.Now(),
 		}
 		_, err := service.AlimentoRepositorio.CrearAlimento(alimentoModel)
 		if err != nil {
@@ -61,7 +67,8 @@ func (service *AlimentoService) CrearAlimento(alimento *Dto.AlimentoDto) *Dto.Re
 	}
 	return &resultado
 }
-func (service *AlimentoService) ActualizarAlimento(id string, alimento *Dto.AlimentoDto) *Dto.Resultado {
+
+func (service *AlimentoService) ActualizarAlimento(id *string, alimento *Dto.AlimentoDto) *Dto.Resultado {
 	resultado := Dto.Resultado{}
 	resultado.ListaMensaje = alimento.ValidarAlimentoDto()
 	if len(resultado.ListaMensaje) > 0 {
@@ -69,14 +76,15 @@ func (service *AlimentoService) ActualizarAlimento(id string, alimento *Dto.Alim
 		return &resultado
 	} else {
 		alimentoModel := Models.Alimento{
-			Nombre:          alimento.Nombre,
-			PrecioUnitario:  alimento.PrecioUnitario,
-			Stock:           alimento.Stock,
-			CantMinimaStock: alimento.CantMinimaStock,
-			TipoAlimento:    Models.TipoAlimento(alimento.TipoAlimento),
-			MomentoDelDia:   convertirMomentoaModel(alimento.MomentoDelDia),
+			Nombre:             alimento.Nombre,
+			PrecioUnitario:     alimento.PrecioUnitario,
+			Stock:              alimento.Stock,
+			CantMininaStock:    alimento.CantMinimaStock,
+			TipoAlimento:       Models.TipoAlimento(alimento.TipoAlimento),
+			MomentoDelDia:      convertirMomentoaModel(alimento.MomentoDelDia),
+			FechaActualizacion: time.Now(),
 		}
-		_, err := service.AlimentoRepositorio.ActualizarAlimento(id, alimentoModel)
+		_, err := service.AlimentoRepositorio.ActualizarAlimento(*id, alimentoModel)
 		if err != nil {
 			resultado.BoolResultado = false
 			resultado.ListaMensaje = append(resultado.ListaMensaje, "Error al actualizar alimento.")
@@ -87,9 +95,10 @@ func (service *AlimentoService) ActualizarAlimento(id string, alimento *Dto.Alim
 	}
 	return &resultado
 }
-func (service *AlimentoService) EliminarAlimento(id string) *Dto.Resultado {
+
+func (service *AlimentoService) EliminarAlimento(id *string) *Dto.Resultado {
 	resultado := Dto.Resultado{}
-	_, err := service.AlimentoRepositorio.EliminarAlimento(id)
+	_, err := service.AlimentoRepositorio.EliminarAlimento(*id)
 	if err != nil {
 		resultado.BoolResultado = false
 		resultado.ListaMensaje = append(resultado.ListaMensaje, "Error al eliminar alimento.")
@@ -99,17 +108,19 @@ func (service *AlimentoService) EliminarAlimento(id string) *Dto.Resultado {
 	}
 	return &resultado
 }
+
 func convertirAlimento(alimento Models.Alimento) *Dto.AlimentoDto {
 	alimentoDto := Dto.AlimentoDto{
 		Nombre:          alimento.Nombre,
 		PrecioUnitario:  alimento.PrecioUnitario,
 		Stock:           alimento.Stock,
-		CantMinimaStock: alimento.CantMinimaStock,
+		CantMinimaStock: alimento.CantMininaStock,
 		TipoAlimento:    Dto.TipoAlimento(alimento.TipoAlimento),
 		MomentoDelDia:   convertirMomentosADto(alimento.MomentoDelDia),
 	}
 	return &alimentoDto
 }
+
 func convertirMomentosADto(momentoLista []Models.Momento) []Dto.Momento {
 	var dtoMomentoLista []Dto.Momento
 	for _, momento := range momentoLista {
@@ -117,6 +128,7 @@ func convertirMomentosADto(momentoLista []Models.Momento) []Dto.Momento {
 	}
 	return dtoMomentoLista
 }
+
 func convertirMomentoaModel(momentoLista []Dto.Momento) []Models.Momento {
 	var modelMomentoLista []Models.Momento
 	for _, momento := range momentoLista {
