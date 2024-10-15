@@ -6,7 +6,7 @@ import (
 	"supercook/Middlewares"
 	"supercook/Repositories"
 	"supercook/Services"
-	clients "supercook/clientes"
+	"supercook/clientes"
 )
 
 var (

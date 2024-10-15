@@ -1,10 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
     const listaAlimentos = document.getElementById('lista-alimentos');
-
-
     const tr = document.createElement('tr');
     let token = localStorage.getItem('authToken')
-
+    console.log('todo gud')
     makeRequest('http://localhost:8080/alimentos/', 'GET', null, JSON, CallType.PRIVATE, successFn, errorFn);
 });
 

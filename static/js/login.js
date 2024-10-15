@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function(eventDOM){
 
 function successFn(response) {
     console.log("Éxito:", response);
-    window.location = '../alimentos/alimentos-lista.html';
+    window.location = 'alimentos-lista.html';
   }
   
   function errorFn(status, response) {
