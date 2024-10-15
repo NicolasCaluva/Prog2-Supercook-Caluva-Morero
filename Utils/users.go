@@ -2,7 +2,7 @@ package Utils
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/maxilovera/go-crud-example/clients/responses"
+	"supercook/clientes/responses"
 )
 
 func SetUserInContext(c *gin.Context, user *responses.UserInfo) {

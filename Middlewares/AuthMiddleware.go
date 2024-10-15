@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/maxilovera/go-crud-example/clients"
-	"github.com/maxilovera/go-crud-example/utils"
+	"supercook/Utils"
+	"supercook/clientes"
 )
 
 type AuthMiddleware struct {
@@ -22,7 +22,6 @@ func NewAuthMiddleware(authClient clients.AuthClientInterface) *AuthMiddleware {
 func (auth *AuthMiddleware) ValidateToken(c *gin.Context) {
 	//Se obtiene el header necesario con nombre "Authorization"
 	authToken := c.GetHeader("Authorization")
-
 	if authToken == "" {
 		//log.Printf("[service:AulaService][method:ObtenerAulaPorId][reason:NOT_FOUND][id:%s]", id)
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Token no encontrado"})
@@ -39,7 +38,7 @@ func (auth *AuthMiddleware) ValidateToken(c *gin.Context) {
 	//Validar que el usuario tenga alguno de todos los roles que yo quiero en mi aplicacion.
 
 	//Seteamos los datos del usuario logueado en el contexto de GIN.
-	utils.SetUserInContext(c, user)
+	Utils.SetUserInContext(c, user)
 
 	c.Next()
 }

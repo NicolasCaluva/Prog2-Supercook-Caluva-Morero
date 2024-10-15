@@ -2,12 +2,12 @@ package Handlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/maxilovera/go-crud-example/utils"
 	"log"
 	"net/http"
 	"strconv"
 	"supercook/Dto"
 	"supercook/Services"
+	"supercook/Utils"
 )
 
 type AlimentoHandler struct {
@@ -27,18 +27,24 @@ func (handler *AlimentoHandler) ObtenerAlimentos(c *gin.Context) {
 		c.Query("nombre"),
 	}
 
-	userInfo := utils.GetUserInfoFromContext(c)
+	userInfo := Utils.GetUserInfoFromContext(c)
+
+	log.Println("ACA ESTA EL CODIGO", userInfo.Codigo)
+
 	if userInfo == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
 		return
 	}
 
-	idUsuario, err := strconv.Atoi(userInfo.Codigo)
+	userId, err := strconv.Atoi(userInfo.Codigo)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user code"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	var alimentos = handler.AlimentoService.ObtenerAlimentos(&filtro, &idUsuario)
+
+	log.Println("userId", userId)
+
+	var alimentos = handler.AlimentoService.ObtenerAlimentos(&filtro, &userId)
 	c.JSON(http.StatusOK, alimentos)
 }
 

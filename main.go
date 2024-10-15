@@ -6,6 +6,7 @@ import (
 	"supercook/Middlewares"
 	"supercook/Repositories"
 	"supercook/Services"
+	clients "supercook/clientes"
 )
 
 var (
@@ -15,21 +16,27 @@ var (
 
 func main() {
 	router = gin.Default()
+	router.Use(Middlewares.CorsMiddleware())
 	dependencias()
 	rutas()
-	router.Static("/static", "./static")
+
 	router.Run(":8080")
 }
 
 func rutas() {
-	router.Use(Middlewares.CorsMiddleware())
 
-	router.GET("/alimentos/", alimentoHandler.ObtenerAlimentos)
-	router.GET("/alimentos/:id/", alimentoHandler.ObtenerAlimentoPorID)
-	router.POST("/alimentos/", alimentoHandler.CrearAlimento)
-	router.PUT("/alimentos/:id/", alimentoHandler.ActualizarAlimento)
-	router.DELETE("/alimentos/:id/", alimentoHandler.EliminarAlimento)
+	var authClient clients.AuthClientInterface
+	authClient = clients.NewAuthClient()
+	authMiddleware := Middlewares.NewAuthMiddleware(authClient)
+	router.Use(authMiddleware.ValidateToken)
 
+	group := router.Group("/alimentos")
+	group.Use(authMiddleware.ValidateToken)
+	group.GET("/", alimentoHandler.ObtenerAlimentos)
+	group.GET("/:id/", alimentoHandler.ObtenerAlimentoPorID)
+	group.POST("/", alimentoHandler.CrearAlimento)
+	group.PUT("/:id/", alimentoHandler.ActualizarAlimento)
+	group.DELETE("/:id/", alimentoHandler.EliminarAlimento)
 }
 
 func dependencias() {
