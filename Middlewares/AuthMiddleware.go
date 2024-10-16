@@ -22,6 +22,7 @@ func NewAuthMiddleware(authClient clients.AuthClientInterface) *AuthMiddleware {
 func (auth *AuthMiddleware) ValidateToken(c *gin.Context) {
 	//Se obtiene el header necesario con nombre "Authorization"
 	authToken := c.GetHeader("Authorization")
+
 	if authToken == "" {
 		//log.Printf("[service:AulaService][method:ObtenerAulaPorId][reason:NOT_FOUND][id:%s]", id)
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Token no encontrado"})

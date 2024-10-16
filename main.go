@@ -6,7 +6,7 @@ import (
 	"supercook/Middlewares"
 	"supercook/Repositories"
 	"supercook/Services"
-	"supercook/clientes"
+	clients "supercook/clientes"
 )
 
 var (
@@ -16,7 +16,7 @@ var (
 
 func main() {
 	router = gin.Default()
-	router.Use(Middlewares.CorsMiddleware())
+	router.Use(Middlewares.CORSMiddleware())
 	dependencias()
 	rutas()
 
@@ -31,12 +31,14 @@ func rutas() {
 	router.Use(authMiddleware.ValidateToken)
 
 	group := router.Group("/alimentos")
-	group.Use(authMiddleware.ValidateToken)
+	//group.Use(authMiddleware.ValidateToken)
+	group.Use(Middlewares.CORSMiddleware())
 	group.GET("/", alimentoHandler.ObtenerAlimentos)
 	group.GET("/:id/", alimentoHandler.ObtenerAlimentoPorID)
 	group.POST("/", alimentoHandler.CrearAlimento)
 	group.PUT("/:id/", alimentoHandler.ActualizarAlimento)
 	group.DELETE("/:id/", alimentoHandler.EliminarAlimento)
+
 }
 
 func dependencias() {

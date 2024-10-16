@@ -21,13 +21,12 @@ func NuevoAlimentoHandler(alimentoService Services.AlimentoInteface) *AlimentoHa
 }
 func (handler *AlimentoHandler) ObtenerAlimentos(c *gin.Context) {
 	log.Print("ObtenerAlimentos")
+	userInfo := Utils.GetUserInfoFromContext(c)
 	filtro := [3]string{
 		c.Query("momentoDelDia"),
 		c.Query("tipoAlimento"),
 		c.Query("nombre"),
 	}
-
-	userInfo := Utils.GetUserInfoFromContext(c)
 
 	log.Println("ACA ESTA EL CODIGO", userInfo.Codigo)
 
