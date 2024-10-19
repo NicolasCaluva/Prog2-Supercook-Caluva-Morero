@@ -7,7 +7,7 @@ import (
 
 type Alimento struct {
 	ID                 primitive.ObjectID `bson:"_id,omitempty"`
-	IDUsuario          int                `bson:"idUsuario"`
+	IDUsuario          string             `bson:"idUsuario"`
 	Nombre             string             `bson:"nombre"`
 	PrecioUnitario     float64            `bson:"precioUnitario"`
 	Stock              int                `bson:"stock"`
