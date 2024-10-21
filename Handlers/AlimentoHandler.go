@@ -21,11 +21,6 @@ func NuevoAlimentoHandler(alimentoService Services.AlimentoInteface) *AlimentoHa
 func (handler *AlimentoHandler) ObtenerAlimentos(c *gin.Context) {
 	log.Print("ObtenerAlimentos")
 	userInfo := Utils.GetUserInfoFromContext(c)
-	filtro := [3]string{
-		c.Query("momentoDelDia"),
-		c.Query("tipoAlimento"),
-		c.Query("nombre"),
-	}
 
 	log.Println("ACA ESTA EL CODIGO", userInfo.Codigo)
 
@@ -33,6 +28,13 @@ func (handler *AlimentoHandler) ObtenerAlimentos(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
 		return
 	}
+
+	momentoDelDia := c.Query("momentoDelDia")
+	tipoAlimento := c.Query("tipoAlimento")
+	nombre := c.Query("nombre")
+
+	filtro := [3]string{momentoDelDia, tipoAlimento, nombre}
+
 	var alimentos = handler.AlimentoService.ObtenerAlimentos(&filtro, &userInfo.Codigo)
 	c.JSON(http.StatusOK, alimentos)
 }
