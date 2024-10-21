@@ -3,7 +3,6 @@ function successFn(response) {
     const listaAlimentos = document.getElementById('lista-alimentos');
     const tr = document.createElement('tr');
     const userinfo = document.getElementById('userInfo')
-
     userinfo.innerHTML = `
         <h1> Bienvenido ${response[0].Nombre} </h1>
     `;

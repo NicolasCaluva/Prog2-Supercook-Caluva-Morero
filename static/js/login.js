@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", function(eventDOM){
           username: document.getElementById("usuario").value, 
           password: document.getElementById("password").value 
         };
-
         await makeRequest(url, Method.POST, data, ContentType.URL_ENCODED, CallType.PUBLIC, successFn, errorFn);
 
         return false;

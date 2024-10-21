@@ -1,7 +1,7 @@
 package Dto
 
 type AlimentoDto struct {
-	IDUsuario       int
+	IDUsuario       string
 	Nombre          string
 	PrecioUnitario  float64
 	Stock           int

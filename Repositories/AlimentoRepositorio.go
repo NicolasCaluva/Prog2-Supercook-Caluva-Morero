@@ -10,11 +10,11 @@ import (
 )
 
 type AlimentoRepositorioInterface interface {
-	ObtenerAlimentos(filtro [3]string, idUsuario int) ([]Models.Alimento, error)
-	ObtenerAlimentoPorID(idAlimento string, idUsuario int) (Models.Alimento, error)
-	CrearAlimento(alimento Models.Alimento) (*mongo.InsertOneResult, error)
-	ActualizarAlimento(id string, alimento Models.Alimento) (*mongo.UpdateResult, error)
-	EliminarAlimento(id string) (*mongo.DeleteResult, error)
+	ObtenerAlimentos(filtro *[3]string, idUsuario *string) ([]Models.Alimento, error)
+	ObtenerAlimentoPorID(idAlimento *string, idUsuario *string) (Models.Alimento, error)
+	CrearAlimento(alimento *Models.Alimento) (*mongo.InsertOneResult, error)
+	ActualizarAlimento(id *string, alimento *Models.Alimento) (*mongo.UpdateResult, error)
+	EliminarAlimento(id *string, idUsuario *string) (*mongo.DeleteResult, error)
 }
 
 type AlimentoRepositorio struct {
@@ -27,12 +27,12 @@ func NuevoAlimentoRepositorio(db DB) *AlimentoRepositorio {
 	}
 }
 
-func (repositorio AlimentoRepositorio) ObtenerAlimentos(filtro [3]string, idUsuario int) ([]Models.Alimento, error) {
+func (repositorio AlimentoRepositorio) ObtenerAlimentos(filtro *[3]string, idUsuario *string) ([]Models.Alimento, error) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
 
 	filtroBson := bson.M{}
 
-	filtroBson["idUsuario"] = idUsuario
+	filtroBson["idUsuario"] = *idUsuario
 	if filtro[0] != "" {
 		filtroBson["momentoDelDia"] = bson.M{"$regex": filtro[0], "$options": "i"}
 	}
@@ -61,11 +61,11 @@ func (repositorio AlimentoRepositorio) ObtenerAlimentos(filtro [3]string, idUsua
 	return alimentos, err
 }
 
-func (repositorio AlimentoRepositorio) ObtenerAlimentoPorID(idAlimento string, idUsuario int) (Models.Alimento, error) {
+func (repositorio AlimentoRepositorio) ObtenerAlimentoPorID(idAlimento *string, idUsuario *string) (Models.Alimento, error) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
-	IdObjeto := Utils.GetObjectIDFromStringID(idAlimento)
+	IdObjeto := Utils.GetObjectIDFromStringID(*idAlimento)
 	filtro := bson.M{"_id": IdObjeto}
-	filtro["idUsuario"] = idUsuario
+	filtro["idUsuario"] = *idUsuario
 	cursor, err := coleccion.Find(context.TODO(), filtro)
 	defer cursor.Close(context.Background())
 	var alimento Models.Alimento
@@ -79,15 +79,16 @@ func (repositorio AlimentoRepositorio) ObtenerAlimentoPorID(idAlimento string, i
 	return alimento, err
 }
 
-func (repositorio AlimentoRepositorio) CrearAlimento(alimento Models.Alimento) (*mongo.InsertOneResult, error) {
+func (repositorio AlimentoRepositorio) CrearAlimento(alimento *Models.Alimento) (*mongo.InsertOneResult, error) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
 	resultado, err := coleccion.InsertOne(context.TODO(), alimento)
 	return resultado, err
 }
 
-func (repositorio AlimentoRepositorio) ActualizarAlimento(id string, alimento Models.Alimento) (*mongo.UpdateResult, error) {
+func (repositorio AlimentoRepositorio) ActualizarAlimento(id *string, alimento *Models.Alimento) (*mongo.UpdateResult, error) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
-	filtro := bson.M{"_id": alimento.ID}
+	filtro := bson.M{"_id": id}
+	filtro["idUsuario"] = alimento.IDUsuario
 	entidad := bson.M{
 		"$set": bson.M{
 			"nombre":             alimento.Nombre,
@@ -104,9 +105,10 @@ func (repositorio AlimentoRepositorio) ActualizarAlimento(id string, alimento Mo
 	return resultado, err
 }
 
-func (repositorio AlimentoRepositorio) EliminarAlimento(id string) (*mongo.DeleteResult, error) {
+func (repositorio AlimentoRepositorio) EliminarAlimento(idAlimento *string, idUsuario *string) (*mongo.DeleteResult, error) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
-	filtro := bson.M{"_id": id}
+	filtro := bson.M{"_id": idAlimento}
+	filtro["idUsuario"] = *idUsuario
 	resultado, err := coleccion.DeleteOne(context.TODO(), filtro)
 	return resultado, err
 }

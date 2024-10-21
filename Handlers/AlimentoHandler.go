@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-	"strconv"
 	"supercook/Dto"
 	"supercook/Services"
 	"supercook/Utils"
@@ -34,51 +33,59 @@ func (handler *AlimentoHandler) ObtenerAlimentos(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
 		return
 	}
-
-	userId, err := strconv.Atoi(userInfo.Codigo)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	log.Println("userId", userId)
-
-	var alimentos = handler.AlimentoService.ObtenerAlimentos(&filtro, &userId)
+	var alimentos = handler.AlimentoService.ObtenerAlimentos(&filtro, &userInfo.Codigo)
 	c.JSON(http.StatusOK, alimentos)
 }
 
 func (handler *AlimentoHandler) ObtenerAlimentoPorID(c *gin.Context) {
-	id := c.Param("id")
-	idUsuario, err := strconv.Atoi(c.Query("idUsuario"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	userInfo := Utils.GetUserInfoFromContext(c)
+	if userInfo == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
 		return
 	}
-	alimento := handler.AlimentoService.ObtenerAlimentoPorID(&id, &idUsuario)
+	id := c.Param("id")
+	alimento := handler.AlimentoService.ObtenerAlimentoPorID(&id, &userInfo.Codigo)
 	c.JSON(http.StatusOK, alimento)
 }
 
 func (handler *AlimentoHandler) CrearAlimento(c *gin.Context) {
+	userInfo := Utils.GetUserInfoFromContext(c)
+	if userInfo == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
+		return
+	}
 	var alimentoDto Dto.AlimentoDto
 
 	if err := c.BindJSON(&alimentoDto); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	alimentoDto.IDUsuario = userInfo.Codigo
 	resultado := handler.AlimentoService.CrearAlimento(&alimentoDto)
 	c.JSON(http.StatusOK, resultado)
 }
 
 func (handler *AlimentoHandler) ActualizarAlimento(c *gin.Context) {
+	userInfo := Utils.GetUserInfoFromContext(c)
+	if userInfo == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
+		return
+	}
 	id := c.Param("id")
 	var alimentoDto Dto.AlimentoDto
 	c.BindJSON(&alimentoDto)
+	alimentoDto.IDUsuario = userInfo.Codigo
 	resultado := handler.AlimentoService.ActualizarAlimento(&id, &alimentoDto)
 	c.JSON(http.StatusOK, resultado)
 }
 
 func (handler *AlimentoHandler) EliminarAlimento(c *gin.Context) {
+	userInfo := Utils.GetUserInfoFromContext(c)
+	if userInfo == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
+		return
+	}
 	id := c.Param("id")
-	resultado := handler.AlimentoService.EliminarAlimento(&id)
+	resultado := handler.AlimentoService.EliminarAlimento(&id, &userInfo.Codigo)
 	c.JSON(http.StatusOK, resultado)
 }
