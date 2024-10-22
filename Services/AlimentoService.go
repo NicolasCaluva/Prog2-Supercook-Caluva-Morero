@@ -116,6 +116,7 @@ func (service *AlimentoService) EliminarAlimento(idAlimento *string, idUsuario *
 func convertirAlimento(alimento Models.Alimento) *Dto.AlimentoDto {
 	alimentoDto := Dto.AlimentoDto{
 		Nombre:          alimento.Nombre,
+		IDUsuario:       alimento.IDUsuario,
 		PrecioUnitario:  alimento.PrecioUnitario,
 		Stock:           alimento.Stock,
 		CantMinimaStock: alimento.CantMininaStock,

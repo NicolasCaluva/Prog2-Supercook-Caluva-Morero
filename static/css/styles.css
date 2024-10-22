@@ -4,3 +4,37 @@
     box-shadow:  15px 15px 30px #707070,
     -15px -15px 30px #ffffff;
 }
+/* Fondo para la imagen con clip-path */
+.bg-image {
+    background-image: url('../prueba.jpg'); /* Cambia esto por la ruta a tu imagen */
+    background-size: cover;
+    background-position: center;
+    height: 100%;
+}
+
+/* Colores y estilos generales */
+.bg-light-blue {
+    background-color: #F4A261;
+}
+
+.bg-dark-transparent {
+    background-color: rgba(61, 43, 31, 0.85); /* Fondo oscuro semi-transparente */
+}
+
+.input-dark {
+    background-color: #3D2B1F;
+    color: white;
+    border: none;
+}
+
+.input-dark::placeholder {
+    color: #bbbbbb;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .bg-image {
+        clip-path: none; /* Sin clip para pantallas pequeñas */
+        transform: none;
+    }
+}

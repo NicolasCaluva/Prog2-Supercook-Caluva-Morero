@@ -56,3 +56,4 @@ document.addEventListener('DOMContentLoaded', async function () {
     let url = 'http://localhost:8080/alimentos/';
     await makeRequest(url, Method.GET, null, ContentType.JSON, CallType.PRIVATE, successFn, errorFn);
 });
+
