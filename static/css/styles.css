@@ -1,29 +1,43 @@
+:root {
+    --color-primary: #F4A261;
+    --color-secondary: #E9C46A;
+    --color-tertiary: #F4A261;
+    --color-dark: #264653;
+    --color-light: #E76F51;
+}
+
+
 .bg-custom-border {
     border-radius: 1rem;
     background: #e0e0e0;
-    box-shadow:  15px 15px 30px #707070,
+    box-shadow: 15px 15px 30px #707070,
     -15px -15px 30px #ffffff;
 }
+
 .bg-image {
     background-image: url('../prueba.jpg');
     background-size: cover;
     background-position: center;
-    height: 100%;
 }
-.bg-light-blue {
-    background-color: #F4A261;
+
+.bg-color-primary {
+    background-color: var(--color-primary);
 }
+
 .bg-dark-transparent {
     background-color: rgba(61, 43, 31, 0.85);
 }
+
 .input-dark {
     background-color: #3D2B1F;
     color: white;
     border: none;
 }
+
 .input-dark::placeholder {
     color: #bbbbbb;
 }
+
 @media (max-width: 768px) {
     .bg-image {
         clip-path: none;

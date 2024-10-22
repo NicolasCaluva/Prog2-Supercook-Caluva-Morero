@@ -11,10 +11,29 @@
 </head>
 <body>
 
-<a href="login.html">Login</a>
-<a href="register.html">Registro</a>
+<header class="p-3 bg-dark text-white">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+                <img src="https://getbootstrap.com/docs/5.3/assets/brand/bootstrap-logo.svg" alt="Logo" width="40" height="32">
+            </a>
 
-<div id="userInfo"></div>
+            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                <li><a href="#" class="nav-link px-2 text-secondary">Home</a></li>
+                <li><a href="alimentos-lista.html" class="nav-link px-2 text-white">Alimentos</a></li>
+                <li><a href="#" class="nav-link px-2 text-white">Recetas</a></li>
+                <li><a href="#" class="nav-link px-2 text-white">Compras</a></li>
+                <li><a href="#" class="nav-link px-2 text-white">Sobre Nosotros</a></li>
+            </ul>
+
+
+            <div class="text-end">
+                <button type="button" class="btn btn-outline-light me-2">Loguearte</button>
+                <button type="button" class="btn btn-warning">Registrarse</button>
+            </div>
+        </div>
+    </div>
+</header>
 
 <div class="container w-100 min-vh-100">
     <h1>Listado de alimentos</h1>
