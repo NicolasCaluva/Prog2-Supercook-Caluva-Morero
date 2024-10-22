@@ -64,6 +64,10 @@ func (handler *AlimentoHandler) CrearAlimento(c *gin.Context) {
 	}
 	alimentoDto.IDUsuario = userInfo.Codigo
 	resultado := handler.AlimentoService.CrearAlimento(&alimentoDto)
+	if !resultado.BoolResultado {
+		c.JSON(http.StatusBadRequest, resultado)
+		return
+	}
 	c.JSON(http.StatusOK, resultado)
 }
 
@@ -78,6 +82,10 @@ func (handler *AlimentoHandler) ActualizarAlimento(c *gin.Context) {
 	c.BindJSON(&alimentoDto)
 	alimentoDto.IDUsuario = userInfo.Codigo
 	resultado := handler.AlimentoService.ActualizarAlimento(&id, &alimentoDto)
+	if !resultado.BoolResultado {
+		c.JSON(http.StatusBadRequest, resultado)
+		return
+	}
 	c.JSON(http.StatusOK, resultado)
 }
 
@@ -89,5 +97,9 @@ func (handler *AlimentoHandler) EliminarAlimento(c *gin.Context) {
 	}
 	id := c.Param("id")
 	resultado := handler.AlimentoService.EliminarAlimento(&id, &userInfo.Codigo)
+	if !resultado.BoolResultado {
+		c.JSON(http.StatusBadRequest, resultado)
+		return
+	}
 	c.JSON(http.StatusOK, resultado)
 }
