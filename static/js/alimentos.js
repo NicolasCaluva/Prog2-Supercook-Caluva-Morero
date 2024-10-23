@@ -2,9 +2,7 @@ function successFn(response) {
     console.log(response)
     const listaAlimentos = document.getElementById('lista-alimentos');
     const userinfo = document.getElementById('userInfo')
-    userinfo.innerHTML = `
-        <h1> Bienvenido ${response[0].Nombre} </h1>
-    `;
+
 
     response.forEach(alimento => {
         const tr = document.createElement('tr');

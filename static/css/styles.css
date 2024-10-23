@@ -4,6 +4,7 @@
     --color-tertiary: #F4A261;
     --color-dark: #264653;
     --color-light: #E76F51;
+    --color-brown-dark: #3D2B1FD8;
 }
 
 
@@ -24,8 +25,8 @@
     background-color: var(--color-primary);
 }
 
-.bg-dark-transparent {
-    background-color: rgba(61, 43, 31, 0.85);
+.bg-brown-dark {
+    background-color: var(--color-brown-dark);
 }
 
 .input-dark {
