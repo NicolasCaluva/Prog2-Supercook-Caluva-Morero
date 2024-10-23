@@ -81,14 +81,53 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <form id="form-alimento">
+                    <div class="mb-3">
+                        <label for="nombreAlimento" class="form-label">Nombre del alimento</label>
+                        <input type="text" class="form-control" id="nombreAlimento" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="precioUnitario" class="form-label">Precio unitario</label>
+                        <input type="number" step="0.01" class="form-control" id="precioUnitario" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="stock" class="form-label">Stock</label>
+                        <input type="number" class="form-control" id="stock" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="cantMinimaStock" class="form-label">Cantidad mínima de stock</label>
+                        <input type="number" class="form-control" id="cantMinimaStock" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tipoAlimento" class="form-label">Tipo de alimento</label>
+                        <select class="form-select" id="tipoAlimento" required>
+                            <option value="">Selecciona un tipo de alimento</option>
+                            <option value="verdura">Verdura</option>
+                            <option value="fruta">Fruta</option>
+                            <option value="lacteo">Lácteo</option>
+                            <option value="carne">Carne</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="momentoDelDia" class="form-label">Momentos del día</label>
+                        <select multiple class="form-select" id="momentoDelDia" required>
+                            <option value="desayuno">Desayuno</option>
+                            <option value="almuerzo">Almuerzo</option>
+                            <option value="merienda">Merienda</option>
+                            <option value="cena">Cena</option>
+                        </select>
+                    </div>
+                </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary">Confirmar</button>
+                <button type="button" class="btn btn-primary" id="confirmarAlimento">Confirmar</button>
             </div>
         </div>
     </div>
 </div>
+
+
 
 </body>
 <script src="https://kit.fontawesome.com/0d85862334.js" crossorigin="anonymous"></script>

@@ -11,6 +11,7 @@ import (
 
 var (
 	alimentoHandler *Handlers.AlimentoHandler
+	compraHandler   *Handlers.CompraHandler
 	router          *gin.Engine
 )
 
@@ -39,15 +40,24 @@ func rutas() {
 	group.PUT("/:id/", alimentoHandler.ActualizarAlimento)
 	group.DELETE("/:id/", alimentoHandler.EliminarAlimento)
 
+	groupCompra := router.Group("/compras")
+	groupCompra.POST("/", compraHandler.CrearCompra)
+
 }
 
 func dependencias() {
 	var database Repositories.DB
 	var alimentoRepository Repositories.AlimentoRepositorioInterface
-	var alimentoService Services.AlimentoInteface
+	var alimentoService Services.AlimentoInterface
+	var compraService Services.CompraInterfaz
+	var compraRepositorio Repositories.CompraRepositorioInterfaz
 
 	database = Repositories.NuevaMongoDB()
 	alimentoRepository = Repositories.NuevoAlimentoRepositorio(database)
 	alimentoService = Services.NuevoAlimentoService(alimentoRepository)
 	alimentoHandler = Handlers.NuevoAlimentoHandler(alimentoService)
+	compraRepositorio = Repositories.NuevoCompraRepositorio(database)
+	compraService = Services.NuevoCompraService(compraRepositorio)
+	compraHandler = Handlers.NuevoCompraHandler(compraService)
+
 }

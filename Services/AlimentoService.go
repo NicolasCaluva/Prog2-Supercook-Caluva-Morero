@@ -9,11 +9,11 @@ import (
 	"time"
 )
 
-type AlimentoInteface interface {
+type AlimentoInterface interface {
 	ObtenerAlimentos(filtro *[3]string, idUsuario *string) []*Dto.AlimentoDto
 	ObtenerAlimentoPorID(id *string, idUsuario *string) *Dto.AlimentoDto
 	CrearAlimento(alimento *Dto.AlimentoDto) *Dto.Resultado
-	ActualizarAlimento(idAlimento *string, alimento *Dto.AlimentoDto) *Dto.Resultado
+	ActualizarAlimento(alimento *Dto.AlimentoDto) *Dto.Resultado
 	EliminarAlimento(id *string, idUsuario *string) *Dto.Resultado
 }
 
@@ -71,7 +71,7 @@ func (service *AlimentoService) CrearAlimento(alimento *Dto.AlimentoDto) *Dto.Re
 	return &resultado
 }
 
-func (service *AlimentoService) ActualizarAlimento(idAlimento *string, alimento *Dto.AlimentoDto) *Dto.Resultado {
+func (service *AlimentoService) ActualizarAlimento(alimento *Dto.AlimentoDto) *Dto.Resultado {
 	resultado := Dto.Resultado{}
 	resultado.ListaMensaje = alimento.ValidarAlimentoDto()
 	if len(resultado.ListaMensaje) > 0 {
@@ -88,7 +88,7 @@ func (service *AlimentoService) ActualizarAlimento(idAlimento *string, alimento 
 			MomentoDelDia:      convertirMomentoaModel(alimento.MomentoDelDia),
 			FechaActualizacion: time.Now(),
 		}
-		_, err := service.AlimentoRepositorio.ActualizarAlimento(idAlimento, &alimentoModel)
+		_, err := service.AlimentoRepositorio.ActualizarAlimento(&alimentoModel)
 		if err != nil {
 			resultado.BoolResultado = false
 			resultado.ListaMensaje = append(resultado.ListaMensaje, "Error al actualizar alimento.")

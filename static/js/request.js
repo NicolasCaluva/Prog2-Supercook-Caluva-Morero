@@ -50,7 +50,7 @@ async function makeRequest(
         throw new Error("Método HTTP no válido");
         return;
     }
-
+    debugger
     // Validar que los datos no estén vacíos en caso de POST o PUT
     if ((method === "POST" || method === "PUT") && !data) {
         throw new Error(
