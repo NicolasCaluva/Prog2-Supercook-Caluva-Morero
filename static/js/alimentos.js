@@ -140,6 +140,7 @@ function successObtenerAlimento(alimento) {
     confirmarAlimentoBtn.addEventListener('click', async function () {
         const momentosSeleccionados = Array.from(document.getElementById('momentoDelDia').selectedOptions).map(option => option.value);
         const nuevoAlimento = {
+            IdAlimento: alimento.IdAlimento,
             Nombre: nombreAlimento.value,
             PrecioUnitario: parseFloat(precioUnitario.value),
             Stock: parseInt(stock.value),
@@ -148,7 +149,7 @@ function successObtenerAlimento(alimento) {
             MomentoDelDia: momentosSeleccionados
         };
 
-        const URL = 'http://localhost:8080/alimentos/' + alimento.IdAlimento + '/';
+        const URL = 'http://localhost:8080/alimentos/';
         await makeRequest(URL, Method.PUT, nuevoAlimento, ContentType.JSON, CallType.PRIVATE, successEditarAlimento, errorEditarAlimento);
         const modal = bootstrap.Modal.getInstance(document.getElementById('cargarAlimento'));
         modal.hide();
@@ -164,6 +165,7 @@ function errorObtenerAlimento(response) {
 // Funciones para la edición de un alimento en el sistema
 function successEditarAlimento(response) {
     alert("Operación exitosa: \n" + response.ListaMensaje.join("\n"));
+    location.reload();
 }
 
 function errorEditarAlimento(response) {
@@ -173,6 +175,7 @@ function errorEditarAlimento(response) {
 // Funciones para la eliminación de un alimento en el sistema
 function successEliminarAlimento(response) {
     alert("Operación exitosa: \n" + response.ListaMensaje.join("\n"));
+    location.reload();
 }
 
 function errorEliminarAlimento(response) {

@@ -37,7 +37,7 @@ func rutas() {
 	group.GET("/", alimentoHandler.ObtenerAlimentos)
 	group.GET("/:id/", alimentoHandler.ObtenerAlimentoPorID)
 	group.POST("/", alimentoHandler.CrearAlimento)
-	group.PUT("/:id/", alimentoHandler.ActualizarAlimento)
+	group.PUT("/", alimentoHandler.ActualizarAlimento)
 	group.DELETE("/:id/", alimentoHandler.EliminarAlimento)
 
 	groupCompra := router.Group("/compras")

@@ -80,6 +80,7 @@ func (handler *AlimentoHandler) ActualizarAlimento(c *gin.Context) {
 	var alimentoDto Dto.AlimentoDto
 	c.BindJSON(&alimentoDto)
 	alimentoDto.IDUsuario = userInfo.Codigo
+	log.Printf("AlimentoDto: %v", alimentoDto)
 	resultado := handler.AlimentoService.ActualizarAlimento(&alimentoDto)
 	if !resultado.BoolResultado {
 		c.JSON(http.StatusBadRequest, resultado)

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"log"
 	"supercook/Models"
 	"supercook/Utils"
 )
@@ -102,12 +103,17 @@ func (repositorio AlimentoRepositorio) ActualizarAlimento(alimento *Models.Alime
 		},
 	}
 	resultado, err := coleccion.UpdateOne(context.TODO(), filtro, entidad)
+	if err != nil {
+		log.Printf("Error al actualizar el alimento: %v\n", err)
+		return nil, err
+	}
 	return resultado, err
 }
 
 func (repositorio AlimentoRepositorio) EliminarAlimento(idAlimento *string, idUsuario *string) (*mongo.DeleteResult, error) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
-	filtro := bson.M{"_id": idAlimento}
+	IdObjeto := Utils.GetObjectIDFromStringID(*idAlimento)
+	filtro := bson.M{"_id": IdObjeto}
 	filtro["idUsuario"] = *idUsuario
 	resultado, err := coleccion.DeleteOne(context.TODO(), filtro)
 	return resultado, err

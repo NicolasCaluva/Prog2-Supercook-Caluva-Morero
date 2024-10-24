@@ -6,6 +6,7 @@ import (
 	"supercook/Dto"
 	"supercook/Models"
 	"supercook/Repositories"
+	"supercook/Utils"
 	"time"
 )
 
@@ -79,6 +80,7 @@ func (service *AlimentoService) ActualizarAlimento(alimento *Dto.AlimentoDto) *D
 		return &resultado
 	} else {
 		alimentoModel := Models.Alimento{
+			ID:                 Utils.GetObjectIDFromStringID(alimento.IdAlimento),
 			Nombre:             alimento.Nombre,
 			IDUsuario:          alimento.IDUsuario,
 			PrecioUnitario:     alimento.PrecioUnitario,
@@ -102,6 +104,7 @@ func (service *AlimentoService) ActualizarAlimento(alimento *Dto.AlimentoDto) *D
 
 func (service *AlimentoService) EliminarAlimento(idAlimento *string, idUsuario *string) *Dto.Resultado {
 	resultado := Dto.Resultado{}
+	//idAlimentoConvertido:= Utils.GetObjectIDFromStringID(*idAlimento)
 	_, err := service.AlimentoRepositorio.EliminarAlimento(idAlimento, idUsuario)
 	if err != nil {
 		resultado.BoolResultado = false
