@@ -26,6 +26,7 @@ func (handler *CompraHandler) CrearCompra(c *gin.Context) {
 	}
 	var compraDto Dto.CompraDto
 	err := c.BindJSON(&compraDto)
+	compraDto.IDUsuario = userInfo.Codigo
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Error en el JSON"})
 		return

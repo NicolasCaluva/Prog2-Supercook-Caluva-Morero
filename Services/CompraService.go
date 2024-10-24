@@ -5,6 +5,7 @@ import (
 	"supercook/Dto"
 	"supercook/Models"
 	"supercook/Repositories"
+	"time"
 )
 
 type CompraInterfaz interface {
@@ -17,14 +18,17 @@ type CompraService struct {
 	AlimentoService   AlimentoInterface
 }
 
-func NuevoCompraService(compraRepositorio Repositories.CompraRepositorioInterfaz) *CompraService {
+func NuevoCompraService(compraRepositorio Repositories.CompraRepositorioInterfaz, alimentoService AlimentoInterface) *CompraService {
 	return &CompraService{
 		CompraRepositorio: compraRepositorio,
+		AlimentoService:   alimentoService,
 	}
 }
 func (service *CompraService) ObtenerListaAlimentosStockMenorStockMinimo(idUsuario *string) []*Dto.AlimentoDto {
 	log.Printf("ObtenerListaAlimentosStockMenorStockMinimo")
-	alimentos := service.AlimentoService.ObtenerAlimentosConMenosStockQueCantidadMinima(idUsuario)
+	var alimentos []*Dto.AlimentoDto
+	alimentos = service.AlimentoService.ObtenerAlimentosConMenosStockQueCantidadMinima(idUsuario)
+	log.Printf("Alimentos pasa por el service: %v", alimentos)
 	var alimentoDTO []*Dto.AlimentoDto
 	for _, alimento := range alimentos {
 		alimentoDTO = append(alimentoDTO, alimento)
@@ -33,9 +37,10 @@ func (service *CompraService) ObtenerListaAlimentosStockMenorStockMinimo(idUsuar
 }
 func (service *CompraService) AgregarCompra(compra *Dto.CompraDto) *Dto.Resultado {
 	resultado := Dto.Resultado{}
-	resultado.ListaMensaje[0] = compra.ValidarListaAlimentos()
+	mensaje := compra.ValidarListaAlimentos()
+	resultado.ListaMensaje = append(resultado.ListaMensaje, mensaje)
 	var compraModel *Models.Compra
-	if len(resultado.ListaMensaje) > 0 {
+	if resultado.ListaMensaje[0] != "" {
 		resultado.BoolResultado = false
 		return &resultado
 	} else {
@@ -53,16 +58,17 @@ func (service *CompraService) AgregarCompra(compra *Dto.CompraDto) *Dto.Resultad
 					}
 					compraModel.MontoTotal = compraModel.MontoTotal + (alimentoRecibido.PrecioUnitario * float64(alimento.CantComprada))
 					compraModel.Alimentos = append(compraModel.Alimentos, Models.ElementoComprado{IDAlimento: alimento.IDAlimento, CantComprada: alimento.CantComprada})
+					compraModel.FechaCreacion = time.Now()
 				}
 			}
 		}
 	}
-	resultadoCompra, err := service.CompraRepositorio.AgregarCompra(compraModel)
+	_, err := service.CompraRepositorio.AgregarCompra(compraModel)
 	if err != nil {
 		resultado.BoolResultado = false
 		resultado.ListaMensaje = append(resultado.ListaMensaje, "Error al agregar compra.")
 	} else {
-		resultado.ListaMensaje = append(resultado.ListaMensaje, "ERR X MONGO"+resultadoCompra.InsertedID.(string))
+		resultado.ListaMensaje = append(resultado.ListaMensaje, "Compra agregada correctamente.")
 	}
 
 	resultado.BoolResultado = true

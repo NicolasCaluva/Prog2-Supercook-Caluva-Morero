@@ -121,10 +121,12 @@ func (repositorio AlimentoRepositorio) EliminarAlimento(idAlimento *string, idUs
 }
 func (repositorio AlimentoRepositorio) ObtenerAlimentosConStockMenorAlMinimo(idUsuario *string) ([]Models.Alimento, error) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
-	filtro := bson.M{"stock": bson.M{"$lt": "cantMinimaStock"}}
+	filtro := bson.M{"$expr": bson.M{"$lt": []string{"$stock", "$cantMininaStock"}}}
 	filtro["idUsuario"] = *idUsuario
 	alimentosLista, err := coleccion.Find(context.TODO(), filtro)
-	defer alimentosLista.Close(context.Background())
+	if err != nil {
+		return nil, err
+	}
 	var alimentos []Models.Alimento
 	for alimentosLista.Next(context.Background()) {
 		var alimento Models.Alimento

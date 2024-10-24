@@ -57,7 +57,7 @@ func dependencias() {
 	alimentoService = Services.NuevoAlimentoService(alimentoRepository)
 	alimentoHandler = Handlers.NuevoAlimentoHandler(alimentoService)
 	compraRepositorio = Repositories.NuevoCompraRepositorio(database)
-	compraService = Services.NuevoCompraService(compraRepositorio)
+	compraService = Services.NuevoCompraService(compraRepositorio, alimentoService)
 	compraHandler = Handlers.NuevoCompraHandler(compraService)
 
 }

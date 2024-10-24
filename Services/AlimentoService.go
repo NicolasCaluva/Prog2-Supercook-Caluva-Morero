@@ -105,7 +105,6 @@ func (service *AlimentoService) ActualizarAlimento(alimento *Dto.AlimentoDto) *D
 
 func (service *AlimentoService) EliminarAlimento(idAlimento *string, idUsuario *string) *Dto.Resultado {
 	resultado := Dto.Resultado{}
-	//idAlimentoConvertido:= Utils.GetObjectIDFromStringID(*idAlimento)
 	_, err := service.AlimentoRepositorio.EliminarAlimento(idAlimento, idUsuario)
 	if err != nil {
 		resultado.BoolResultado = false
@@ -117,12 +116,12 @@ func (service *AlimentoService) EliminarAlimento(idAlimento *string, idUsuario *
 	return &resultado
 }
 func (service *AlimentoService) ObtenerAlimentosConMenosStockQueCantidadMinima(idUsuario *string) []*Dto.AlimentoDto {
-	log.Printf("compras pasa por alimentos service")
 	alimentos, _ := service.AlimentoRepositorio.ObtenerAlimentosConStockMenorAlMinimo(idUsuario)
 	var alimentosDto []*Dto.AlimentoDto
 	for _, alimento := range alimentos {
 		alimentosDto = append(alimentosDto, convertirAlimento(alimento))
 	}
+	log.Printf("Alimentos pasa por el service: %v", alimentosDto)
 	return alimentosDto
 }
 

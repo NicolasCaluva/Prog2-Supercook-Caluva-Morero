@@ -1,10 +1,12 @@
 package Dto
 
+import "time"
+
 type CompraDto struct {
 	IDCompra      string
 	IDUsuario     string ``
 	Alimentos     []ElementoCompradoDto
-	FechaCreacion string
+	FechaCreacion time.Time
 	MontoTotal    float64
 }
 
