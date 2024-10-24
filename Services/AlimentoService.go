@@ -117,6 +117,7 @@ func (service *AlimentoService) EliminarAlimento(idAlimento *string, idUsuario *
 	return &resultado
 }
 func (service *AlimentoService) ObtenerAlimentosConMenosStockQueCantidadMinima(idUsuario *string) []*Dto.AlimentoDto {
+	log.Printf("compras pasa por alimentos service")
 	alimentos, _ := service.AlimentoRepositorio.ObtenerAlimentosConStockMenorAlMinimo(idUsuario)
 	var alimentosDto []*Dto.AlimentoDto
 	for _, alimento := range alimentos {

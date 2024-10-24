@@ -1,6 +1,7 @@
 package Services
 
 import (
+	"log"
 	"supercook/Dto"
 	"supercook/Models"
 	"supercook/Repositories"
@@ -22,6 +23,7 @@ func NuevoCompraService(compraRepositorio Repositories.CompraRepositorioInterfaz
 	}
 }
 func (service *CompraService) ObtenerListaAlimentosStockMenorStockMinimo(idUsuario *string) []*Dto.AlimentoDto {
+	log.Printf("ObtenerListaAlimentosStockMenorStockMinimo")
 	alimentos := service.AlimentoService.ObtenerAlimentosConMenosStockQueCantidadMinima(idUsuario)
 	var alimentoDTO []*Dto.AlimentoDto
 	for _, alimento := range alimentos {
@@ -49,10 +51,8 @@ func (service *CompraService) AgregarCompra(compra *Dto.CompraDto) *Dto.Resultad
 						primerIteracion = false
 						compraModel = convertirCompra(compra)
 					}
-					compraModel.Alimentos = append(compraModel.Alimentos, Models.ElementoComprado{
-						IDAlimento:   alimento.IDAlimento,
-						CantComprada: alimento.CantComprada,
-					})
+					compraModel.MontoTotal = compraModel.MontoTotal + (alimentoRecibido.PrecioUnitario * float64(alimento.CantComprada))
+					compraModel.Alimentos = append(compraModel.Alimentos, Models.ElementoComprado{IDAlimento: alimento.IDAlimento, CantComprada: alimento.CantComprada})
 				}
 			}
 		}

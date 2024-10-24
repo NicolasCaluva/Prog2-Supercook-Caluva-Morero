@@ -2,6 +2,7 @@ package Handlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"supercook/Dto"
 	"supercook/Services"
@@ -33,6 +34,7 @@ func (handler *CompraHandler) CrearCompra(c *gin.Context) {
 	c.JSON(http.StatusOK, resultado)
 }
 func (handler *CompraHandler) ObtenerListaAlimentosStockMenorStockMinimo(c *gin.Context) {
+	log.Printf("ObtenerListaAlimentosStockMenorStockMinimo")
 	userInfo := Utils.GetUserInfoFromContext(c)
 	if userInfo == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})

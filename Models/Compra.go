@@ -5,4 +5,5 @@ type Compra struct {
 	IDUsuario     string             `bson:"idUsuario"`
 	Alimentos     []ElementoComprado `bson:"alimentos"`
 	FechaCreacion string             `bson:"fecha"`
+	MontoTotal    float64            `bson:"montoTotal"`
 }

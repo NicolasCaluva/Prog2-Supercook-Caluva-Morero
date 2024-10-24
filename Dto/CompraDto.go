@@ -5,6 +5,7 @@ type CompraDto struct {
 	IDUsuario     string ``
 	Alimentos     []ElementoCompradoDto
 	FechaCreacion string
+	MontoTotal    float64
 }
 
 func (Compra *CompraDto) ValidarListaAlimentos() string {
