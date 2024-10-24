@@ -16,6 +16,7 @@ type AlimentoInterface interface {
 	CrearAlimento(alimento *Dto.AlimentoDto) *Dto.Resultado
 	ActualizarAlimento(alimento *Dto.AlimentoDto) *Dto.Resultado
 	EliminarAlimento(id *string, idUsuario *string) *Dto.Resultado
+	ObtenerAlimentosConMenosStockQueCantidadMinima(idUsuario *string) []*Dto.AlimentoDto
 }
 
 type AlimentoService struct {
@@ -114,6 +115,14 @@ func (service *AlimentoService) EliminarAlimento(idAlimento *string, idUsuario *
 		resultado.ListaMensaje = append(resultado.ListaMensaje, "Alimento eliminado con éxito.")
 	}
 	return &resultado
+}
+func (service *AlimentoService) ObtenerAlimentosConMenosStockQueCantidadMinima(idUsuario *string) []*Dto.AlimentoDto {
+	alimentos, _ := service.AlimentoRepositorio.ObtenerAlimentosConStockMenorAlMinimo(idUsuario)
+	var alimentosDto []*Dto.AlimentoDto
+	for _, alimento := range alimentos {
+		alimentosDto = append(alimentosDto, convertirAlimento(alimento))
+	}
+	return alimentosDto
 }
 
 func convertirAlimento(alimento Models.Alimento) *Dto.AlimentoDto {

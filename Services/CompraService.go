@@ -8,6 +8,7 @@ import (
 
 type CompraInterfaz interface {
 	AgregarCompra(compra *Dto.CompraDto) *Dto.Resultado
+	ObtenerListaAlimentosStockMenorStockMinimo(idUsuario *string) []*Dto.AlimentoDto
 }
 
 type CompraService struct {
@@ -19,6 +20,14 @@ func NuevoCompraService(compraRepositorio Repositories.CompraRepositorioInterfaz
 	return &CompraService{
 		CompraRepositorio: compraRepositorio,
 	}
+}
+func (service *CompraService) ObtenerListaAlimentosStockMenorStockMinimo(idUsuario *string) []*Dto.AlimentoDto {
+	alimentos := service.AlimentoService.ObtenerAlimentosConMenosStockQueCantidadMinima(idUsuario)
+	var alimentoDTO []*Dto.AlimentoDto
+	for _, alimento := range alimentos {
+		alimentoDTO = append(alimentoDTO, alimento)
+	}
+	return alimentoDTO
 }
 func (service *CompraService) AgregarCompra(compra *Dto.CompraDto) *Dto.Resultado {
 	resultado := Dto.Resultado{}

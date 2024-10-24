@@ -42,6 +42,7 @@ func rutas() {
 
 	groupCompra := router.Group("/compras")
 	groupCompra.POST("/", compraHandler.CrearCompra)
+	groupCompra.GET("/", compraHandler.ObtenerListaAlimentosStockMenorStockMinimo)
 }
 
 func dependencias() {

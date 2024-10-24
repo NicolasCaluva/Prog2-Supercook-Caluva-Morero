@@ -32,3 +32,12 @@ func (handler *CompraHandler) CrearCompra(c *gin.Context) {
 	resultado := handler.CompraService.AgregarCompra(&compraDto)
 	c.JSON(http.StatusOK, resultado)
 }
+func (handler *CompraHandler) ObtenerListaAlimentosStockMenorStockMinimo(c *gin.Context) {
+	userInfo := Utils.GetUserInfoFromContext(c)
+	if userInfo == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
+		return
+	}
+	alimentos := handler.CompraService.ObtenerListaAlimentosStockMenorStockMinimo(&userInfo.Codigo)
+	c.JSON(http.StatusOK, alimentos)
+}

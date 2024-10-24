@@ -16,6 +16,7 @@ type AlimentoRepositorioInterface interface {
 	CrearAlimento(alimento *Models.Alimento) (*mongo.InsertOneResult, error)
 	ActualizarAlimento(alimento *Models.Alimento) (*mongo.UpdateResult, error)
 	EliminarAlimento(id *string, idUsuario *string) (*mongo.DeleteResult, error)
+	ObtenerAlimentosConStockMenorAlMinimo(idUsuario *string) ([]Models.Alimento, error)
 }
 
 type AlimentoRepositorio struct {
