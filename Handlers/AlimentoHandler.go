@@ -10,10 +10,10 @@ import (
 )
 
 type AlimentoHandler struct {
-	AlimentoService Services.AlimentoInteface
+	AlimentoService Services.AlimentoInterface
 }
 
-func NuevoAlimentoHandler(alimentoService Services.AlimentoInteface) *AlimentoHandler {
+func NuevoAlimentoHandler(alimentoService Services.AlimentoInterface) *AlimentoHandler {
 	return &AlimentoHandler{
 		AlimentoService: alimentoService,
 	}
@@ -77,11 +77,10 @@ func (handler *AlimentoHandler) ActualizarAlimento(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
 		return
 	}
-	id := c.Param("id")
 	var alimentoDto Dto.AlimentoDto
 	c.BindJSON(&alimentoDto)
 	alimentoDto.IDUsuario = userInfo.Codigo
-	resultado := handler.AlimentoService.ActualizarAlimento(&id, &alimentoDto)
+	resultado := handler.AlimentoService.ActualizarAlimento(&alimentoDto)
 	if !resultado.BoolResultado {
 		c.JSON(http.StatusBadRequest, resultado)
 		return

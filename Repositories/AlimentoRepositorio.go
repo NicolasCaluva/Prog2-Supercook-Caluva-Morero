@@ -13,7 +13,7 @@ type AlimentoRepositorioInterface interface {
 	ObtenerAlimentos(filtro *[3]string, idUsuario *string) ([]Models.Alimento, error)
 	ObtenerAlimentoPorID(idAlimento *string, idUsuario *string) (Models.Alimento, error)
 	CrearAlimento(alimento *Models.Alimento) (*mongo.InsertOneResult, error)
-	ActualizarAlimento(id *string, alimento *Models.Alimento) (*mongo.UpdateResult, error)
+	ActualizarAlimento(alimento *Models.Alimento) (*mongo.UpdateResult, error)
 	EliminarAlimento(id *string, idUsuario *string) (*mongo.DeleteResult, error)
 }
 
@@ -85,9 +85,9 @@ func (repositorio AlimentoRepositorio) CrearAlimento(alimento *Models.Alimento) 
 	return resultado, err
 }
 
-func (repositorio AlimentoRepositorio) ActualizarAlimento(id *string, alimento *Models.Alimento) (*mongo.UpdateResult, error) {
+func (repositorio AlimentoRepositorio) ActualizarAlimento(alimento *Models.Alimento) (*mongo.UpdateResult, error) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
-	filtro := bson.M{"_id": id}
+	filtro := bson.M{"_id": alimento.ID}
 	filtro["idUsuario"] = alimento.IDUsuario
 	entidad := bson.M{
 		"$set": bson.M{
@@ -111,4 +111,21 @@ func (repositorio AlimentoRepositorio) EliminarAlimento(idAlimento *string, idUs
 	filtro["idUsuario"] = *idUsuario
 	resultado, err := coleccion.DeleteOne(context.TODO(), filtro)
 	return resultado, err
+}
+func (repositorio AlimentoRepositorio) ObtenerAlimentosConStockMenorAlMinimo(idUsuario *string) ([]Models.Alimento, error) {
+	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
+	filtro := bson.M{"stock": bson.M{"$lt": "cantMinimaStock"}}
+	filtro["idUsuario"] = *idUsuario
+	alimentosLista, err := coleccion.Find(context.TODO(), filtro)
+	defer alimentosLista.Close(context.Background())
+	var alimentos []Models.Alimento
+	for alimentosLista.Next(context.Background()) {
+		var alimento Models.Alimento
+		err := alimentosLista.Decode(&alimento)
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+		}
+		alimentos = append(alimentos, alimento)
+	}
+	return alimentos, err
 }
