@@ -32,6 +32,10 @@ func (handler *CompraHandler) CrearCompra(c *gin.Context) {
 		return
 	}
 	resultado := handler.CompraService.AgregarCompra(&compraDto)
+	if !resultado.BoolResultado {
+		c.JSON(http.StatusBadRequest, resultado)
+		return
+	}
 	c.JSON(http.StatusOK, resultado)
 }
 func (handler *CompraHandler) ObtenerListaAlimentosStockMenorStockMinimo(c *gin.Context) {

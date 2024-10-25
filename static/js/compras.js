@@ -58,10 +58,6 @@ async function enviarCompraDto() {
         }
     });
 
-    if (alimentosComprados.length === 0) {
-        alert('No has seleccionado alimentos o cantidades válidas.');
-        return;
-    }
 
     const compraDto = {
         Alimentos: alimentosComprados
