@@ -25,26 +25,37 @@
                 <ul class="nav mb-2 justify-content-center mb-md-0">
                     <li><a href="alimentos-lista.html" class="nav-link px-2 text-white">Alimentos</a></li>
                     <li><a href="#" class="nav-link px-2 text-white">Recetas</a></li>
-                    <li><a href="Compras.html" class="nav-link px-2 text-white">Compras</a></li>
+                    <li><a href="compras.html" class="nav-link px-2 text-white">Compras</a></li>
                     <li><a href="#" class="nav-link px-2 text-white">Sobre Nosotros</a></li>
                 </ul>
             </div>
 
 
             <div class="col-3">
-                <a href="login.html" class="btn btn-outline-light me-2">Iniciar sesión</a>
-                <a href="register.html" class="btn btn-warning">Registrarse</a>
+                <div class="dropdown">
+                    <button class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                        <i class="fas fa-user"></i> Perfil
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li class="text-center">
+                            <button class="dropdown-item" type="button" id="logout">Cerrar sesión</button>
+                        </li>
+                        <li class="text-center">
+                            <span id="user-info"></span>
+                        </li>
+                        <li class="text-center">
+                            <span id="rol"></span>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
 </header>
-<a href="login.html">Login</a>
-<a href="register.html">Registro</a>
-
-<div id="userInfo"></div>
 
 <div class="container w-100 min-vh-100">
-    <h1>Listado de Alimentos Poco Stock</h1>
+    <h1>Alimentos con menor stock del mínimo</h1>
 
     <div class="table-responsive bg-custom-border mx-4 my-3">
         <table class="table table-striped">
@@ -66,26 +77,9 @@
     </div>
     <div class="row">
         <div class="col-12">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cargarCompra">
+            <button type="button" class="btn btn-primary" id="cargarNuevaCompra">
                 Cargar nueva compra
             </button>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="cargarCompra" tabindex="-1" aria-labelledby="cargarCompra" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5">Cargar nueva compra</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary">Confirmar</button>
-            </div>
         </div>
     </div>
 </div>
@@ -96,5 +90,6 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 <script src="../static/js/request.js"></script>
-<script src="../static/js/Compras.js"></script>
+<script src="../static/js/compras.js"></script>
+<script src="../static/js/userinfo.js"></script>
 </html>

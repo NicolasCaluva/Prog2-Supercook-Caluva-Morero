@@ -1,13 +1,14 @@
+let listaCompras = document.getElementById('lista-compras');
+
 document.addEventListener('DOMContentLoaded', async function () {
-    const listaCompras = document.getElementById('lista-compras');
     await obtenerListaAlimentosPocoStock();
 
-    const confirmarButton = document.querySelector('.modal-footer .btn-primary');
+    const confirmarButton = document.getElementById('cargarNuevaCompra');
     confirmarButton.addEventListener('click', enviarCompraDto);
 });
 
 function successCargarListaCompras(response) {
-    const listaCompras = document.getElementById('lista-compras');
+
     response.forEach(compra => {
         console.log(compra);
         const tr = document.createElement('tr');

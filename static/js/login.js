@@ -18,6 +18,9 @@ document.addEventListener("DOMContentLoaded", function(eventDOM){
 
 function successFn(response) {
     console.log("Éxito:", response);
+
+    localStorage.setItem('username', response.username);
+    localStorage.setItem('rol', response.rol);
     window.location = 'alimentos-lista.html';
   }
   
