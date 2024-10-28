@@ -112,7 +112,3 @@ async function makeRequest(
         throw new Error(`Request ERROR: ${error?.message || error}`);
     }
 }
-
-function isUserLogged() {
-    return localStorage.getItem("authToken") != null;
-}
