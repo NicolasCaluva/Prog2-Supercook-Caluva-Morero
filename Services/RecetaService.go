@@ -136,6 +136,8 @@ func convertirReceta(receta Models.Receta) *Dto.RecetaDto {
 }
 
 func convertirAlimentoRecetaADto(alimentoReceta Models.AlimentoReceta) *Dto.AlimentoRecetaDto {
+	// TODO: Acá debería obtener el nombre del alimento según la id y asignarlo al dto
+
 	return &Dto.AlimentoRecetaDto{
 		IDAlimento: alimentoReceta.IDAlimento,
 		Cantidad:   alimentoReceta.Cantidad,

@@ -7,7 +7,11 @@ let listaAlimentosSeleccionados = document.getElementById('lista-alimentos-selec
 document.addEventListener('DOMContentLoaded', async function () {
     const agregarRecetaBtn = document.getElementById('agregarNuevaReceta');
     listaRecetas = document.getElementById('lista-recetas');
-    await obtenerListaRecetas();
+    try {
+        await obtenerListaRecetas();
+    } catch (error) {
+        console.log('Error:', error);
+    }
 
     agregarRecetaBtn.addEventListener('click', function () {
         momento.addEventListener('change', async function () {
@@ -44,7 +48,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             await makeRequest(URL, Method.POST, nuevoReceta, ContentType.JSON, CallType.PRIVATE, successCargarNuevaReceta, errorCargarNuevaReceta);
             const modal = bootstrap.Modal.getInstance(document.getElementById('cargarReceta'));
             modal.hide();
-            //location.reload();
+            location.reload();
         });
     });
 });
@@ -72,7 +76,7 @@ function successObtenerListaRecetas(response) {
             value: receta.ID
         });
         botonEditar.setAttribute('data-bs-toggle', 'modal');
-        botonEditar.setAttribute('data-bs-target', '#editarReceta');
+        botonEditar.setAttribute('data-bs-target', '#cargarReceta');
         botonEditar.appendChild(iconoEditar);
         botonEditar.addEventListener('click', async function () {
             let idReceta = this.value;
@@ -109,8 +113,47 @@ function errorObtenerListaRecetas(status, response) {
 }
 
 function successObtenerReceta(response) {
-    alert('Receta obtenida');
-    console.log(response);
+    console.log('Receta:', response);
+    nombre.value = response.Nombre;
+    momento.value = response.Momento;
+    
+    response.Alimentos.forEach(alimento => {
+        const div = document.createElement('div');
+        div.setAttribute('class', 'row mt-3');
+        const div2 = document.createElement('div');
+        div2.setAttribute('class', 'col-2 d-flex align-items-center');
+
+        const label = document.createElement('label');
+        label.innerText = alimento.Nombre;
+        label.setAttribute('for', alimento.id);
+        label.setAttribute('class', 'col-10');
+
+        const input = document.createElement('input');
+        input.setAttribute('type', 'number');
+        input.setAttribute('id', alimento.IdAlimento);
+        input.setAttribute('min', 1);
+        input.setAttribute('value', alimento.Cantidad);
+        input.setAttribute('class', 'form-control form-control-sm');
+        input.setAttribute('required', true);
+
+        const botonEliminar = document.createElement('button');
+        const iconoEliminar = document.createElement('i');
+        botonEliminar.setAttribute('class', 'btn btn-danger btn-sm');
+        iconoEliminar.setAttribute('class', 'fa-solid fa-trash');
+        botonEliminar.appendChild(iconoEliminar);
+        botonEliminar.addEventListener('click', function () {
+            const option = document.createElement('option');
+            option.value = alimento.IdAlimento;
+            option.innerText = alimento.Nombre;
+            listaAlimentos.appendChild(option);
+            div.remove();
+        });
+        label.appendChild(input);
+        div.appendChild(label);
+        div2.appendChild(botonEliminar);
+        div.appendChild(div2);
+        listaAlimentosSeleccionados.appendChild(div);
+    });
 }
 
 function errorObtenerReceta(status, response) {

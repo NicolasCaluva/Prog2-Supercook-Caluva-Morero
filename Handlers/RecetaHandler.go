@@ -36,9 +36,13 @@ func (handler *RecetaHandler) ObtenerRecetas(c *gin.Context) {
 }
 
 func (handler *RecetaHandler) ObtenerRecetaPorID(c *gin.Context) {
-	userInfo := c.Request.Header.Get("Authorization")
+	userInfo := Utils.GetUserInfoFromContext(c)
+	if userInfo == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
+		return
+	}
 	id := c.Param("id")
-	receta := handler.RecetaService.ObtenerRecetaPorID(&id, &userInfo)
+	receta := handler.RecetaService.ObtenerRecetaPorID(&id, &userInfo.Codigo)
 	c.JSON(http.StatusOK, receta)
 }
 
@@ -67,7 +71,11 @@ func (handler *RecetaHandler) CrearReceta(c *gin.Context) {
 }
 
 func (handler *RecetaHandler) ActualizarReceta(c *gin.Context) {
-	//userInfo := c.Request.Header.Get("Authorization")
+	userInfo := Utils.GetUserInfoFromContext(c)
+	if userInfo == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
+		return
+	}
 	var recetaDto Dto.RecetaDto
 	err := c.BindJSON(&recetaDto)
 	if err != nil {
@@ -75,6 +83,10 @@ func (handler *RecetaHandler) ActualizarReceta(c *gin.Context) {
 		return
 	}
 	resultado := handler.RecetaService.ActualizarReceta(&recetaDto)
+	if !resultado.BoolResultado {
+		c.JSON(http.StatusBadRequest, resultado)
+		return
+	}
 	c.JSON(http.StatusOK, resultado)
 }
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"log"
 	"supercook/Models"
 	"supercook/Utils"
 )
@@ -92,7 +93,20 @@ func (recetaRepositorio *RecetaRepositorio) ObtenerRecetaPorID(idReceta *string,
 func (recetaRepositorio *RecetaRepositorio) ActualizarReceta(receta *Models.Receta) (*mongo.UpdateResult, error) {
 	coleccion := recetaRepositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("receta")
 	filtro := bson.M{"_id": receta.ID}
-	resultado, err := coleccion.ReplaceOne(context.TODO(), filtro, receta)
+	filtro["idUsuario"] = receta.IDUsuario
+	entidad := bson.M{
+		"$set": bson.M{
+			"nombre":             receta.Nombre,
+			"alimentos":          receta.Alimentos,
+			"momento":            receta.Momento,
+			"fechaActualizacion": receta.FechaActualizacion,
+		},
+	}
+	resultado, err := coleccion.ReplaceOne(context.TODO(), filtro, entidad)
+	if err != nil {
+		log.Printf("Error al actualizar receta: %v", err)
+		return nil, err
+	}
 	return resultado, err
 }
 
