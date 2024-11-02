@@ -42,7 +42,13 @@ func (service *RecetaService) ObtenerRecetaPorID(idReceta *string, idUsuario *st
 
 func (service *RecetaService) CrearReceta(receta *Dto.RecetaDto) *Dto.Resultado {
 	resultado := Dto.Resultado{}
-	resultado.ListaMensaje = append(resultado.ListaMensaje, receta.ValidarRecetaDto())
+	resultadoValidacion := receta.ValidarRecetaDto()
+	if resultadoValidacion != "" {
+		resultado.ListaMensaje = append(resultado.ListaMensaje, receta.ValidarRecetaDto())
+	} else {
+		resultado.ListaMensaje = []string{}
+	}
+
 	if len(resultado.ListaMensaje) > 0 {
 		resultado.BoolResultado = false
 		return &resultado

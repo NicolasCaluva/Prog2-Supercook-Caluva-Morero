@@ -1,38 +1,58 @@
-let listaRecetas = document.getElementById('lista-recetas');
+let listaRecetas;
 let nombre = document.getElementById('nombre');
 let listaAlimentos = document.getElementById('lista-alimentos');
 let momento = document.getElementById('momento');
+let listaAlimentosSeleccionados = document.getElementById('lista-alimentos-seleccionados');
 
 document.addEventListener('DOMContentLoaded', async function () {
     const agregarRecetaBtn = document.getElementById('agregarNuevaReceta');
 
+    listaRecetas = document.getElementById('lista-recetas');
     await obtenerListaRecetas();
 
-    agregarRecetaBtn.addEventListener('click',async function () {
-        debugger
-        document.getElementById('form-receta').reset();
-        await cargarAlimentos();
+    agregarRecetaBtn.addEventListener('click', function () {
+        momento.addEventListener('change', async function () {
+            if (listaAlimentosSeleccionados.hasChildNodes()) {
+                listaAlimentosSeleccionados.innerHTML = '';
+            }
+
+            if (listaAlimentos.hasChildNodes()) {
+                listaAlimentos.innerHTML = '';
+            }
+            await cargarAlimentos(momento.value)
+        });
+
         const confirmarRecetaBtn = document.getElementById('confirmarReceta');
 
         confirmarRecetaBtn.addEventListener('click', async function () {
-            const listaAlimentosSeleccionados = Array.from(listaAlimentos.selectedOptions).map(option => option.value);
+            const lista_inputs = listaAlimentosSeleccionados.querySelectorAll('input');
+            const lista_alimentos_seleccionados = [];
+            lista_inputs.forEach(input => {
+                const idAlimento = input.id;
+                const cantidad = input.value;
+                lista_alimentos_seleccionados.push({
+                    IdAlimento: idAlimento,
+                    Cantidad: parseInt(cantidad)
+                });
+            });
+
             const nuevoReceta = {
                 Nombre: nombre.value,
-                Alimentos: listaAlimentosSeleccionados,
+                Alimentos: lista_alimentos_seleccionados,
                 Momento: momento.value
             };
             const URL = 'http://localhost:8080/recetas/';
             await makeRequest(URL, Method.POST, nuevoReceta, ContentType.JSON, CallType.PRIVATE, successCargarNuevaReceta, errorCargarNuevaReceta);
             const modal = bootstrap.Modal.getInstance(document.getElementById('cargarReceta'));
             modal.hide();
-            document.getElementById('form-receta').reset();
+            //location.reload();
         });
     });
 });
 
 async function obtenerListaRecetas() {
     let URL = 'http://localhost:8080/recetas/';
-    // Acá está el error, al ejecutar el MakeRequest, no se ejecuta ni el success ni el error
+    // TODO: Hay un error al hacer el makeRequest, no se está ejecutando la función successObtenerListaRecetas
     await makeRequest(URL, Method.GET, null, ContentType.JSON, CallType.PRIVATE, successObtenerListaRecetas, errorObtenerListaRecetas);
 }
 
@@ -41,8 +61,7 @@ function successObtenerListaRecetas(response) {
     response.forEach(receta => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-                            <td>${receta.nombre}</td>
-                            <td>$${receta.alimentos}</td>
+                            <td>${receta.Nombre}</td>
                             <td>${receta.momento}</td>
                         `;
         const botonEditar = document.createElement('button');
@@ -110,20 +129,55 @@ function errorEliminarReceta(status, response) {
     console.log("Falla:", response);
 }
 
-async function cargarAlimentos() {
-    const URL = 'http://localhost:8080/alimentos/';
-    await makeRequest(URL, Method.GET, null, ContentType.JSON, CallType.PRIVATE, successCargarAlimentos, errorCargarAlimentos);
+function cargarAlimentos(momento) {
+    const URL = 'http://localhost:8080/alimentos/?momentoDelDia=' + momento; // Momento es un string, no un ID
+    makeRequest(URL, Method.GET, null, ContentType.JSON, CallType.PRIVATE, successCargarAlimentos, errorCargarAlimentos);
 }
 
 function successCargarAlimentos(response) {
     console.log('Alimentos:', response)
-    debugger
     response.forEach(alimento => {
         const option = document.createElement('option');
         option.value = alimento.id;
-        option.innerText = alimento.nombre;
+        option.innerText = alimento.Nombre;
+        option.addEventListener('click', function () {
+            listaAlimentos.removeChild(option);
+            const div = document.createElement('div');
+            div.setAttribute('class', 'row mt-3');
+            const div2 = document.createElement('div');
+            div2.setAttribute('class', 'col-2 d-flex align-items-center');
+
+            const label = document.createElement('label');
+            label.innerText = alimento.Nombre;
+            label.setAttribute('for', alimento.id);
+            label.setAttribute('class', 'col-10');
+
+            const input = document.createElement('input');
+            input.setAttribute('type', 'number');
+            input.setAttribute('id', alimento.IdAlimento);
+            input.setAttribute('min', 1);
+            input.setAttribute('value', 1);
+            input.setAttribute('class', 'form-control form-control-sm');
+            input.setAttribute('required', true);
+
+            const botonEliminar = document.createElement('button');
+            const iconoEliminar = document.createElement('i');
+            botonEliminar.setAttribute('class', 'btn btn-danger btn-sm');
+            iconoEliminar.setAttribute('class', 'fa-solid fa-trash');
+            botonEliminar.appendChild(iconoEliminar);
+            botonEliminar.addEventListener('click', function () {
+                listaAlimentos.appendChild(option);
+                div.remove();
+            });
+            label.appendChild(input);
+            div.appendChild(label);
+            div2.appendChild(botonEliminar);
+            div.appendChild(div2);
+            listaAlimentosSeleccionados.appendChild(div);
+        });
         listaAlimentos.appendChild(option);
     });
+
 }
 
 function errorCargarAlimentos(status, response) {

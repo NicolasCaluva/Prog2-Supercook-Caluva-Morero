@@ -9,9 +9,6 @@ type RecetaDto struct {
 }
 
 func (receta *RecetaDto) ValidarRecetaDto() string {
-	if receta.IDUsuario == "" {
-		return "El ID del usuario no puede estar vacío"
-	}
 	if receta.Nombre == "" {
 		return "El nombre de la receta no puede estar vacío"
 	}

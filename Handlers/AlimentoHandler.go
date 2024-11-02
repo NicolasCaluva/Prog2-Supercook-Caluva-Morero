@@ -19,10 +19,7 @@ func NuevoAlimentoHandler(alimentoService Services.AlimentoInterface) *AlimentoH
 	}
 }
 func (handler *AlimentoHandler) ObtenerAlimentos(c *gin.Context) {
-	log.Print("ObtenerAlimentos")
 	userInfo := Utils.GetUserInfoFromContext(c)
-
-	log.Println("ACA ESTA EL CODIGO", userInfo.Codigo)
 
 	if userInfo == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
