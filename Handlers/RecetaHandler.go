@@ -19,9 +19,19 @@ func NuevoRecetaHandler(recetaService Services.RecetaInterface) *RecetaHandler {
 }
 
 func (handler *RecetaHandler) ObtenerRecetas(c *gin.Context) {
-	filtro := [3]string{c.Query("tipo"), c.Query("nombre")}
-	userInfo := c.Request.Header.Get("Authorization")
-	var recetas = handler.RecetaService.ObtenerRecetas(&filtro, &userInfo)
+	userInfo := Utils.GetUserInfoFromContext(c)
+
+	if userInfo == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
+		return
+	}
+
+	momento := c.Query("momento")
+	nombre := c.Query("nombre")
+	tipoAlimento := c.Query("tipoAlimento")
+
+	filtro := [3]string{momento, nombre, tipoAlimento}
+	var recetas = handler.RecetaService.ObtenerRecetas(&filtro, &userInfo.Codigo)
 	c.JSON(http.StatusOK, recetas)
 }
 
@@ -69,8 +79,16 @@ func (handler *RecetaHandler) ActualizarReceta(c *gin.Context) {
 }
 
 func (handler *RecetaHandler) EliminarReceta(c *gin.Context) {
-	userInfo := c.Request.Header.Get("Authorization")
+	userInfo := Utils.GetUserInfoFromContext(c)
+	if userInfo == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
+		return
+	}
 	id := c.Param("id")
-	resultado := handler.RecetaService.EliminarReceta(&id, &userInfo)
+	resultado := handler.RecetaService.EliminarReceta(&id, &userInfo.Codigo)
+	if !resultado.BoolResultado {
+		c.JSON(http.StatusBadRequest, resultado)
+		return
+	}
 	c.JSON(http.StatusOK, resultado)
 }

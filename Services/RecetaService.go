@@ -115,6 +115,7 @@ func (service *RecetaService) EliminarReceta(idReceta *string, idUsuario *string
 		resultado.ListaMensaje = append(resultado.ListaMensaje, err.Error())
 	} else {
 		resultado.BoolResultado = true
+		resultado.ListaMensaje = append(resultado.ListaMensaje, "Receta eliminada con éxito.")
 	}
 	return &resultado
 }

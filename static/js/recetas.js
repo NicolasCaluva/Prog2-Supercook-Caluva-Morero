@@ -6,7 +6,6 @@ let listaAlimentosSeleccionados = document.getElementById('lista-alimentos-selec
 
 document.addEventListener('DOMContentLoaded', async function () {
     const agregarRecetaBtn = document.getElementById('agregarNuevaReceta');
-
     listaRecetas = document.getElementById('lista-recetas');
     await obtenerListaRecetas();
 
@@ -52,7 +51,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 async function obtenerListaRecetas() {
     let URL = 'http://localhost:8080/recetas/';
-    // TODO: Hay un error al hacer el makeRequest, no se está ejecutando la función successObtenerListaRecetas
     await makeRequest(URL, Method.GET, null, ContentType.JSON, CallType.PRIVATE, successObtenerListaRecetas, errorObtenerListaRecetas);
 }
 
@@ -62,16 +60,16 @@ function successObtenerListaRecetas(response) {
         const tr = document.createElement('tr');
         tr.innerHTML = `
                             <td>${receta.Nombre}</td>
-                            <td>${receta.momento}</td>
+                            <td>${receta.Alimentos.map(alimento => alimento.Nombre).join(', ')}</td>
+                            <td>${receta.Momento.charAt(0).toUpperCase() + receta.Momento.slice(1)}</td>
                         `;
         const botonEditar = document.createElement('button');
         const iconoEditar = document.createElement('i');
         iconoEditar.setAttribute('class', 'fa-solid fa-pencil');
 
         Object.assign(botonEditar, {
-            className: 'btn btn-warning',
-            innerText: 'Editar',
-            value: receta.id
+            className: 'btn btn-primary',
+            value: receta.ID
         });
         botonEditar.setAttribute('data-bs-toggle', 'modal');
         botonEditar.setAttribute('data-bs-target', '#editarReceta');
@@ -87,20 +85,19 @@ function successObtenerListaRecetas(response) {
 
         Object.assign(botonEliminar, {
             className: 'btn btn-danger',
-            innerText: 'Eliminar',
-            value: receta.id
+            type: 'button',
         });
         iconoEliminar.setAttribute('class', 'fa-solid fa-trash');
         botonEliminar.appendChild(iconoEliminar);
         botonEliminar.addEventListener('click', async function () {
-            let idReceta = receta.id;
+            let idReceta = receta.ID;
             const URL = 'http://localhost:8080/recetas/' + idReceta + '/';
             await makeRequest(URL, Method.DELETE, null, ContentType.JSON, CallType.PRIVATE, successEliminarReceta, errorEliminarReceta);
         });
 
         const tdBotones = document.createElement('td');
-        tdBotones.appendChild(botonEliminar);
         tdBotones.appendChild(botonEditar);
+        tdBotones.appendChild(botonEliminar);
         tdBotones.setAttribute('class', 'd-flex gap-2');
         tr.appendChild(tdBotones);
         listaRecetas.appendChild(tr);
@@ -122,7 +119,7 @@ function errorObtenerReceta(status, response) {
 
 function successEliminarReceta(response) {
     alert('Receta eliminada');
-    console.log(response);
+    location.reload();
 }
 
 function errorEliminarReceta(status, response) {
@@ -130,7 +127,7 @@ function errorEliminarReceta(status, response) {
 }
 
 function cargarAlimentos(momento) {
-    const URL = 'http://localhost:8080/alimentos/?momentoDelDia=' + momento; // Momento es un string, no un ID
+    const URL = 'http://localhost:8080/alimentos/?momentoDelDia=' + momento;
     makeRequest(URL, Method.GET, null, ContentType.JSON, CallType.PRIVATE, successCargarAlimentos, errorCargarAlimentos);
 }
 
