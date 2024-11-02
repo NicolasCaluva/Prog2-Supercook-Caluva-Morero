@@ -1,16 +1,30 @@
 let listaCompras = document.getElementById('lista-compras');
+let PaginaActual = 1;
+const ItemsPorPagina = 10;
+let comprasData = [];
 
 document.addEventListener('DOMContentLoaded', async function () {
     await obtenerListaAlimentosPocoStock();
 
     const confirmarButton = document.getElementById('cargarNuevaCompra');
     confirmarButton.addEventListener('click', enviarCompraDto);
+
+    document.getElementById('pagAnterior').addEventListener('click', IrPaginaPrevia);
+    document.getElementById('pagSiguiente').addEventListener('click', IrPaginaSiguiente);
 });
 
 function successCargarListaCompras(response) {
+    comprasData = response;
+    RenderizarPagina(PaginaActual);
+}
 
-    response.forEach(compra => {
-        console.log(compra);
+function RenderizarPagina(page) {
+    listaCompras.innerHTML = '';
+    const start = (page - 1) * ItemsPorPagina;
+    const end = start + ItemsPorPagina;
+    const pageItems = comprasData.slice(start, end);
+
+    pageItems.forEach(compra => {
         const tr = document.createElement('tr');
         tr.dataset.idAlimento = compra.IdAlimento;
 
@@ -22,7 +36,7 @@ function successCargarListaCompras(response) {
             <td>${compra.TipoAlimento.charAt(0).toUpperCase() + compra.TipoAlimento.slice(1)}</td>
             <td>${compra.MomentoDelDia.map(momento => momento.charAt(0).toUpperCase() + momento.slice(1)).join(' - ')}</td>
         `;
-        
+
         const tdAcciones = document.createElement('td');
         const inputCantidad = document.createElement('input');
         inputCantidad.type = 'number';
@@ -33,6 +47,28 @@ function successCargarListaCompras(response) {
         tr.appendChild(tdAcciones);
         listaCompras.appendChild(tr);
     });
+
+    document.getElementById('indicadorPagina').textContent = `Página ${PaginaActual}`;
+    updatePaginationButtons();
+}
+
+function updatePaginationButtons() {
+    document.getElementById('pagAnterior').disabled = PaginaActual === 1;
+    document.getElementById('pagSiguiente').disabled = PaginaActual * ItemsPorPagina >= comprasData.length;
+}
+
+function IrPaginaPrevia() {
+    if (PaginaActual > 1) {
+        PaginaActual--;
+        RenderizarPagina(PaginaActual);
+    }
+}
+
+function IrPaginaSiguiente() {
+    if (PaginaActual * ItemsPorPagina < comprasData.length) {
+        PaginaActual++;
+        RenderizarPagina(PaginaActual);
+    }
 }
 
 function errorCargarListaAlimentosPocoStock(status, response) {
@@ -57,7 +93,6 @@ async function enviarCompraDto() {
             });
         }
     });
-
 
     const compraDto = {
         Alimentos: alimentosComprados

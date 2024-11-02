@@ -1,5 +1,6 @@
 // Variables globales
 let listaAlimentos;
+let listaAlimentosData = [];
 let nombreAlimento = document.getElementById('nombreAlimento');
 let precioUnitario = document.getElementById('precioUnitario');
 let stock = document.getElementById('stock');
@@ -7,20 +8,20 @@ let cantMinimaStock = document.getElementById('cantMinimaStock');
 let tipoAlimento = document.getElementById('tipoAlimento');
 let momentoDelDia = document.getElementById('momentoDelDia');
 
+// Paginación
+let pagActual = 1;
+const itemPorPagina = 10; // Cantidad de alimentos por página
+let paginaTotal = 1; // Total de páginas (actualizado dinámicamente)
+
 // DOM
 document.addEventListener('DOMContentLoaded', async function () {
     listaAlimentos = document.getElementById('lista-alimentos');
-
     await obtenerListaAlimentos();
 
     const agregarAlimentoBtn = document.querySelector('button[id="agregarNuevoAlimento"]');
-
     agregarAlimentoBtn.addEventListener('click', function () {
         document.getElementById('form-alimento').reset();
-
-        const confirmarAlimentoBtn = document.getElementById('confirmarAlimento');
-
-        confirmarAlimentoBtn.addEventListener('click', async function () {
+        document.getElementById('confirmarAlimento').onclick = async function () {
             const momentosSeleccionados = Array.from(momentoDelDia.selectedOptions).map(option => option.value);
             const nuevoAlimento = {
                 Nombre: nombreAlimento.value,
@@ -32,16 +33,49 @@ document.addEventListener('DOMContentLoaded', async function () {
             };
             const URL = 'http://localhost:8080/alimentos/';
             await makeRequest(URL, 'POST', nuevoAlimento, ContentType.JSON, CallType.PRIVATE, successCargarNuevoAlimento, errorCargarNuevoAlimento);
-            const modal = bootstrap.Modal.getInstance(document.getElementById('cargarAlimento'));
-            modal.hide();
-            document.getElementById('form-alimento').reset();
-            listaAlimentos.appendChild(tr)
-        });
+            bootstrap.Modal.getInstance(document.getElementById('cargarAlimento')).hide();
+            await obtenerListaAlimentos();
+        };
     });
+
+    document.getElementById('pagAnterior').addEventListener('click', () => cambiarPagina(pagActual - 1));
+    document.getElementById('pagSiguiente').addEventListener('click', () => cambiarPagina(pagActual + 1));
 });
 
-// Funciones de éxito y error de obtención del listado de alimentos
+function cambiarPagina(page) {
+    if (page < 1 || page > paginaTotal) return;
+    pagActual = page;
+    mostrarPagina();
+}
 
+// Función para mostrar alimentos de la página actual
+function mostrarPagina() {
+    const comienzo = (pagActual - 1) * itemPorPagina;
+    const final = comienzo + itemPorPagina;
+    const alimentosPagina = listaAlimentosData.slice(comienzo, final);
+
+    // Limpiar la tabla antes de agregar los alimentos de la nueva página
+    listaAlimentos.innerHTML = '';
+    successCargarListaAlimentos(alimentosPagina);
+
+    // Actualizar los botones de paginación
+    document.getElementById('numeroPagina').textContent = `Página ${pagActual} de ${paginaTotal}`;
+    document.getElementById('pagAnterior').disabled = pagActual === 1;
+    document.getElementById('pagSiguiente').disabled = pagActual === paginaTotal;
+}
+
+// Función para cargar alimentos y calcular total de páginas
+async function obtenerListaAlimentos() {
+    const url = 'http://localhost:8080/alimentos/';
+    await makeRequest(url, Method.GET, null, ContentType.JSON, CallType.PRIVATE, function(response) {
+        listaAlimentosData = response;
+        paginaTotal = Math.ceil(listaAlimentosData.length / itemPorPagina);
+        pagActual = 1;
+        mostrarPagina();
+    }, errorCargarListaAlimentos);
+}
+
+// Funciones de éxito y error de obtención del listado de alimentos
 function successCargarListaAlimentos(response) {
     response.forEach(alimento => {
         const tr = document.createElement('tr');
@@ -87,27 +121,19 @@ function successCargarListaAlimentos(response) {
         });
 
         const tdBotones = document.createElement('td');
-
         tdBotones.appendChild(botonEditar);
         tdBotones.appendChild(botonEliminar);
-        tdBotones.setAttribute('class', 'd-flex gap-2')
+        tdBotones.setAttribute('class', 'd-flex gap-2');
         tr.appendChild(tdBotones);
         listaAlimentos.appendChild(tr);
-    })
+    });
 }
 
 function errorCargarListaAlimentos(status, response) {
     console.log("Falla:", response);
 }
 
-async function obtenerListaAlimentos() {
-    let url = 'http://localhost:8080/alimentos/';
-    await makeRequest(url, Method.GET, null, ContentType.JSON, CallType.PRIVATE, successCargarListaAlimentos, errorCargarListaAlimentos);
-}
-
-
 // Funciones para la carga de un nuevo alimento en el sistema
-
 function successCargarNuevoAlimento(response) {
     alert("Operación exitosa: \n" + response.ListaMensaje.join("\n"));
 }
@@ -117,7 +143,6 @@ function errorCargarNuevoAlimento(status, response) {
 }
 
 // Funciones para la obtención de un alimento del sistema
-
 function successObtenerAlimento(alimento) {
     nombreAlimento.value = alimento.Nombre;
     precioUnitario.value = alimento.PrecioUnitario;
@@ -161,11 +186,10 @@ function errorObtenerAlimento(response) {
     alert("Hubo un error al obtener el alimento" + response.ListaMensaje.join("\n"));
 }
 
-
 // Funciones para la edición de un alimento en el sistema
 function successEditarAlimento(response) {
     alert("Operación exitosa: \n" + response.ListaMensaje.join("\n"));
-    location.reload();
+    obtenerListaAlimentos();
 }
 
 function errorEditarAlimento(response) {
@@ -175,7 +199,7 @@ function errorEditarAlimento(response) {
 // Funciones para la eliminación de un alimento en el sistema
 function successEliminarAlimento(response) {
     alert("Operación exitosa: \n" + response.ListaMensaje.join("\n"));
-    location.reload();
+    obtenerListaAlimentos();
 }
 
 function errorEliminarAlimento(response) {
