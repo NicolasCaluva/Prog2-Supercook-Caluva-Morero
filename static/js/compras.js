@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     const confirmarButton = document.getElementById('cargarNuevaCompra');
     confirmarButton.addEventListener('click', enviarCompraDto);
-
+    document.getElementById('aplicarFiltros').addEventListener('click', aplicarFiltros);
     document.getElementById('pagAnterior').addEventListener('click', IrPaginaPrevia);
     document.getElementById('pagSiguiente').addEventListener('click', IrPaginaSiguiente);
 });
@@ -75,8 +75,21 @@ function errorCargarListaAlimentosPocoStock(status, response) {
     console.log("Falla al cargar la lista:", response);
 }
 
+async function aplicarFiltros() {
+    debugger;
+    const tipoAlimento = document.getElementById('tipoAlimento').value;
+    const nombre = document.getElementById('nombre').value;
+    const momentoDelDiaSelect = document.getElementById('momentoDelDia');
+    const momentosSeleccionados = Array.from(momentoDelDiaSelect.selectedOptions)
+        .map(option => `momentoDelDia=${option.value}`)
+        .join('&');
+
+    const url = `http://localhost:8080/alimentos/?${momentosSeleccionados}&tipoAlimento=${tipoAlimento}&nombre=${nombre}&StockMenorCantidadMinima=True`;
+    await makeRequest(url, Method.GET, null, ContentType.JSON, CallType.PRIVATE, successCargarListaCompras, errorCargarListaAlimentosPocoStock);
+}
+
 async function obtenerListaAlimentosPocoStock() {
-    let url = 'http://localhost:8080/compras/';
+    const url = 'http://localhost:8080/alimentos/?StockMenorCantidadMinima=True';
     await makeRequest(url, Method.GET, null, ContentType.JSON, CallType.PRIVATE, successCargarListaCompras, errorCargarListaAlimentosPocoStock);
 }
 
@@ -110,6 +123,6 @@ function successEnviarCompra(response) {
 }
 
 function errorEnviarCompra(status, response) {
-    console.log('Error al enviar la compra:', response);
+    console.log(response.error);
     alert('Hubo un error al realizar la compra.');
 }

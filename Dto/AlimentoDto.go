@@ -1,5 +1,7 @@
 package Dto
 
+import "supercook/Errors"
+
 type AlimentoDto struct {
 	IdAlimento      string
 	IDUsuario       string
@@ -11,24 +13,24 @@ type AlimentoDto struct {
 	MomentoDelDia   []Momento
 }
 
-func (a *AlimentoDto) ValidarAlimentoDto() []string {
-	var mensajes []string
-
+func (a *AlimentoDto) ValidarAlimentoDto() error {
 	if a.Nombre == "" {
-		mensajes = append(mensajes, "El nombre no puede ser vacío ni nulo.")
+		return Errors.ErrorAlimentoNombreMalIngresado
 	}
 	if a.PrecioUnitario <= 0 {
-		mensajes = append(mensajes, "El precio unitario debe ser mayor que 0.")
+		return Errors.ErrorAlimentoPrecioUnitarioMalIngresado
 	}
 	if a.Stock < 0 {
-		mensajes = append(mensajes, "El stock no puede ser negativo.")
+		return Errors.ErrorAlimentoStockMalIngresado
 	}
 	if a.CantMinimaStock < 0 {
-		mensajes = append(mensajes, "La cantidad mínima de stock no puede ser negativa.")
+		return Errors.ErrorAlimentoCantMinimaStockMalIngresado
+	}
+	if a.TipoAlimento == "" {
+		return Errors.ErrorAlimentoTipoAlimentoMalIngresado
 	}
 	if len(a.MomentoDelDia) == 0 {
-		mensajes = append(mensajes, "Debe haber al menos un momento del día.")
+		return Errors.ErrorAlimentoMomentoDelDiaMalIngresado
 	}
-
-	return mensajes
+	return nil
 }

@@ -3,6 +3,8 @@ package Repositories
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/mongo"
+	"log"
+	"supercook/Errors"
 	"supercook/Models"
 )
 
@@ -22,7 +24,8 @@ func (compraRepositorio *CompraRepositorio) AgregarCompra(compra *Models.Compra)
 	coleccion := compraRepositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("compra")
 	resultado, err := coleccion.InsertOne(context.Background(), compra)
 	if err != nil {
-		return nil, err
+		log.Printf("Error: %v\n", Errors.ErrorConectarBD)
+		return nil, Errors.ErrorConectarBD
 	}
 	return resultado, nil
 }

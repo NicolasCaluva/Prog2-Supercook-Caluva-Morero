@@ -30,7 +30,6 @@
                 </ul>
             </div>
 
-
             <div class="col-3">
                 <div class="dropdown">
                     <button class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown"
@@ -56,7 +55,39 @@
 
 <div class="container w-100 min-vh-100">
     <h1>Alimentos con menor stock del mínimo</h1>
-
+    <div class="card my-4">
+        <div class="card-body">
+            <form id="filtros-form" class="row">
+                <div class="col-md-3">
+                    <label for="momentoDelDia" class="form-label">Momento del Día</label>
+                    <select id="momentoDelDia" class="form-select" multiple>
+                        <option value="">Todos</option>
+                        <option value="desayuno">Desayuno</option>
+                        <option value="almuerzo">Almuerzo</option>
+                        <option value="merienda">Merienda</option>
+                        <option value="cena">Cena</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="tipoAlimento" class="form-label">Tipo de Alimento</label>
+                    <select id="tipoAlimento" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="verdura">Verdura</option>
+                        <option value="fruta">Fruta</option>
+                        <option value="lacteo">Lácteo</option>
+                        <option value="carne">Carne</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input type="text" id="nombre" class="form-control" placeholder="Buscar por nombre">
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="button" id="aplicarFiltros" class="btn btn-primary">Aplicar Filtros</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <div class="table-responsive bg-custom-border mx-4 my-3">
         <table class="table table-striped">
             <thead>

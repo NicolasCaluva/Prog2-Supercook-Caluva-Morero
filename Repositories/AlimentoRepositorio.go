@@ -2,21 +2,21 @@ package Repositories
 
 import (
 	"context"
-	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
+	"strings"
+	"supercook/Errors"
 	"supercook/Models"
 	"supercook/Utils"
 )
 
 type AlimentoRepositorioInterface interface {
-	ObtenerAlimentos(filtro *[3]string, idUsuario *string) ([]Models.Alimento, error)
+	ObtenerAlimentos(filtro *[4]string, idUsuario *string) ([]Models.Alimento, error)
 	ObtenerAlimentoPorID(idAlimento *string, idUsuario *string) (Models.Alimento, error)
 	CrearAlimento(alimento *Models.Alimento) (*mongo.InsertOneResult, error)
 	ActualizarAlimento(alimento *Models.Alimento) (*mongo.UpdateResult, error)
 	EliminarAlimento(id *string, idUsuario *string) (*mongo.DeleteResult, error)
-	ObtenerAlimentosConStockMenorAlMinimo(idUsuario *string) ([]Models.Alimento, error)
 }
 
 type AlimentoRepositorio struct {
@@ -29,36 +29,48 @@ func NuevoAlimentoRepositorio(db DB) *AlimentoRepositorio {
 	}
 }
 
-func (repositorio AlimentoRepositorio) ObtenerAlimentos(filtro *[3]string, idUsuario *string) ([]Models.Alimento, error) {
+func (repositorio AlimentoRepositorio) ObtenerAlimentos(filtro *[4]string, idUsuario *string) ([]Models.Alimento, error) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
-
-	filtroBson := bson.M{}
-
-	filtroBson["idUsuario"] = *idUsuario
+	filtros := []bson.M{}
+	filtros = append(filtros, bson.M{"idUsuario": *idUsuario})
+	// Agregamos cada filtro si está presente
 	if filtro[0] != "" {
-		filtroBson["momentoDelDia"] = bson.M{"$regex": filtro[0], "$options": "i"}
+		momentos := strings.Split(filtro[0], ",")
+		filtros = append(filtros, bson.M{"momentoDelDia": bson.M{"$in": momentos}})
 	}
 	if filtro[1] != "" {
-		filtroBson["tipoAlimento"] = bson.M{"$regex": filtro[1], "$options": "i"}
+		filtros = append(filtros, bson.M{"tipoAlimento": bson.M{"$regex": filtro[1], "$options": "i"}})
 	}
 	if filtro[2] != "" {
-		filtroBson["nombre"] = bson.M{"$regex": filtro[2], "$options": "i"}
+		filtros = append(filtros, bson.M{"nombre": bson.M{"$regex": filtro[2], "$options": "i"}})
 	}
-
+	if filtro[3] == "True" {
+		filtros = append(filtros, bson.M{"$expr": bson.M{"$lt": []string{"$stock", "$cantMininaStock"}}})
+	}
+	var filtroBson bson.M
+	if len(filtros) > 0 {
+		filtroBson = bson.M{"$and": filtros}
+	} else {
+		filtroBson = bson.M{}
+	}
 	cursor, err := coleccion.Find(context.TODO(), filtroBson)
 	if err != nil {
-		return nil, err
+		log.Printf("Error: %v\n", Errors.ErrorConectarBD)
+		return nil, Errors.ErrorConectarBD
 	}
 	defer cursor.Close(context.Background())
-
 	var alimentos []Models.Alimento
 	for cursor.Next(context.Background()) {
 		var alimento Models.Alimento
 		err := cursor.Decode(&alimento)
 		if err != nil {
-			fmt.Printf("Error: %v\n", err)
+			log.Printf("Error: %v\n", Errors.ErrorDecodificarAlimento)
+			return nil, Errors.ErrorDecodificarAlimento
 		}
 		alimentos = append(alimentos, alimento)
+	}
+	if len(alimentos) == 0 {
+		return nil, Errors.ErrorListaVaciaDeAlimentos
 	}
 	return alimentos, err
 }
@@ -66,24 +78,30 @@ func (repositorio AlimentoRepositorio) ObtenerAlimentos(filtro *[3]string, idUsu
 func (repositorio AlimentoRepositorio) ObtenerAlimentoPorID(idAlimento *string, idUsuario *string) (Models.Alimento, error) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
 	IdObjeto := Utils.GetObjectIDFromStringID(*idAlimento)
-	filtro := bson.M{"_id": IdObjeto}
-	filtro["idUsuario"] = *idUsuario
-	cursor, err := coleccion.Find(context.TODO(), filtro)
-	defer cursor.Close(context.Background())
-	var alimento Models.Alimento
-	for cursor.Next(context.Background()) {
-		err := cursor.Decode(&alimento)
-		if err != nil {
+	filtro := bson.M{"_id": IdObjeto, "idUsuario": *idUsuario}
 
-			fmt.Printf("Error: %v\n", err)
+	var alimento Models.Alimento
+	err := coleccion.FindOne(context.TODO(), filtro).Decode(&alimento)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			log.Printf("Error: %v\n", Errors.ErrorAlimentoNoEncontrado)
+			return Models.Alimento{}, Errors.ErrorAlimentoNoEncontrado
 		}
+		log.Printf("Error: %v\n", Errors.ErrorConectarBD)
+		return Models.Alimento{}, Errors.ErrorConectarBD
 	}
-	return alimento, err
+
+	return alimento, nil
 }
 
 func (repositorio AlimentoRepositorio) CrearAlimento(alimento *Models.Alimento) (*mongo.InsertOneResult, error) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
 	resultado, err := coleccion.InsertOne(context.TODO(), alimento)
+	if err != nil {
+		log.Printf("Error: %v\n", Errors.ErrorConectarBD)
+		return nil, Errors.ErrorConectarBD
+	}
+	log.Printf("Alimento creado con éxito: %v\n", resultado.InsertedID)
 	return resultado, err
 }
 
@@ -105,10 +123,14 @@ func (repositorio AlimentoRepositorio) ActualizarAlimento(alimento *Models.Alime
 	}
 	resultado, err := coleccion.UpdateOne(context.TODO(), filtro, entidad)
 	if err != nil {
-		log.Printf("Error al actualizar el alimento: %v\n", err)
-		return nil, err
+		log.Printf("Error: %v\n", Errors.ErrorConectarBD)
+		return nil, Errors.ErrorConectarBD
 	}
-	return resultado, err
+	if resultado.MatchedCount == 0 {
+		log.Printf("Error: %v\n", Errors.ErrorAlimentoNoEncontradoActualizar)
+		return nil, Errors.ErrorAlimentoNoEncontradoActualizar
+	}
+	return resultado, nil
 }
 
 func (repositorio AlimentoRepositorio) EliminarAlimento(idAlimento *string, idUsuario *string) (*mongo.DeleteResult, error) {
@@ -117,24 +139,39 @@ func (repositorio AlimentoRepositorio) EliminarAlimento(idAlimento *string, idUs
 	filtro := bson.M{"_id": IdObjeto}
 	filtro["idUsuario"] = *idUsuario
 	resultado, err := coleccion.DeleteOne(context.TODO(), filtro)
-	return resultado, err
+	if err != nil {
+		log.Printf("Error: %v\n", Errors.ErrorConectarBD)
+		return nil, Errors.ErrorConectarBD
+	}
+	if resultado.DeletedCount == 0 {
+		log.Printf("Error: %v\n", Errors.ErrorAlimentoNoEncontradoEliminar)
+		return nil, Errors.ErrorAlimentoNoEncontradoEliminar
+	}
+	return resultado, nil
 }
-func (repositorio AlimentoRepositorio) ObtenerAlimentosConStockMenorAlMinimo(idUsuario *string) ([]Models.Alimento, error) {
+
+/*func (repositorio AlimentoRepositorio) ObtenerAlimentosConStockMenorAlMinimo(idUsuario *string) ([]Models.Alimento, error) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
 	filtro := bson.M{"$expr": bson.M{"$lt": []string{"$stock", "$cantMininaStock"}}}
 	filtro["idUsuario"] = *idUsuario
 	alimentosLista, err := coleccion.Find(context.TODO(), filtro)
 	if err != nil {
-		return nil, err
+		log.Printf("Error: %v\n", Errors.ErrorConectarBD)
+		return nil, Errors.ErrorConectarBD
 	}
 	var alimentos []Models.Alimento
 	for alimentosLista.Next(context.Background()) {
 		var alimento Models.Alimento
 		err := alimentosLista.Decode(&alimento)
 		if err != nil {
-			fmt.Printf("Error: %v\n", err)
+			log.Printf("Error: %v\n", Errors.ErrorDecodificarAlimento)
+			return nil, Errors.ErrorDecodificarAlimento
 		}
 		alimentos = append(alimentos, alimento)
 	}
-	return alimentos, err
-}
+	if len(alimentos) == 0 {
+		log.Printf("Error: %v\n", Errors.ErrorListaVaciaDeAlimentos)
+		return nil, Errors.ErrorListaVaciaDeAlimentos
+	}
+	return alimentos, nil
+}*/
