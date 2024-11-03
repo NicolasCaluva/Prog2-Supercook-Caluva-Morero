@@ -41,6 +41,8 @@ func (service *CompraService) AgregarCompra(compra *Dto.CompraDto) *error {
 				compraModel.MontoTotal = compraModel.MontoTotal + (alimentoRecibido.PrecioUnitario * float64(alimento.CantComprada))
 				compraModel.Alimentos = append(compraModel.Alimentos, Models.ElementoComprado{IDAlimento: alimento.IDAlimento, CantComprada: alimento.CantComprada})
 				compraModel.FechaCreacion = time.Now()
+			} else {
+				return err
 			}
 		}
 	}
