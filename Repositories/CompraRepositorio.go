@@ -9,7 +9,7 @@ import (
 )
 
 type CompraRepositorioInterfaz interface {
-	AgregarCompra(compra *Models.Compra) (*mongo.InsertOneResult, error)
+	AgregarCompra(compra *Models.Compra) (*mongo.InsertOneResult, *Errors.ErrorCodigo)
 }
 type CompraRepositorio struct {
 	db DB
@@ -20,7 +20,7 @@ func NuevoCompraRepositorio(db DB) *CompraRepositorio {
 		db: db,
 	}
 }
-func (compraRepositorio *CompraRepositorio) AgregarCompra(compra *Models.Compra) (*mongo.InsertOneResult, error) {
+func (compraRepositorio *CompraRepositorio) AgregarCompra(compra *Models.Compra) (*mongo.InsertOneResult, *Errors.ErrorCodigo) {
 	coleccion := compraRepositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("compra")
 	resultado, err := coleccion.InsertOne(context.Background(), compra)
 	if err != nil {

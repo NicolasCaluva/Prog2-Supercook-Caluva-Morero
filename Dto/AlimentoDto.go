@@ -13,7 +13,7 @@ type AlimentoDto struct {
 	MomentoDelDia   []Momento
 }
 
-func (a *AlimentoDto) ValidarAlimentoDto() error {
+func (a *AlimentoDto) ValidarAlimentoDto() *Errors.ErrorCodigo {
 	if a.Nombre == "" {
 		return Errors.ErrorAlimentoNombreMalIngresado
 	}

@@ -1,5 +1,7 @@
 package Dto
 
+import "supercook/Errors"
+
 type RecetaDto struct {
 	ID        string
 	IDUsuario string
@@ -8,15 +10,15 @@ type RecetaDto struct {
 	Momento   Momento
 }
 
-func (receta *RecetaDto) ValidarRecetaDto() string {
+func (receta *RecetaDto) ValidarRecetaDto() *Errors.ErrorCodigo {
 	if receta.Nombre == "" {
-		return "El nombre de la receta no puede estar vacío"
+		return Errors.ErrorRecetaNombreMalIngresado
 	}
 	if len(receta.Alimentos) == 0 {
-		return "Debe haber al menos un alimento en la receta"
+		return Errors.ErrorRecetaAlimentosMalIngresados
 	}
 	if receta.Momento == "" {
-		return "Debe haber un momento del día en la receta"
+		return Errors.ErrorRecetaMomentoDelDiaMalIngresado
 	}
-	return ""
+	return nil
 }

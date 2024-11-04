@@ -2,6 +2,7 @@ package Services
 
 import (
 	"supercook/Dto"
+	"supercook/Errors"
 	"supercook/Models"
 	"supercook/Repositories"
 	"supercook/Utils"
@@ -9,11 +10,11 @@ import (
 )
 
 type RecetaInterface interface {
-	ObtenerRecetas(filtro *[3]string, idUsuario *string) []*Dto.RecetaDto
-	ObtenerRecetaPorID(idReceta *string, idUsuario *string) *Dto.RecetaDto
-	CrearReceta(receta *Dto.RecetaDto) *Dto.Resultado
-	ActualizarReceta(receta *Dto.RecetaDto) *Dto.Resultado
-	EliminarReceta(idReceta *string, idUsuario *string) *Dto.Resultado
+	ObtenerRecetas(filtro *[3]string, idUsuario *string) ([]*Dto.RecetaDto, *Errors.ErrorCodigo)
+	ObtenerRecetaPorID(idReceta *string, idUsuario *string) (*Dto.RecetaDto, *Errors.ErrorCodigo)
+	CrearReceta(receta *Dto.RecetaDto) *Errors.ErrorCodigo
+	ActualizarReceta(receta *Dto.RecetaDto) *Errors.ErrorCodigo
+	EliminarReceta(idReceta *string, idUsuario *string) *Errors.ErrorCodigo
 }
 
 type RecetaService struct {
@@ -26,32 +27,30 @@ func NuevoRecetaService(recetaRepositorio Repositories.RecetaRepositorioInterfac
 	}
 }
 
-func (service *RecetaService) ObtenerRecetas(filtro *[3]string, idUsuario *string) []*Dto.RecetaDto {
-	recetas, _ := service.RecetaRepositorio.ObtenerRecetas(filtro, idUsuario)
+func (service *RecetaService) ObtenerRecetas(filtro *[3]string, idUsuario *string) ([]*Dto.RecetaDto, *Errors.ErrorCodigo) {
+	recetas, err := service.RecetaRepositorio.ObtenerRecetas(filtro, idUsuario)
+	if err != nil {
+		return nil, err
+	}
 	var recetasDto []*Dto.RecetaDto
 	for _, receta := range recetas {
 		recetasDto = append(recetasDto, convertirReceta(receta))
 	}
-	return recetasDto
+	return recetasDto, nil
 }
 
-func (service *RecetaService) ObtenerRecetaPorID(idReceta *string, idUsuario *string) *Dto.RecetaDto {
-	receta, _ := service.RecetaRepositorio.ObtenerRecetaPorID(idReceta, idUsuario)
-	return convertirReceta(receta)
-}
-
-func (service *RecetaService) CrearReceta(receta *Dto.RecetaDto) *Dto.Resultado {
-	resultado := Dto.Resultado{}
-	resultadoValidacion := receta.ValidarRecetaDto()
-	if resultadoValidacion != "" {
-		resultado.ListaMensaje = append(resultado.ListaMensaje, receta.ValidarRecetaDto())
-	} else {
-		resultado.ListaMensaje = []string{}
+func (service *RecetaService) ObtenerRecetaPorID(idReceta *string, idUsuario *string) (*Dto.RecetaDto, *Errors.ErrorCodigo) {
+	receta, err := service.RecetaRepositorio.ObtenerRecetaPorID(idReceta, idUsuario)
+	if err != nil {
+		return nil, err
 	}
+	return convertirReceta(receta), nil
+}
 
-	if len(resultado.ListaMensaje) > 0 {
-		resultado.BoolResultado = false
-		return &resultado
+func (service *RecetaService) CrearReceta(receta *Dto.RecetaDto) *Errors.ErrorCodigo {
+	resultadoValidacion := receta.ValidarRecetaDto()
+	if resultadoValidacion != nil {
+		return resultadoValidacion
 	} else {
 		var listaAlimentosReceta []Models.AlimentoReceta
 		for _, alimentoReceta := range receta.Alimentos {
@@ -67,21 +66,16 @@ func (service *RecetaService) CrearReceta(receta *Dto.RecetaDto) *Dto.Resultado 
 		}
 		_, err := service.RecetaRepositorio.CrearReceta(&recetaModel)
 		if err != nil {
-			resultado.BoolResultado = false
-			resultado.ListaMensaje = append(resultado.ListaMensaje, err.Error())
-		} else {
-			resultado.BoolResultado = true
+			return err
 		}
-		return &resultado
+		return nil
 	}
 }
 
-func (service *RecetaService) ActualizarReceta(receta *Dto.RecetaDto) *Dto.Resultado {
-	resultado := Dto.Resultado{}
-	resultado.ListaMensaje = append(resultado.ListaMensaje, receta.ValidarRecetaDto())
-	if len(resultado.ListaMensaje) > 0 {
-		resultado.BoolResultado = false
-		return &resultado
+func (service *RecetaService) ActualizarReceta(receta *Dto.RecetaDto) *Errors.ErrorCodigo {
+	error := receta.ValidarRecetaDto()
+	if error != nil {
+		return error
 	} else {
 		var listaAlimentosReceta []Models.AlimentoReceta
 		for _, alimentoReceta := range receta.Alimentos {
@@ -98,26 +92,18 @@ func (service *RecetaService) ActualizarReceta(receta *Dto.RecetaDto) *Dto.Resul
 		}
 		_, err := service.RecetaRepositorio.ActualizarReceta(&recetaModel)
 		if err != nil {
-			resultado.BoolResultado = false
-			resultado.ListaMensaje = append(resultado.ListaMensaje, err.Error())
-		} else {
-			resultado.BoolResultado = true
+			return err
 		}
-		return &resultado
+		return nil
 	}
 }
 
-func (service *RecetaService) EliminarReceta(idReceta *string, idUsuario *string) *Dto.Resultado {
-	resultado := Dto.Resultado{}
+func (service *RecetaService) EliminarReceta(idReceta *string, idUsuario *string) *Errors.ErrorCodigo {
 	_, err := service.RecetaRepositorio.EliminarReceta(idReceta, idUsuario)
 	if err != nil {
-		resultado.BoolResultado = false
-		resultado.ListaMensaje = append(resultado.ListaMensaje, err.Error())
-	} else {
-		resultado.BoolResultado = true
-		resultado.ListaMensaje = append(resultado.ListaMensaje, "Receta eliminada con éxito.")
+		return err
 	}
-	return &resultado
+	return nil
 }
 
 func convertirReceta(receta Models.Receta) *Dto.RecetaDto {

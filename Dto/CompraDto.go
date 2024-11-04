@@ -13,7 +13,7 @@ type CompraDto struct {
 	MontoTotal    float64
 }
 
-func (Compra *CompraDto) ValidarListaAlimentos() error {
+func (Compra *CompraDto) ValidarListaAlimentos() *Errors.ErrorCodigo {
 	if len(Compra.Alimentos) == 0 {
 		return Errors.ErrorListaVaciaDeCompras
 	}

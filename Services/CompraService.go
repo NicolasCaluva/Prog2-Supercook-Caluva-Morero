@@ -2,13 +2,14 @@ package Services
 
 import (
 	"supercook/Dto"
+	"supercook/Errors"
 	"supercook/Models"
 	"supercook/Repositories"
 	"time"
 )
 
 type CompraInterfaz interface {
-	AgregarCompra(compra *Dto.CompraDto) *error
+	AgregarCompra(compra *Dto.CompraDto) *Errors.ErrorCodigo
 }
 
 type CompraService struct {
@@ -22,16 +23,16 @@ func NuevoCompraService(compraRepositorio Repositories.CompraRepositorioInterfaz
 		AlimentoService:   alimentoService,
 	}
 }
-func (service *CompraService) AgregarCompra(compra *Dto.CompraDto) *error {
+func (service *CompraService) AgregarCompra(compra *Dto.CompraDto) *Errors.ErrorCodigo {
 	error := compra.ValidarListaAlimentos()
 	var compraModel *Models.Compra
 	if error != nil {
-		return &error
+		return error
 	} else {
 		primerIteracion := true
 		for _, alimento := range compra.Alimentos {
 			alimentoRecibido, err := service.AlimentoService.ObtenerAlimentoPorID(&alimento.IDAlimento, &compra.IDUsuario)
-			if err != nil {
+			if err == nil {
 				alimentoRecibido.Stock = alimentoRecibido.Stock + alimento.CantComprada
 				service.AlimentoService.ActualizarAlimento(alimentoRecibido)
 				if primerIteracion {
@@ -48,7 +49,7 @@ func (service *CompraService) AgregarCompra(compra *Dto.CompraDto) *error {
 	}
 	_, err1 := service.CompraRepositorio.AgregarCompra(compraModel)
 	if err1 != nil {
-		return &err1
+		return err1
 	}
 	return nil
 }

@@ -37,7 +37,7 @@ func (handler *AlimentoHandler) ObtenerAlimentos(c *gin.Context) {
 
 	alimentos, err := handler.AlimentoService.ObtenerAlimentos(&filtro, &userInfo.Codigo)
 	if err != nil {
-		c.Error(*err)
+		c.Error(err)
 		return
 	}
 	c.JSON(http.StatusOK, alimentos)
@@ -52,7 +52,7 @@ func (handler *AlimentoHandler) ObtenerAlimentoPorID(c *gin.Context) {
 	id := c.Param("id")
 	alimento, error := handler.AlimentoService.ObtenerAlimentoPorID(&id, &userInfo.Codigo)
 	if error != nil {
-		c.Error(*error)
+		c.Error(error)
 		return
 	}
 	c.JSON(http.StatusOK, alimento)
@@ -73,7 +73,7 @@ func (handler *AlimentoHandler) CrearAlimento(c *gin.Context) {
 	alimentoDto.IDUsuario = userInfo.Codigo
 	error := handler.AlimentoService.CrearAlimento(&alimentoDto)
 	if error != nil {
-		c.Error(*error)
+		c.Error(error)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"mensaje": "Alimento creado con éxito"})
@@ -91,7 +91,7 @@ func (handler *AlimentoHandler) ActualizarAlimento(c *gin.Context) {
 	log.Printf("AlimentoDto: %v", alimentoDto)
 	error := handler.AlimentoService.ActualizarAlimento(&alimentoDto)
 	if error != nil {
-		c.Error(*error)
+		c.Error(error)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"mensaje": "Alimento actualizado con éxito"})
@@ -106,7 +106,7 @@ func (handler *AlimentoHandler) EliminarAlimento(c *gin.Context) {
 	id := c.Param("id")
 	error := handler.AlimentoService.EliminarAlimento(&id, &userInfo.Codigo)
 	if error != nil {
-		c.Error(*error)
+		c.Error(error)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"mensaje": "Alimento eliminado con éxito"})
