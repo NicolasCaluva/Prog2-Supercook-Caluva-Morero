@@ -15,14 +15,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
 
     const lastSegment = location.href.split('/').pop();
-    console.log(lastSegment)
-    if (lastSegment === 'alimentos.html') {
+    if (lastSegment.includes('alimentos.html')) {
         nav_alimentos.classList.add('active');
     }
-    if (lastSegment === 'recetas.html') {
+    if (lastSegment.includes('recetas.html')) {
         nav_recetas.classList.add('active');
     }
-    if (lastSegment === 'compras.html') {
+    if (lastSegment.includes('compras.html')) {
         nav_compras.classList.add('active');
     }
 });

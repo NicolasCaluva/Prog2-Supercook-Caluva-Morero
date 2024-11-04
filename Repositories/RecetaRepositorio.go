@@ -107,7 +107,7 @@ func (recetaRepositorio *RecetaRepositorio) ActualizarReceta(receta *Models.Rece
 			"fechaActualizacion": receta.FechaActualizacion,
 		},
 	}
-	resultado, err := coleccion.ReplaceOne(context.TODO(), filtro, entidad)
+	resultado, err := coleccion.UpdateOne(context.TODO(), filtro, entidad)
 	if err != nil {
 		log.Printf("Error: %v\n", Errors.ErrorConectarBD)
 		return nil, Errors.ErrorConectarBD

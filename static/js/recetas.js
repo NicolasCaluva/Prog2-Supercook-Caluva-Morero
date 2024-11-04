@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         momento.value = '';
         listaAlimentosSeleccionados.innerHTML = '';
         listaAlimentos.innerHTML = '';
+        confirmarRecetaBtn.value = '';
         confirmarRecetaBtn.removeEventListener('click', confirmarFormularioReceta);
     });
 });
@@ -60,6 +61,7 @@ function successObtenerListaRecetas(response) {
             const URL = 'http://localhost:8080/recetas/' + idReceta + '/';
             await makeRequest(URL, Method.GET, null, ContentType.JSON, CallType.PRIVATE, successObtenerReceta, errorObtenerReceta);
 
+            confirmarRecetaBtn.value = idReceta;
             confirmarRecetaBtn.addEventListener('click', () => confirmarFormularioReceta('PUT'));
         });
 
@@ -92,7 +94,6 @@ function errorObtenerListaRecetas(status, response) {
 }
 
 async function successObtenerReceta(response) {
-    console.log('Receta:', response);
     nombre.value = response.Nombre;
     momento.value = response.Momento;
 
@@ -130,10 +131,7 @@ function cargarAlimentos(momento) {
 
 function successCargarAlimentos(response) {
     // Recibe todos los alimentos que se pueden agregar a la receta
-    cargarOpciones(response);
-}
 
-function cargarOpciones(response) {
     // Carga las opciones de alimentos en el selector de alimentos según el momento del día recibido
 
     response.forEach(alimento => {

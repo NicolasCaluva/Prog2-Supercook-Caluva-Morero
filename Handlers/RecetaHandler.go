@@ -90,6 +90,7 @@ func (handler *RecetaHandler) ActualizarReceta(c *gin.Context) {
 		c.Error(Errors.ErrorJsonInvalidoReceta)
 		return
 	}
+	recetaDto.IDUsuario = userInfo.Codigo
 	resultado := handler.RecetaService.ActualizarReceta(&recetaDto)
 	if resultado != nil {
 		c.Error(resultado)
