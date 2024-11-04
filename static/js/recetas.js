@@ -4,6 +4,9 @@ let listaAlimentos = document.getElementById('lista-alimentos');
 let momento = document.getElementById('momento');
 let listaAlimentosSeleccionados = document.getElementById('lista-alimentos-seleccionados');
 let confirmarRecetaBtn = document.getElementById('confirmarReceta');
+let listaRecetasData = [];  // Store all recipes
+let paginaActual = 1;
+const recetasPorPagina = 10;  // Display 10 recipes per page
 
 document.addEventListener('DOMContentLoaded', async function () {
     const agregarRecetaBtn = document.getElementById('agregarNuevaReceta');
@@ -16,7 +19,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     agregarRecetaBtn.addEventListener('click', function () {
         momento.addEventListener('change', momentoOnChange);
-
         confirmarRecetaBtn.addEventListener('click', () => confirmarFormularioReceta('POST'));
     });
 
@@ -29,6 +31,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         confirmarRecetaBtn.value = '';
         confirmarRecetaBtn.removeEventListener('click', confirmarFormularioReceta);
     });
+
+    document.getElementById('pagAnterior').addEventListener('click', () => cambiarPagina(-1));
+    document.getElementById('pagSiguiente').addEventListener('click', () => cambiarPagina(1));
 });
 
 async function obtenerListaRecetas() {
@@ -38,17 +43,27 @@ async function obtenerListaRecetas() {
 
 function successObtenerListaRecetas(response) {
     console.log('Recetas:', response);
-    response.forEach(receta => {
+    listaRecetasData = response;  // Store all recipes
+    renderizarPagina();
+}
+
+function renderizarPagina() {
+    listaRecetas.innerHTML = '';  // Clear the table
+    const inicio = (paginaActual - 1) * recetasPorPagina;
+    const fin = inicio + recetasPorPagina;
+    const recetasActuales = listaRecetasData.slice(inicio, fin);
+
+    recetasActuales.forEach(receta => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-                            <td>${receta.Nombre}</td>
-                            <td>${receta.Alimentos.map(alimento => alimento.Nombre).join(', ')}</td>
-                            <td>${receta.Momento.charAt(0).toUpperCase() + receta.Momento.slice(1)}</td>
-                        `;
+            <td>${receta.Nombre}</td>
+            <td>${receta.Alimentos.map(alimento => alimento.Nombre).join(', ')}</td>
+            <td>${receta.Momento.charAt(0).toUpperCase() + receta.Momento.slice(1)}</td>
+        `;
+
         const botonEditar = document.createElement('button');
         const iconoEditar = document.createElement('i');
         iconoEditar.setAttribute('class', 'fa-solid fa-pencil');
-
         Object.assign(botonEditar, {
             className: 'btn btn-primary',
             value: receta.ID
@@ -60,14 +75,12 @@ function successObtenerListaRecetas(response) {
             let idReceta = this.value;
             const URL = 'http://localhost:8080/recetas/' + idReceta + '/';
             await makeRequest(URL, Method.GET, null, ContentType.JSON, CallType.PRIVATE, successObtenerReceta, errorObtenerReceta);
-
             confirmarRecetaBtn.value = idReceta;
             confirmarRecetaBtn.addEventListener('click', () => confirmarFormularioReceta('PUT'));
         });
 
         const botonEliminar = document.createElement('button');
         const iconoEliminar = document.createElement('i');
-
         Object.assign(botonEliminar, {
             className: 'btn btn-danger',
             type: 'button',
@@ -87,6 +100,19 @@ function successObtenerListaRecetas(response) {
         tr.appendChild(tdBotones);
         listaRecetas.appendChild(tr);
     });
+
+    actualizarIndicardorPagina();
+}
+
+function actualizarIndicardorPagina() {
+    document.getElementById('indicadorPagina').textContent = `Página ${paginaActual}`;
+    document.getElementById('pagAnterior').disabled = paginaActual === 1;
+    document.getElementById('pagSiguiente').disabled = paginaActual * recetasPorPagina >= listaRecetasData.length;
+}
+
+function cambiarPagina(direction) {
+    paginaActual += direction;
+    renderizarPagina();
 }
 
 function errorObtenerListaRecetas(status, response) {

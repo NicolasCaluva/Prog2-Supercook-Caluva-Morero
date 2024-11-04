@@ -7,7 +7,6 @@ import (
 	"supercook/Errors"
 )
 
-// ErrorMiddleware es un middleware que maneja los errores
 func ErrorMiddleware(c *gin.Context) {
 	c.Next()
 
@@ -15,24 +14,28 @@ func ErrorMiddleware(c *gin.Context) {
 		err := c.Errors.Last().Err
 		var errorCodigo *Errors.ErrorCodigo
 		if ok := errors.As(err, &errorCodigo); ok {
-			c.JSON(httpStatusFromCode(errorCodigo.Codigo), gin.H{"error": errorCodigo.Mensaje})
+			c.JSON(httpStatusFromCode(errorCodigo.Codigo), gin.H{"error": modificarMensajeID500(errorCodigo)})
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 		}
 	}
 }
-
-// httpStatusFromCode convierte un código de error en un código de estado HTTP
+func modificarMensajeID500(codigo *Errors.ErrorCodigo) string {
+	if codigo.Codigo == "ERR_500" {
+		return "Error interno del servidor"
+	}
+	return codigo.Mensaje
+}
 func httpStatusFromCode(codigo string) int {
 	switch codigo {
-	case "ERR_1":
+	case "ERR_500":
 		return http.StatusInternalServerError
-	case "ERR_2":
-		return http.StatusBadRequest
-	case "ERR_10":
+	case "ERR_401":
 		return http.StatusUnauthorized
-	case "ERR_50":
+	case "ERR_404":
 		return http.StatusNotFound
+	case "ERR_400":
+		return http.StatusBadRequest
 	default:
 		return http.StatusInternalServerError
 	}
