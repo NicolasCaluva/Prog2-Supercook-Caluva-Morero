@@ -106,7 +106,6 @@ async function successObtenerReceta(response) {
         }
         await cargarAlimentos(momento.value)
     });
-
     await cargarAlimentos(momento.value);
     cargarAlimentosReceta(response.Alimentos);
 }
@@ -130,15 +129,19 @@ function cargarAlimentos(momento) {
 }
 
 function successCargarAlimentos(response) {
-    // TODO: Verificar si se pueden cargar los alimentos que ya están en la rec
+    // Recibe todos los alimentos que se pueden agregar a la receta
     cargarOpciones(response);
 }
 
 function cargarOpciones(response) {
     // Carga las opciones de alimentos en el selector de alimentos según el momento del día recibido
+
     response.forEach(alimento => {
+        if (Array.from(listaAlimentosSeleccionados.querySelectorAll('input')).find(input => input.id === alimento.IdAlimento)) {
+            return;
+        }
         const option = document.createElement('option');
-        option.value = alimento.id;
+        option.value = alimento.IdAlimento;
         option.innerText = alimento.Nombre;
         option.addEventListener('click', () => agregarAlimentoAReceta(option, alimento));
         listaAlimentos.appendChild(option);
@@ -147,15 +150,10 @@ function cargarOpciones(response) {
 
 function cargarAlimentosReceta(alimentos) {
     // Carga los alimentos que ya están en la receta y elimina los que están en la lista de alimentos
+
+    // alimentos son todos los alimentos que están asociados a la receta
     alimentos.forEach(alimento => {
         agregarAlimentoAReceta(null, alimento);
-
-        // TODO: Eliminar de la lista de alimentos de la izquierda los que ya se encuentren en la receta
-        const option = document.querySelector('option[value="' + alimento.id + '"]');
-        console.log('Opcion a eliminar', option);
-        if (option) {
-            listaAlimentos.removeChild(option);
-        }
     });
 }
 
@@ -163,10 +161,11 @@ function cargarAlimentosReceta(alimentos) {
 function agregarAlimentoAReceta(option, alimento) {
     // Agrega los alimentos a la lista de alimentos seleccionados y permite eliminarlos de la lista de alimentos
     // y agregarlos nuevamente al selector de alimentos
-
+    console.log(alimento)
     if (option) {
         listaAlimentos.removeChild(option);
     }
+
     const div = document.createElement('div');
     div.setAttribute('class', 'row mt-3');
     const div2 = document.createElement('div');
@@ -174,29 +173,36 @@ function agregarAlimentoAReceta(option, alimento) {
 
     const label = document.createElement('label');
     label.innerText = alimento.Nombre;
-    label.setAttribute('for', alimento.id);
+    label.setAttribute('for', alimento.IDAlimento);
     label.setAttribute('class', 'col-10');
 
     const input = document.createElement('input');
     input.setAttribute('type', 'number');
-    input.setAttribute('id', alimento.IdAlimento);
+    input.setAttribute('id', alimento.IDAlimento);
     input.setAttribute('min', 1);
     input.setAttribute('value', alimento.Cantidad ? alimento.Cantidad : 1);
     input.setAttribute('class', 'form-control form-control-sm');
     input.setAttribute('required', true);
 
-    const botonEliminar = document.createElement('button');
+    const botonEliminarSeleccionado = document.createElement('button');
     const iconoEliminar = document.createElement('i');
-    botonEliminar.setAttribute('class', 'btn btn-danger btn-sm');
+    botonEliminarSeleccionado.setAttribute('class', 'btn btn-danger btn-sm');
     iconoEliminar.setAttribute('class', 'fa-solid fa-trash');
-    botonEliminar.appendChild(iconoEliminar);
-    botonEliminar.addEventListener('click', function () {
+    botonEliminarSeleccionado.appendChild(iconoEliminar);
+    botonEliminarSeleccionado.setAttribute('value', alimento.IDAlimento);
+    botonEliminarSeleccionado.addEventListener('click', function () {
+        if (!option) {
+            option = document.createElement('option');
+            option.value = this.value;
+            option.innerText = alimento.Nombre;
+            option.addEventListener('click', () => agregarAlimentoAReceta(option, alimento));
+        }
         listaAlimentos.appendChild(option);
         div.remove();
     });
     label.appendChild(input);
     div.appendChild(label);
-    div2.appendChild(botonEliminar);
+    div2.appendChild(botonEliminarSeleccionado);
     div.appendChild(div2);
     listaAlimentosSeleccionados.appendChild(div);
 }
