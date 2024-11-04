@@ -3,6 +3,7 @@ let nombre = document.getElementById('nombre');
 let listaAlimentos = document.getElementById('lista-alimentos');
 let momento = document.getElementById('momento');
 let listaAlimentosSeleccionados = document.getElementById('lista-alimentos-seleccionados');
+let confirmarRecetaBtn = document.getElementById('confirmarReceta');
 
 document.addEventListener('DOMContentLoaded', async function () {
     const agregarRecetaBtn = document.getElementById('agregarNuevaReceta');
@@ -14,42 +15,18 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     agregarRecetaBtn.addEventListener('click', function () {
-        momento.addEventListener('change', async function () {
-            if (listaAlimentosSeleccionados.hasChildNodes()) {
-                listaAlimentosSeleccionados.innerHTML = '';
-            }
+        momento.addEventListener('change', momentoOnChange);
 
-            if (listaAlimentos.hasChildNodes()) {
-                listaAlimentos.innerHTML = '';
-            }
-            await cargarAlimentos(momento.value)
-        });
+        confirmarRecetaBtn.addEventListener('click', () => confirmarFormularioReceta('POST'));
+    });
 
-        const confirmarRecetaBtn = document.getElementById('confirmarReceta');
-
-        confirmarRecetaBtn.addEventListener('click', async function () {
-            const lista_inputs = listaAlimentosSeleccionados.querySelectorAll('input');
-            const lista_alimentos_seleccionados = [];
-            lista_inputs.forEach(input => {
-                const idAlimento = input.id;
-                const cantidad = input.value;
-                lista_alimentos_seleccionados.push({
-                    IdAlimento: idAlimento,
-                    Cantidad: parseInt(cantidad)
-                });
-            });
-
-            const nuevoReceta = {
-                Nombre: nombre.value,
-                Alimentos: lista_alimentos_seleccionados,
-                Momento: momento.value
-            };
-            const URL = 'http://localhost:8080/recetas/';
-            await makeRequest(URL, Method.POST, nuevoReceta, ContentType.JSON, CallType.PRIVATE, successCargarNuevaReceta, errorCargarNuevaReceta);
-            const modal = bootstrap.Modal.getInstance(document.getElementById('cargarReceta'));
-            modal.hide();
-            location.reload();
-        });
+    const modal = document.getElementById('cargarReceta');
+    modal.addEventListener('hidden.bs.modal', function () {
+        nombre.value = '';
+        momento.value = '';
+        listaAlimentosSeleccionados.innerHTML = '';
+        listaAlimentos.innerHTML = '';
+        confirmarRecetaBtn.removeEventListener('click', confirmarFormularioReceta);
     });
 });
 
@@ -82,6 +59,8 @@ function successObtenerListaRecetas(response) {
             let idReceta = this.value;
             const URL = 'http://localhost:8080/recetas/' + idReceta + '/';
             await makeRequest(URL, Method.GET, null, ContentType.JSON, CallType.PRIVATE, successObtenerReceta, errorObtenerReceta);
+
+            confirmarRecetaBtn.addEventListener('click', () => confirmarFormularioReceta('PUT'));
         });
 
         const botonEliminar = document.createElement('button');
@@ -112,48 +91,24 @@ function errorObtenerListaRecetas(status, response) {
     console.log("Falla:", response);
 }
 
-function successObtenerReceta(response) {
+async function successObtenerReceta(response) {
     console.log('Receta:', response);
     nombre.value = response.Nombre;
     momento.value = response.Momento;
-    
-    response.Alimentos.forEach(alimento => {
-        const div = document.createElement('div');
-        div.setAttribute('class', 'row mt-3');
-        const div2 = document.createElement('div');
-        div2.setAttribute('class', 'col-2 d-flex align-items-center');
 
-        const label = document.createElement('label');
-        label.innerText = alimento.Nombre;
-        label.setAttribute('for', alimento.id);
-        label.setAttribute('class', 'col-10');
+    momento.addEventListener('change', async function () {
+        if (listaAlimentosSeleccionados.hasChildNodes()) {
+            listaAlimentosSeleccionados.innerHTML = '';
+        }
 
-        const input = document.createElement('input');
-        input.setAttribute('type', 'number');
-        input.setAttribute('id', alimento.IdAlimento);
-        input.setAttribute('min', 1);
-        input.setAttribute('value', alimento.Cantidad);
-        input.setAttribute('class', 'form-control form-control-sm');
-        input.setAttribute('required', true);
-
-        const botonEliminar = document.createElement('button');
-        const iconoEliminar = document.createElement('i');
-        botonEliminar.setAttribute('class', 'btn btn-danger btn-sm');
-        iconoEliminar.setAttribute('class', 'fa-solid fa-trash');
-        botonEliminar.appendChild(iconoEliminar);
-        botonEliminar.addEventListener('click', function () {
-            const option = document.createElement('option');
-            option.value = alimento.IdAlimento;
-            option.innerText = alimento.Nombre;
-            listaAlimentos.appendChild(option);
-            div.remove();
-        });
-        label.appendChild(input);
-        div.appendChild(label);
-        div2.appendChild(botonEliminar);
-        div.appendChild(div2);
-        listaAlimentosSeleccionados.appendChild(div);
+        if (listaAlimentos.hasChildNodes()) {
+            listaAlimentos.innerHTML = '';
+        }
+        await cargarAlimentos(momento.value)
     });
+
+    await cargarAlimentos(momento.value);
+    cargarAlimentosReceta(response.Alimentos);
 }
 
 function errorObtenerReceta(status, response) {
@@ -175,49 +130,75 @@ function cargarAlimentos(momento) {
 }
 
 function successCargarAlimentos(response) {
-    console.log('Alimentos:', response)
+    // TODO: Verificar si se pueden cargar los alimentos que ya están en la rec
+    cargarOpciones(response);
+}
+
+function cargarOpciones(response) {
+    // Carga las opciones de alimentos en el selector de alimentos según el momento del día recibido
     response.forEach(alimento => {
         const option = document.createElement('option');
         option.value = alimento.id;
         option.innerText = alimento.Nombre;
-        option.addEventListener('click', function () {
-            listaAlimentos.removeChild(option);
-            const div = document.createElement('div');
-            div.setAttribute('class', 'row mt-3');
-            const div2 = document.createElement('div');
-            div2.setAttribute('class', 'col-2 d-flex align-items-center');
-
-            const label = document.createElement('label');
-            label.innerText = alimento.Nombre;
-            label.setAttribute('for', alimento.id);
-            label.setAttribute('class', 'col-10');
-
-            const input = document.createElement('input');
-            input.setAttribute('type', 'number');
-            input.setAttribute('id', alimento.IdAlimento);
-            input.setAttribute('min', 1);
-            input.setAttribute('value', 1);
-            input.setAttribute('class', 'form-control form-control-sm');
-            input.setAttribute('required', true);
-
-            const botonEliminar = document.createElement('button');
-            const iconoEliminar = document.createElement('i');
-            botonEliminar.setAttribute('class', 'btn btn-danger btn-sm');
-            iconoEliminar.setAttribute('class', 'fa-solid fa-trash');
-            botonEliminar.appendChild(iconoEliminar);
-            botonEliminar.addEventListener('click', function () {
-                listaAlimentos.appendChild(option);
-                div.remove();
-            });
-            label.appendChild(input);
-            div.appendChild(label);
-            div2.appendChild(botonEliminar);
-            div.appendChild(div2);
-            listaAlimentosSeleccionados.appendChild(div);
-        });
+        option.addEventListener('click', () => agregarAlimentoAReceta(option, alimento));
         listaAlimentos.appendChild(option);
     });
+}
 
+function cargarAlimentosReceta(alimentos) {
+    // Carga los alimentos que ya están en la receta y elimina los que están en la lista de alimentos
+    alimentos.forEach(alimento => {
+        agregarAlimentoAReceta(null, alimento);
+
+        // TODO: Eliminar de la lista de alimentos de la izquierda los que ya se encuentren en la receta
+        const option = document.querySelector('option[value="' + alimento.id + '"]');
+        console.log('Opcion a eliminar', option);
+        if (option) {
+            listaAlimentos.removeChild(option);
+        }
+    });
+}
+
+
+function agregarAlimentoAReceta(option, alimento) {
+    // Agrega los alimentos a la lista de alimentos seleccionados y permite eliminarlos de la lista de alimentos
+    // y agregarlos nuevamente al selector de alimentos
+
+    if (option) {
+        listaAlimentos.removeChild(option);
+    }
+    const div = document.createElement('div');
+    div.setAttribute('class', 'row mt-3');
+    const div2 = document.createElement('div');
+    div2.setAttribute('class', 'col-2 d-flex align-items-center');
+
+    const label = document.createElement('label');
+    label.innerText = alimento.Nombre;
+    label.setAttribute('for', alimento.id);
+    label.setAttribute('class', 'col-10');
+
+    const input = document.createElement('input');
+    input.setAttribute('type', 'number');
+    input.setAttribute('id', alimento.IdAlimento);
+    input.setAttribute('min', 1);
+    input.setAttribute('value', alimento.Cantidad ? alimento.Cantidad : 1);
+    input.setAttribute('class', 'form-control form-control-sm');
+    input.setAttribute('required', true);
+
+    const botonEliminar = document.createElement('button');
+    const iconoEliminar = document.createElement('i');
+    botonEliminar.setAttribute('class', 'btn btn-danger btn-sm');
+    iconoEliminar.setAttribute('class', 'fa-solid fa-trash');
+    botonEliminar.appendChild(iconoEliminar);
+    botonEliminar.addEventListener('click', function () {
+        listaAlimentos.appendChild(option);
+        div.remove();
+    });
+    label.appendChild(input);
+    div.appendChild(label);
+    div2.appendChild(botonEliminar);
+    div.appendChild(div2);
+    listaAlimentosSeleccionados.appendChild(div);
 }
 
 function errorCargarAlimentos(status, response) {
@@ -231,4 +212,48 @@ function successCargarNuevaReceta(response) {
 
 function errorCargarNuevaReceta(status, response) {
     console.log("Falla:", response);
+}
+
+
+async function confirmarFormularioReceta(method) {
+    const lista_inputs = listaAlimentosSeleccionados.querySelectorAll('input');
+    const lista_alimentos_seleccionados = [];
+    lista_inputs.forEach(input => {
+        const idAlimento = input.id;
+        const cantidad = input.value;
+        lista_alimentos_seleccionados.push({
+            IdAlimento: idAlimento,
+            Cantidad: parseInt(cantidad)
+        });
+    });
+
+    const nuevoReceta = {
+        Nombre: nombre.value,
+        Alimentos: lista_alimentos_seleccionados,
+        Momento: momento.value
+    };
+
+    if (method === 'PUT') {
+        // TODO: Veriicar la forma en la que se obtiene el ID de la receta
+        const URL = 'http://localhost:8080/recetas/' + confirmarRecetaBtn.value + '/';
+        await makeRequest(URL, Method.PUT, nuevoReceta, ContentType.JSON, CallType.PRIVATE, successCargarNuevaReceta, errorCargarNuevaReceta);
+    } else {
+        const URL = 'http://localhost:8080/recetas/';
+        await makeRequest(URL, Method.POST, nuevoReceta, ContentType.JSON, CallType.PRIVATE, successCargarNuevaReceta, errorCargarNuevaReceta);
+
+    }
+    const modal = bootstrap.Modal.getInstance(document.getElementById('cargarReceta'));
+    modal.hide();
+    location.reload();
+}
+
+async function momentoOnChange() {
+    if (listaAlimentosSeleccionados.hasChildNodes()) {
+        listaAlimentosSeleccionados.innerHTML = '';
+    }
+
+    if (listaAlimentos.hasChildNodes()) {
+        listaAlimentos.innerHTML = '';
+    }
+    await cargarAlimentos(momento.value)
 }
