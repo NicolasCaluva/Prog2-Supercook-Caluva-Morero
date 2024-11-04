@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"supercook/Dto"
+	"supercook/Errors"
 	"supercook/Services"
 	"supercook/Utils"
 )
@@ -22,7 +23,7 @@ func (handler *RecetaHandler) ObtenerRecetas(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
 
 	if userInfo == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
+		c.Error(Errors.ErrorUsuarioNoAutenticado)
 		return
 	}
 
@@ -31,18 +32,26 @@ func (handler *RecetaHandler) ObtenerRecetas(c *gin.Context) {
 	tipoAlimento := c.Query("tipoAlimento")
 
 	filtro := [3]string{momento, nombre, tipoAlimento}
-	var recetas = handler.RecetaService.ObtenerRecetas(&filtro, &userInfo.Codigo)
+	recetas, err := handler.RecetaService.ObtenerRecetas(&filtro, &userInfo.Codigo)
+	if err != nil {
+		c.Error(err)
+		return
+	}
 	c.JSON(http.StatusOK, recetas)
 }
 
 func (handler *RecetaHandler) ObtenerRecetaPorID(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
 	if userInfo == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
+		c.Error(Errors.ErrorUsuarioNoAutenticado)
 		return
 	}
 	id := c.Param("id")
-	receta := handler.RecetaService.ObtenerRecetaPorID(&id, &userInfo.Codigo)
+	receta, err := handler.RecetaService.ObtenerRecetaPorID(&id, &userInfo.Codigo)
+	if err != nil {
+		c.Error(err)
+		return
+	}
 	c.JSON(http.StatusOK, receta)
 }
 
@@ -50,57 +59,56 @@ func (handler *RecetaHandler) CrearReceta(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
 
 	if userInfo == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
+		c.Error(Errors.ErrorUsuarioNoAutenticado)
 		return
 	}
 
 	var recetaDto Dto.RecetaDto
 
 	if err := c.BindJSON(&recetaDto); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Error(Errors.ErrorJsonInvalidoReceta)
 		return
 	}
 
 	recetaDto.IDUsuario = userInfo.Codigo
 	resultado := handler.RecetaService.CrearReceta(&recetaDto)
-	if !resultado.BoolResultado {
-		c.JSON(http.StatusBadRequest, resultado)
+	if resultado != nil {
+		c.Error(resultado)
 		return
 	}
-	c.JSON(http.StatusOK, resultado)
+	c.JSON(http.StatusOK, gin.H{"mensaje": "Receta creada correctamente"})
 }
 
 func (handler *RecetaHandler) ActualizarReceta(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
 	if userInfo == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
+		c.Error(Errors.ErrorUsuarioNoAutenticado)
 		return
 	}
 	var recetaDto Dto.RecetaDto
-	err := c.BindJSON(&recetaDto)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := c.BindJSON(&recetaDto); err != nil {
+		c.Error(Errors.ErrorJsonInvalidoReceta)
 		return
 	}
 	resultado := handler.RecetaService.ActualizarReceta(&recetaDto)
-	if !resultado.BoolResultado {
-		c.JSON(http.StatusBadRequest, resultado)
+	if resultado != nil {
+		c.Error(resultado)
 		return
 	}
-	c.JSON(http.StatusOK, resultado)
+	c.JSON(http.StatusOK, gin.H{"mensaje": "Receta actualizada correctamente"})
 }
 
 func (handler *RecetaHandler) EliminarReceta(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
 	if userInfo == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
+		c.Error(Errors.ErrorUsuarioNoAutenticado)
 		return
 	}
 	id := c.Param("id")
 	resultado := handler.RecetaService.EliminarReceta(&id, &userInfo.Codigo)
-	if !resultado.BoolResultado {
-		c.JSON(http.StatusBadRequest, resultado)
+	if resultado != nil {
+		c.Error(resultado)
 		return
 	}
-	c.JSON(http.StatusOK, resultado)
+	c.JSON(http.StatusOK, gin.H{"mensaje": "Receta eliminada correctamente"})
 }

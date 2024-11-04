@@ -33,8 +33,8 @@ func (handler *CompraHandler) CrearCompra(c *gin.Context) {
 	}
 	resultado := handler.CompraService.AgregarCompra(&compraDto)
 	if resultado != nil {
-		c.Error(*resultado)
+		c.Error(resultado)
 		return
 	}
-	c.JSON(http.StatusOK, resultado)
+	c.JSON(http.StatusOK, gin.H{"mensaje": "Compra realizada con éxito"})
 }

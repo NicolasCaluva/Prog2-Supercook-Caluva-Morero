@@ -117,12 +117,12 @@ async function enviarCompraDto() {
     await makeRequest(url, Method.POST, compraDto, ContentType.JSON, CallType.PRIVATE, successEnviarCompra, errorEnviarCompra);
 }
 
-function successEnviarCompra(response) {
+function successEnviarCompra() {
     alert('Compra realizada con éxito.');
     location.reload();
 }
 
 function errorEnviarCompra(status, response) {
     console.log(response.error);
-    alert('Hubo un error al realizar la compra.');
+    alert(response.error);
 }

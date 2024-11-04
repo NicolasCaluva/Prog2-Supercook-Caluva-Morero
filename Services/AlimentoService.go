@@ -2,6 +2,7 @@ package Services
 
 import (
 	"supercook/Dto"
+	"supercook/Errors"
 	"supercook/Models"
 	"supercook/Repositories"
 	"supercook/Utils"
@@ -9,11 +10,11 @@ import (
 )
 
 type AlimentoInterface interface {
-	ObtenerAlimentos(filtro *[4]string, idUsuario *string) ([]*Dto.AlimentoDto, *error)
-	ObtenerAlimentoPorID(id *string, idUsuario *string) (*Dto.AlimentoDto, *error)
-	CrearAlimento(alimento *Dto.AlimentoDto) *error
-	ActualizarAlimento(alimento *Dto.AlimentoDto) *error
-	EliminarAlimento(id *string, idUsuario *string) *error
+	ObtenerAlimentos(filtro *[4]string, idUsuario *string) ([]*Dto.AlimentoDto, *Errors.ErrorCodigo)
+	ObtenerAlimentoPorID(id *string, idUsuario *string) (*Dto.AlimentoDto, *Errors.ErrorCodigo)
+	CrearAlimento(alimento *Dto.AlimentoDto) *Errors.ErrorCodigo
+	ActualizarAlimento(alimento *Dto.AlimentoDto) *Errors.ErrorCodigo
+	EliminarAlimento(id *string, idUsuario *string) *Errors.ErrorCodigo
 }
 
 type AlimentoService struct {
@@ -26,10 +27,10 @@ func NuevoAlimentoService(alimentoRepositorio Repositories.AlimentoRepositorioIn
 	}
 }
 
-func (service *AlimentoService) ObtenerAlimentos(filtro *[4]string, idUsuario *string) ([]*Dto.AlimentoDto, *error) {
+func (service *AlimentoService) ObtenerAlimentos(filtro *[4]string, idUsuario *string) ([]*Dto.AlimentoDto, *Errors.ErrorCodigo) {
 	alimentos, error := service.AlimentoRepositorio.ObtenerAlimentos(filtro, idUsuario)
 	if error != nil {
-		return nil, &error
+		return nil, error
 	}
 	var alimentosDto []*Dto.AlimentoDto
 	for _, alimento := range alimentos {
@@ -38,18 +39,18 @@ func (service *AlimentoService) ObtenerAlimentos(filtro *[4]string, idUsuario *s
 	return alimentosDto, nil
 }
 
-func (service *AlimentoService) ObtenerAlimentoPorID(idAlimento *string, idUsuario *string) (*Dto.AlimentoDto, *error) {
+func (service *AlimentoService) ObtenerAlimentoPorID(idAlimento *string, idUsuario *string) (*Dto.AlimentoDto, *Errors.ErrorCodigo) {
 	alimento, err := service.AlimentoRepositorio.ObtenerAlimentoPorID(idAlimento, idUsuario)
 	if err != nil {
-		return nil, &err
+		return nil, err
 	}
 	return convertirAlimento(alimento), nil
 }
 
-func (service *AlimentoService) CrearAlimento(alimento *Dto.AlimentoDto) *error {
+func (service *AlimentoService) CrearAlimento(alimento *Dto.AlimentoDto) *Errors.ErrorCodigo {
 	error := alimento.ValidarAlimentoDto()
 	if error != nil {
-		return &error
+		return error
 	} else {
 		alimentoModel := Models.Alimento{
 			Nombre:          alimento.Nombre,
@@ -63,16 +64,16 @@ func (service *AlimentoService) CrearAlimento(alimento *Dto.AlimentoDto) *error 
 		}
 		_, err := service.AlimentoRepositorio.CrearAlimento(&alimentoModel)
 		if err != nil {
-			return &err
+			return err
 		}
 		return nil
 	}
 }
 
-func (service *AlimentoService) ActualizarAlimento(alimento *Dto.AlimentoDto) *error {
+func (service *AlimentoService) ActualizarAlimento(alimento *Dto.AlimentoDto) *Errors.ErrorCodigo {
 	error := alimento.ValidarAlimentoDto()
 	if error != nil {
-		return &error
+		return error
 	} else {
 		alimentoModel := Models.Alimento{
 			ID:                 Utils.GetObjectIDFromStringID(alimento.IdAlimento),
@@ -87,16 +88,16 @@ func (service *AlimentoService) ActualizarAlimento(alimento *Dto.AlimentoDto) *e
 		}
 		_, err := service.AlimentoRepositorio.ActualizarAlimento(&alimentoModel)
 		if err != nil {
-			return &err
+			return err
 		}
 		return nil
 	}
 }
 
-func (service *AlimentoService) EliminarAlimento(idAlimento *string, idUsuario *string) *error {
+func (service *AlimentoService) EliminarAlimento(idAlimento *string, idUsuario *string) *Errors.ErrorCodigo {
 	_, err := service.AlimentoRepositorio.EliminarAlimento(idAlimento, idUsuario)
 	if err != nil {
-		return &err
+		return err
 	}
 	return nil
 }
