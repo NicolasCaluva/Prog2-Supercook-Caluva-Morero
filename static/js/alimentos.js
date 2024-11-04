@@ -135,11 +135,12 @@ function errorCargarListaAlimentos(status, response) {
 
 // Funciones para la carga de un nuevo alimento en el sistema
 function successCargarNuevoAlimento(response) {
-    alert("Operación exitosa: \n" + response.ListaMensaje.join("\n"));
+    alert("Alimento cargado correctamente");
 }
 
 function errorCargarNuevoAlimento(status, response) {
-    alert("Hubo un error al cargar el alimento");
+    console.log("Falla:", response);
+    alert(response.error);
 }
 
 // Funciones para la obtención de un alimento del sistema
@@ -183,25 +184,26 @@ function successObtenerAlimento(alimento) {
 }
 
 function errorObtenerAlimento(response) {
-    alert("Hubo un error al obtener el alimento" + response.ListaMensaje.join("\n"));
+    alert("Hubo un error al obtener el alimento");
 }
 
 // Funciones para la edición de un alimento en el sistema
 function successEditarAlimento(response) {
-    alert("Operación exitosa: \n" + response.ListaMensaje.join("\n"));
+    alert("Alimento Editado correctamente");
     obtenerListaAlimentos();
 }
 
 function errorEditarAlimento(response) {
-    alert("Hubo un error al editar el alimento" + response.ListaMensaje.join("\n"));
+    alert(response.error);
 }
 
 // Funciones para la eliminación de un alimento en el sistema
 function successEliminarAlimento(response) {
-    alert("Operación exitosa: \n" + response.ListaMensaje.join("\n"));
+    alert("Alimento eliminado correctamente");
+    location.reload();
     obtenerListaAlimentos();
 }
 
 function errorEliminarAlimento(response) {
-    alert("Hubo un error al eliminar el alimento" + response.ListaMensaje.join("\n"));
+    alert(response.error);
 }

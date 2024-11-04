@@ -19,6 +19,7 @@ var (
 func main() {
 	router = gin.Default()
 	router.Use(Middlewares.CORSMiddleware())
+	router.Use(Middlewares.ErrorMiddleware)
 	dependencias()
 	rutas()
 
@@ -43,7 +44,6 @@ func rutas() {
 
 	groupCompra := router.Group("/compras")
 	groupCompra.POST("/", compraHandler.CrearCompra)
-	groupCompra.GET("/", compraHandler.ObtenerListaAlimentosStockMenorStockMinimo)
 
 	groupReceta := router.Group("/recetas")
 	// groupReceta.Use(Middlewares.CORSMiddleware())

@@ -4,7 +4,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"strings"
 	"supercook/Dto"
+	"supercook/Errors"
 	"supercook/Services"
 	"supercook/Utils"
 )
@@ -22,81 +24,90 @@ func (handler *AlimentoHandler) ObtenerAlimentos(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
 
 	if userInfo == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
+		c.Error(Errors.ErrorUsuarioNoAutenticado)
 		return
 	}
 
-	momentoDelDia := c.Query("momentoDelDia")
+	momentosDelDia := c.QueryArray("momentoDelDia")
 	tipoAlimento := c.Query("tipoAlimento")
 	nombre := c.Query("nombre")
+	StockMenorCantidadMinima := c.Query("StockMenorCantidadMinima")
+	momentosDelDiaStr := strings.Join(momentosDelDia, ",")
+	filtro := [4]string{momentosDelDiaStr, tipoAlimento, nombre, StockMenorCantidadMinima}
 
-	filtro := [3]string{momentoDelDia, tipoAlimento, nombre}
-
-	var alimentos = handler.AlimentoService.ObtenerAlimentos(&filtro, &userInfo.Codigo)
+	alimentos, err := handler.AlimentoService.ObtenerAlimentos(&filtro, &userInfo.Codigo)
+	if err != nil {
+		c.Error(*err)
+		return
+	}
 	c.JSON(http.StatusOK, alimentos)
 }
 
 func (handler *AlimentoHandler) ObtenerAlimentoPorID(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
 	if userInfo == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
+		c.Error(Errors.ErrorUsuarioNoAutenticado)
 		return
 	}
 	id := c.Param("id")
-	alimento := handler.AlimentoService.ObtenerAlimentoPorID(&id, &userInfo.Codigo)
+	alimento, error := handler.AlimentoService.ObtenerAlimentoPorID(&id, &userInfo.Codigo)
+	if error != nil {
+		c.Error(*error)
+		return
+	}
 	c.JSON(http.StatusOK, alimento)
 }
 
 func (handler *AlimentoHandler) CrearAlimento(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
 	if userInfo == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
+		c.Error(Errors.ErrorUsuarioNoAutenticado)
 		return
 	}
 	var alimentoDto Dto.AlimentoDto
 
 	if err := c.BindJSON(&alimentoDto); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Error(Errors.ErrorJsonInvalidoAlimento)
 		return
 	}
 	alimentoDto.IDUsuario = userInfo.Codigo
-	resultado := handler.AlimentoService.CrearAlimento(&alimentoDto)
-	if !resultado.BoolResultado {
-		c.JSON(http.StatusBadRequest, resultado)
+	error := handler.AlimentoService.CrearAlimento(&alimentoDto)
+	if error != nil {
+		c.Error(*error)
 		return
 	}
-	c.JSON(http.StatusOK, resultado)
+	c.JSON(http.StatusOK, gin.H{"mensaje": "Alimento creado con éxito"})
 }
 
 func (handler *AlimentoHandler) ActualizarAlimento(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
 	if userInfo == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
+		c.Error(Errors.ErrorUsuarioNoAutenticado)
 		return
 	}
 	var alimentoDto Dto.AlimentoDto
 	c.BindJSON(&alimentoDto)
 	alimentoDto.IDUsuario = userInfo.Codigo
 	log.Printf("AlimentoDto: %v", alimentoDto)
-	resultado := handler.AlimentoService.ActualizarAlimento(&alimentoDto)
-	if !resultado.BoolResultado {
-		c.JSON(http.StatusBadRequest, resultado)
+	error := handler.AlimentoService.ActualizarAlimento(&alimentoDto)
+	if error != nil {
+		c.Error(*error)
 		return
 	}
-	c.JSON(http.StatusOK, resultado)
+	c.JSON(http.StatusOK, gin.H{"mensaje": "Alimento actualizado con éxito"})
 }
 
 func (handler *AlimentoHandler) EliminarAlimento(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
 	if userInfo == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
+		c.Error(Errors.ErrorUsuarioNoAutenticado)
 		return
 	}
 	id := c.Param("id")
-	resultado := handler.AlimentoService.EliminarAlimento(&id, &userInfo.Codigo)
-	if !resultado.BoolResultado {
-		c.JSON(http.StatusBadRequest, resultado)
+	error := handler.AlimentoService.EliminarAlimento(&id, &userInfo.Codigo)
+	if error != nil {
+		c.Error(*error)
 		return
 	}
-	c.JSON(http.StatusOK, resultado)
+	c.JSON(http.StatusOK, gin.H{"mensaje": "Alimento eliminado con éxito"})
 }

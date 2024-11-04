@@ -1,7 +1,6 @@
 package Services
 
 import (
-	"log"
 	"supercook/Dto"
 	"supercook/Models"
 	"supercook/Repositories"
@@ -9,8 +8,7 @@ import (
 )
 
 type CompraInterfaz interface {
-	AgregarCompra(compra *Dto.CompraDto) *Dto.Resultado
-	ObtenerListaAlimentosStockMenorStockMinimo(idUsuario *string) []*Dto.AlimentoDto
+	AgregarCompra(compra *Dto.CompraDto) *error
 }
 
 type CompraService struct {
@@ -24,55 +22,35 @@ func NuevoCompraService(compraRepositorio Repositories.CompraRepositorioInterfaz
 		AlimentoService:   alimentoService,
 	}
 }
-func (service *CompraService) ObtenerListaAlimentosStockMenorStockMinimo(idUsuario *string) []*Dto.AlimentoDto {
-	log.Printf("ObtenerListaAlimentosStockMenorStockMinimo")
-	var alimentos []*Dto.AlimentoDto
-	alimentos = service.AlimentoService.ObtenerAlimentosConMenosStockQueCantidadMinima(idUsuario)
-	log.Printf("Alimentos pasa por el service: %v", alimentos)
-	var alimentoDTO []*Dto.AlimentoDto
-	for _, alimento := range alimentos {
-		alimentoDTO = append(alimentoDTO, alimento)
-	}
-	return alimentoDTO
-}
-func (service *CompraService) AgregarCompra(compra *Dto.CompraDto) *Dto.Resultado {
-	resultado := Dto.Resultado{}
-	mensaje := compra.ValidarListaAlimentos()
-	resultado.ListaMensaje = append(resultado.ListaMensaje, mensaje)
+func (service *CompraService) AgregarCompra(compra *Dto.CompraDto) *error {
+	error := compra.ValidarListaAlimentos()
 	var compraModel *Models.Compra
-	if resultado.ListaMensaje[0] != "" {
-		resultado.BoolResultado = false
-		return &resultado
+	if error != nil {
+		return &error
 	} else {
 		primerIteracion := true
 		for _, alimento := range compra.Alimentos {
-			alimentoRecibido := service.AlimentoService.ObtenerAlimentoPorID(&alimento.IDAlimento, &compra.IDUsuario)
-			if alimentoRecibido != nil {
+			alimentoRecibido, err := service.AlimentoService.ObtenerAlimentoPorID(&alimento.IDAlimento, &compra.IDUsuario)
+			if err != nil {
 				alimentoRecibido.Stock = alimentoRecibido.Stock + alimento.CantComprada
-				resultadoAlimentos := service.AlimentoService.ActualizarAlimento(alimentoRecibido)
-				resultado.ListaMensaje = append(resultado.ListaMensaje, resultadoAlimentos.ListaMensaje...)
-				if resultadoAlimentos.BoolResultado {
-					if primerIteracion {
-						primerIteracion = false
-						compraModel = convertirCompra(compra)
-					}
-					compraModel.MontoTotal = compraModel.MontoTotal + (alimentoRecibido.PrecioUnitario * float64(alimento.CantComprada))
-					compraModel.Alimentos = append(compraModel.Alimentos, Models.ElementoComprado{IDAlimento: alimento.IDAlimento, CantComprada: alimento.CantComprada})
-					compraModel.FechaCreacion = time.Now()
+				service.AlimentoService.ActualizarAlimento(alimentoRecibido)
+				if primerIteracion {
+					primerIteracion = false
+					compraModel = convertirCompra(compra)
 				}
+				compraModel.MontoTotal = compraModel.MontoTotal + (alimentoRecibido.PrecioUnitario * float64(alimento.CantComprada))
+				compraModel.Alimentos = append(compraModel.Alimentos, Models.ElementoComprado{IDAlimento: alimento.IDAlimento, CantComprada: alimento.CantComprada})
+				compraModel.FechaCreacion = time.Now()
+			} else {
+				return err
 			}
 		}
 	}
-	_, err := service.CompraRepositorio.AgregarCompra(compraModel)
-	if err != nil {
-		resultado.BoolResultado = false
-		resultado.ListaMensaje = append(resultado.ListaMensaje, "Error al agregar compra.")
-	} else {
-		resultado.ListaMensaje = append(resultado.ListaMensaje, "Compra agregada correctamente.")
+	_, err1 := service.CompraRepositorio.AgregarCompra(compraModel)
+	if err1 != nil {
+		return &err1
 	}
-
-	resultado.BoolResultado = true
-	return &resultado
+	return nil
 }
 
 // haceme una funcion para cambiar de dto a model
