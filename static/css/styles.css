@@ -45,3 +45,9 @@
         transform: none;
     }
 }
+
+.active {
+    background-color: var(--color-primary) !important;
+    border-radius: 5px;
+    color: white;
+}
