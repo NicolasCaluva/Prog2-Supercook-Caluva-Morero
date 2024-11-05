@@ -4,9 +4,9 @@ let listaAlimentos = document.getElementById('lista-alimentos');
 let momento = document.getElementById('momento');
 let listaAlimentosSeleccionados = document.getElementById('lista-alimentos-seleccionados');
 let confirmarRecetaBtn = document.getElementById('confirmarReceta');
-let listaRecetasData = [];  // Store all recipes
+let listaRecetasData = [];
 let paginaActual = 1;
-const recetasPorPagina = 10;  // Display 10 recipes per page
+const recetasPorPagina = 10;
 
 document.addEventListener('DOMContentLoaded', async function () {
     const agregarRecetaBtn = document.getElementById('agregarNuevaReceta');
@@ -43,12 +43,12 @@ async function obtenerListaRecetas() {
 
 function successObtenerListaRecetas(response) {
     console.log('Recetas:', response);
-    listaRecetasData = response;  // Store all recipes
+    listaRecetasData = response;
     renderizarPagina();
 }
 
 function renderizarPagina() {
-    listaRecetas.innerHTML = '';  // Clear the table
+    listaRecetas.innerHTML = '';
     const inicio = (paginaActual - 1) * recetasPorPagina;
     const fin = inicio + recetasPorPagina;
     const recetasActuales = listaRecetasData.slice(inicio, fin);
@@ -197,12 +197,12 @@ function agregarAlimentoAReceta(option, alimento) {
 
     const label = document.createElement('label');
     label.innerText = alimento.Nombre;
-    label.setAttribute('for', alimento.IDAlimento);
+    label.setAttribute('for', alimento.IdAlimento);
     label.setAttribute('class', 'col-10');
 
     const input = document.createElement('input');
     input.setAttribute('type', 'number');
-    input.setAttribute('id', alimento.IDAlimento);
+    input.setAttribute('id', alimento.IdAlimento);
     input.setAttribute('min', 1);
     input.setAttribute('value', alimento.Cantidad ? alimento.Cantidad : 1);
     input.setAttribute('class', 'form-control form-control-sm');
@@ -213,7 +213,7 @@ function agregarAlimentoAReceta(option, alimento) {
     botonEliminarSeleccionado.setAttribute('class', 'btn btn-danger btn-sm');
     iconoEliminar.setAttribute('class', 'fa-solid fa-trash');
     botonEliminarSeleccionado.appendChild(iconoEliminar);
-    botonEliminarSeleccionado.setAttribute('value', alimento.IDAlimento);
+    botonEliminarSeleccionado.setAttribute('value', alimento.IdAlimento);
     botonEliminarSeleccionado.addEventListener('click', function () {
         if (!option) {
             option = document.createElement('option');

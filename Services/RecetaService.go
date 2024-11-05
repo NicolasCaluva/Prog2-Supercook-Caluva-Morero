@@ -19,11 +19,13 @@ type RecetaInterface interface {
 
 type RecetaService struct {
 	RecetaRepositorio Repositories.RecetaRepositorioInterface
+	AlimentoService   AlimentoInterface
 }
 
-func NuevoRecetaService(recetaRepositorio Repositories.RecetaRepositorioInterface) *RecetaService {
+func NuevoRecetaService(recetaRepositorio Repositories.RecetaRepositorioInterface, alimentoService AlimentoInterface) *RecetaService {
 	return &RecetaService{
 		RecetaRepositorio: recetaRepositorio,
+		AlimentoService:   alimentoService,
 	}
 }
 
@@ -35,6 +37,13 @@ func (service *RecetaService) ObtenerRecetas(filtro *[3]string, idUsuario *strin
 	var recetasDto []*Dto.RecetaDto
 	for _, receta := range recetas {
 		recetasDto = append(recetasDto, convertirReceta(receta))
+		for i, alimento := range recetasDto[len(recetasDto)-1].Alimentos {
+			alimento, err := service.AlimentoService.ObtenerAlimentoPorID(&alimento.IDAlimento, idUsuario)
+			if err != nil {
+				return nil, err
+			}
+			recetasDto[len(recetasDto)-1].Alimentos[i].Nombre = alimento.Nombre
+		}
 	}
 	return recetasDto, nil
 }
@@ -122,7 +131,6 @@ func convertirReceta(receta Models.Receta) *Dto.RecetaDto {
 }
 
 func convertirAlimentoRecetaADto(alimentoReceta Models.AlimentoReceta) *Dto.AlimentoRecetaDto {
-	// TODO: Acá debería obtener el nombre del alimento según la id y asignarlo al dto
 
 	return &Dto.AlimentoRecetaDto{
 		IDAlimento: alimentoReceta.IDAlimento,
