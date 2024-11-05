@@ -1,20 +1,21 @@
 package Dto
 
+import "supercook/Errors"
+
 type AlimentoRecetaDto struct {
 	IDAlimento string
 	Nombre     string
 	Cantidad   int
 }
 
-func (a *AlimentoRecetaDto) ValidarAlimentoRecetaDto() []string {
-	var mensajes []string
+func (a *AlimentoRecetaDto) ValidarAlimentoRecetaDto() *Errors.ErrorCodigo {
 
 	if a.IDAlimento == "" {
-		mensajes = append(mensajes, "El ID del alimento no puede ser vacío ni nulo.")
+		return Errors.ErrorAlimentoRecetaIDAlimentoMalIngresado
 	}
 	if a.Cantidad <= 0 {
-		mensajes = append(mensajes, "La cantidad debe ser mayor que 0.")
+		return Errors.ErrorCantidadMenorACero
 	}
 
-	return mensajes
+	return nil
 }

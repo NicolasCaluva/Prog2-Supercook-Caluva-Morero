@@ -50,7 +50,6 @@ func rutas() {
 	groupReceta.GET("/", recetaHandler.ObtenerRecetas)
 	groupReceta.GET("/:id/", recetaHandler.ObtenerRecetaPorID)
 	groupReceta.POST("/", recetaHandler.CrearReceta)
-	groupReceta.PUT("/:id/", recetaHandler.ActualizarReceta)
 	groupReceta.DELETE("/:id/", recetaHandler.EliminarReceta)
 }
 

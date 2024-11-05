@@ -79,26 +79,6 @@ func (handler *RecetaHandler) CrearReceta(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"mensaje": "Receta creada correctamente"})
 }
 
-func (handler *RecetaHandler) ActualizarReceta(c *gin.Context) {
-	userInfo := Utils.GetUserInfoFromContext(c)
-	if userInfo == nil {
-		c.Error(Errors.ErrorUsuarioNoAutenticado)
-		return
-	}
-	var recetaDto Dto.RecetaDto
-	if err := c.BindJSON(&recetaDto); err != nil {
-		c.Error(Errors.ErrorJsonInvalidoReceta)
-		return
-	}
-	recetaDto.IDUsuario = userInfo.Codigo
-	resultado := handler.RecetaService.ActualizarReceta(&recetaDto)
-	if resultado != nil {
-		c.Error(resultado)
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"mensaje": "Receta actualizada correctamente"})
-}
-
 func (handler *RecetaHandler) EliminarReceta(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
 	if userInfo == nil {

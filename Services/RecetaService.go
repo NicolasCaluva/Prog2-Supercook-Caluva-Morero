@@ -5,7 +5,6 @@ import (
 	"supercook/Errors"
 	"supercook/Models"
 	"supercook/Repositories"
-	"supercook/Utils"
 	"time"
 )
 
@@ -13,7 +12,6 @@ type RecetaInterface interface {
 	ObtenerRecetas(filtro *[3]string, idUsuario *string) ([]*Dto.RecetaDto, *Errors.ErrorCodigo)
 	ObtenerRecetaPorID(idReceta *string, idUsuario *string) (*Dto.RecetaDto, *Errors.ErrorCodigo)
 	CrearReceta(receta *Dto.RecetaDto) *Errors.ErrorCodigo
-	ActualizarReceta(receta *Dto.RecetaDto) *Errors.ErrorCodigo
 	EliminarReceta(idReceta *string, idUsuario *string) *Errors.ErrorCodigo
 }
 
@@ -58,11 +56,26 @@ func (service *RecetaService) ObtenerRecetaPorID(idReceta *string, idUsuario *st
 
 func (service *RecetaService) CrearReceta(receta *Dto.RecetaDto) *Errors.ErrorCodigo {
 	resultadoValidacion := receta.ValidarRecetaDto()
+	var alimentos []Dto.AlimentoDto
 	if resultadoValidacion != nil {
 		return resultadoValidacion
 	} else {
 		var listaAlimentosReceta []Models.AlimentoReceta
 		for _, alimentoReceta := range receta.Alimentos {
+			err := alimentoReceta.ValidarAlimentoRecetaDto()
+			if err != nil {
+				return err
+			}
+			alimentoObtenido, err := service.AlimentoService.ObtenerAlimentoPorID(&alimentoReceta.IDAlimento, &receta.IDUsuario)
+			if err != nil {
+				return err
+			}
+			if alimentoObtenido.Stock < alimentoReceta.Cantidad {
+				return Errors.ErrorNoHayStock
+			}
+			alimentoObtenido.Stock = alimentoObtenido.Stock - alimentoReceta.Cantidad
+			alimentos = append(alimentos, *alimentoObtenido)
+
 			listaAlimentosReceta = append(listaAlimentosReceta, convertirAlimentoRecetaAModel(alimentoReceta))
 		}
 
@@ -77,40 +90,36 @@ func (service *RecetaService) CrearReceta(receta *Dto.RecetaDto) *Errors.ErrorCo
 		if err != nil {
 			return err
 		}
-		return nil
-	}
-}
 
-func (service *RecetaService) ActualizarReceta(receta *Dto.RecetaDto) *Errors.ErrorCodigo {
-	error := receta.ValidarRecetaDto()
-	if error != nil {
-		return error
-	} else {
-		var listaAlimentosReceta []Models.AlimentoReceta
-		for _, alimentoReceta := range receta.Alimentos {
-			listaAlimentosReceta = append(listaAlimentosReceta, convertirAlimentoRecetaAModel(alimentoReceta))
-		}
-
-		recetaModel := Models.Receta{
-			ID:                 Utils.GetObjectIDFromStringID(receta.ID),
-			IDUsuario:          receta.IDUsuario,
-			Nombre:             receta.Nombre,
-			Alimentos:          listaAlimentosReceta,
-			Momento:            Models.Momento(receta.Momento),
-			FechaActualizacion: time.Now(),
-		}
-		_, err := service.RecetaRepositorio.ActualizarReceta(&recetaModel)
-		if err != nil {
-			return err
+		for _, alimento := range alimentos {
+			err := service.AlimentoService.ActualizarAlimento(&alimento)
+			if err != nil {
+				return err
+			}
 		}
 		return nil
 	}
 }
 
 func (service *RecetaService) EliminarReceta(idReceta *string, idUsuario *string) *Errors.ErrorCodigo {
-	_, err := service.RecetaRepositorio.EliminarReceta(idReceta, idUsuario)
+	recetaObtenida, err := service.RecetaRepositorio.ObtenerRecetaPorID(idReceta, idUsuario)
 	if err != nil {
 		return err
+	}
+	_, err = service.RecetaRepositorio.EliminarReceta(idReceta, idUsuario)
+	if err != nil {
+		return err
+	}
+	for _, alimentoReceta := range recetaObtenida.Alimentos {
+		alimentoObtenido, err := service.AlimentoService.ObtenerAlimentoPorID(&alimentoReceta.IDAlimento, idUsuario)
+		if err != nil {
+			return err
+		}
+		alimentoObtenido.Stock = alimentoObtenido.Stock + alimentoReceta.Cantidad
+		err = service.AlimentoService.ActualizarAlimento(alimentoObtenido)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

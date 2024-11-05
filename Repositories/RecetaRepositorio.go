@@ -14,7 +14,6 @@ type RecetaRepositorioInterface interface {
 	CrearReceta(receta *Models.Receta) (*mongo.InsertOneResult, *Errors.ErrorCodigo)
 	ObtenerRecetas(filtro *[3]string, idUsuario *string) ([]Models.Receta, *Errors.ErrorCodigo)
 	ObtenerRecetaPorID(idReceta *string, idUsuario *string) (Models.Receta, *Errors.ErrorCodigo)
-	ActualizarReceta(receta *Models.Receta) (*mongo.UpdateResult, *Errors.ErrorCodigo)
 	EliminarReceta(idReceta *string, idUsuario *string) (*mongo.DeleteResult, *Errors.ErrorCodigo)
 }
 
@@ -93,31 +92,6 @@ func (recetaRepositorio *RecetaRepositorio) ObtenerRecetaPorID(idReceta *string,
 	}
 
 	return receta, nil
-}
-
-func (recetaRepositorio *RecetaRepositorio) ActualizarReceta(receta *Models.Receta) (*mongo.UpdateResult, *Errors.ErrorCodigo) {
-	coleccion := recetaRepositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("receta")
-	filtro := bson.M{"_id": receta.ID}
-	filtro["idUsuario"] = receta.IDUsuario
-	entidad := bson.M{
-		"$set": bson.M{
-			"nombre":             receta.Nombre,
-			"alimentos":          receta.Alimentos,
-			"momento":            receta.Momento,
-			"fechaActualizacion": receta.FechaActualizacion,
-		},
-	}
-	resultado, err := coleccion.UpdateOne(context.TODO(), filtro, entidad)
-	if err != nil {
-		log.Printf("Error: %v\n", Errors.ErrorConectarBD)
-		return nil, Errors.ErrorConectarBD
-	}
-	if resultado.MatchedCount == 0 {
-		log.Printf("Error: %v\n", Errors.ErrorAlimentoNoEncontradoActualizar)
-		return nil, Errors.ErrorRecetaNoEncontradoActualizar
-
-	}
-	return resultado, nil
 }
 
 func (recetaRepositorio *RecetaRepositorio) EliminarReceta(idReceta *string, idUsuario *string) (*mongo.DeleteResult, *Errors.ErrorCodigo) {
