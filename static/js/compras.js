@@ -76,7 +76,6 @@ function errorCargarListaAlimentosPocoStock(status, response) {
 }
 
 async function aplicarFiltros() {
-    debugger;
     const tipoAlimento = document.getElementById('tipoAlimento').value;
     const nombre = document.getElementById('nombre').value;
     const momentoDelDiaSelect = document.getElementById('momentoDelDia');

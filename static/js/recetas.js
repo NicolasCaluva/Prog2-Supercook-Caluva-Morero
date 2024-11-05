@@ -22,6 +22,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         confirmarRecetaBtn.addEventListener('click', () => confirmarFormularioReceta('POST'));
     });
 
+    document.getElementById('filtrarRecetas').addEventListener('click', aplicarFiltros);
+
     const modal = document.getElementById('cargarReceta');
     modal.addEventListener('hidden.bs.modal', function () {
         nombre.value = '';
@@ -42,7 +44,6 @@ async function obtenerListaRecetas() {
 }
 
 function successObtenerListaRecetas(response) {
-    console.log('Recetas:', response);
     listaRecetasData = response;
     renderizarPagina();
 }
@@ -97,7 +98,8 @@ function cambiarPagina(direction) {
 }
 
 function errorObtenerListaRecetas(status, response) {
-    console.log("Falla:", response);
+    alert(response.error)
+    location.reload()
 }
 
 
@@ -228,4 +230,12 @@ async function momentoOnChange() {
         listaAlimentos.innerHTML = '';
     }
     await cargarAlimentos(momento.value)
+}
+
+async function aplicarFiltros(){
+    const nombre = document.getElementById('filtro-nombre').value;
+    const momento = document.getElementById('filtro-momento').value;
+    const tipo_alimento = document.getElementById('filtro-tipo-alimento').value;
+    const URL = `http://localhost:8080/recetas/?nombre=${nombre}&momento=${momento}&tipoAlimento=${tipo_alimento}`;
+    await makeRequest(URL, Method.GET, null, ContentType.JSON, CallType.PRIVATE, successObtenerListaRecetas, errorObtenerListaRecetas);
 }

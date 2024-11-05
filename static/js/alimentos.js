@@ -14,32 +14,30 @@ let paginaTotal = 1;
 // DOM
 document.addEventListener('DOMContentLoaded', async function () {
     listaAlimentos = document.getElementById('lista-alimentos');
+    const modal = document.getElementById('cargarAlimento');
     await obtenerListaAlimentos();
 
-    const agregarAlimentoBtn = document.querySelector('button[id="agregarNuevoAlimento"]');
+    const agregarAlimentoBtn = document.getElementById('agregarNuevoAlimento');
     agregarAlimentoBtn.addEventListener('click', function () {
         document.getElementById('form-alimento').reset();
-        document.getElementById('confirmarAlimento').onclick = async function () {
-            const momentosSeleccionados = Array.from(momentoDelDia.selectedOptions).map(option => option.value);
-            const nuevoAlimento = {
-                Nombre: nombreAlimento.value,
-                PrecioUnitario: parseFloat(precioUnitario.value),
-                Stock: parseInt(stock.value),
-                CantMinimaStock: parseInt(cantMinimaStock.value),
-                TipoAlimento: tipoAlimento.value,
-                MomentoDelDia: momentosSeleccionados
-            };
-            const URL = 'http://localhost:8080/alimentos/';
-            await makeRequest(URL, 'POST', nuevoAlimento, ContentType.JSON, CallType.PRIVATE, successCargarNuevoAlimento, errorCargarNuevoAlimento);
-            bootstrap.Modal.getInstance(document.getElementById('cargarAlimento')).hide();
-            await obtenerListaAlimentos();
-        };
+        const confirmarAlimentoBtn = document.getElementById('confirmarAlimento');
+        confirmarAlimentoBtn.addEventListener('click', () => confirmarNuevoAlimento())
     });
-    const modal = document.getElementById('cargarAlimento');
+
     modal.addEventListener('hidden.bs.modal', function () {
         document.getElementById('form-alimento').reset();
         const confirmarAlimentoBtn = document.getElementById('confirmarAlimento');
-        confirmarAlimentoBtn.removeEventListener('click', null);
+
+        try {
+            confirmarAlimentoBtn.removeEventListener('click', confirmarNuevoAlimento);
+        } catch {
+        }
+
+        try {
+            confirmarAlimentoBtn.removeEventListener('click', confirmarEdicionAlimento);
+        } catch {
+        }
+
     });
     document.getElementById('pagAnterior').addEventListener('click', () => cambiarPagina(pagActual - 1));
     document.getElementById('pagSiguiente').addEventListener('click', () => cambiarPagina(pagActual + 1));
@@ -65,8 +63,8 @@ function mostrarPagina() {
 }
 
 async function obtenerListaAlimentos() {
-    const url = 'http://localhost:8080/alimentos/';
-    await makeRequest(url, Method.GET, null, ContentType.JSON, CallType.PRIVATE, function(response) {
+    const URL = 'http://localhost:8080/alimentos/';
+    await makeRequest(URL, Method.GET, null, ContentType.JSON, CallType.PRIVATE, function (response) {
         listaAlimentosData = response;
         paginaTotal = Math.ceil(listaAlimentosData.length / itemPorPagina);
         pagActual = 1;
@@ -161,28 +159,10 @@ function successObtenerAlimento(alimento) {
 
     const confirmarAlimentoBtn = document.getElementById('confirmarAlimento');
 
-    confirmarAlimentoBtn.addEventListener('click', async function () {
-        const momentosSeleccionados = Array.from(document.getElementById('momentoDelDia').selectedOptions).map(option => option.value);
-        const nuevoAlimento = {
-            IdAlimento: alimento.IdAlimento,
-            Nombre: nombreAlimento.value,
-            PrecioUnitario: parseFloat(precioUnitario.value),
-            Stock: parseInt(stock.value),
-            CantMinimaStock: parseInt(cantMinimaStock.value),
-            TipoAlimento: tipoAlimento.value,
-            MomentoDelDia: momentosSeleccionados
-        };
-
-        const URL = 'http://localhost:8080/alimentos/';
-        await makeRequest(URL, Method.PUT, nuevoAlimento, ContentType.JSON, CallType.PRIVATE, successEditarAlimento, errorEditarAlimento);
-        const modal = bootstrap.Modal.getInstance(document.getElementById('cargarAlimento'));
-        modal.hide();
-        document.getElementById('form-alimento').reset();
-    });
+    confirmarAlimentoBtn.addEventListener('click', () => confirmarEdicionAlimento(alimento));
 }
 
 function errorObtenerAlimento(status, response) {
-    location.reload();
     alert(response.error);
 }
 
@@ -192,20 +172,57 @@ function successEditarAlimento(response) {
     obtenerListaAlimentos();
 }
 
-function errorEditarAlimento(status,response) {
-    console.log("Falla:", response);
-    location.reload();
+function errorEditarAlimento(status, response) {
     alert(response.error);
 }
 
 // Funciones para la eliminación de un alimento en el sistema
 function successEliminarAlimento(response) {
     alert("Alimento eliminado correctamente");
-    location.reload();
     obtenerListaAlimentos();
 }
 
-function errorEliminarAlimento(status,response) {
-    console.log("Falla:", response);
+function errorEliminarAlimento(status, response) {
     alert(response.error);
+}
+
+async function confirmarNuevoAlimento() {
+    const momentosSeleccionados = Array.from(momentoDelDia.selectedOptions).map(option => option.value);
+    const nuevoAlimento = {
+        Nombre: nombreAlimento.value,
+        PrecioUnitario: parseFloat(precioUnitario.value),
+        Stock: parseInt(stock.value),
+        CantMinimaStock: parseInt(cantMinimaStock.value),
+        TipoAlimento: tipoAlimento.value,
+        MomentoDelDia: momentosSeleccionados
+    };
+    const URL = 'http://localhost:8080/alimentos/';
+    await makeRequest(URL, 'POST', nuevoAlimento, ContentType.JSON, CallType.PRIVATE, successCargarNuevoAlimento, errorCargarNuevoAlimento);
+    modal.hide();
+    location.reload();
+}
+
+async function confirmarEdicionAlimento(alimento) {
+    const momentosSeleccionados = Array.from(document.getElementById('momentoDelDia').selectedOptions).map(option => option.value);
+    const nuevoAlimento = {
+        IdAlimento: alimento.IdAlimento,
+        Nombre: nombreAlimento.value,
+        PrecioUnitario: parseFloat(precioUnitario.value),
+        Stock: parseInt(stock.value),
+        CantMinimaStock: parseInt(cantMinimaStock.value),
+        TipoAlimento: tipoAlimento.value,
+        MomentoDelDia: momentosSeleccionados
+    };
+
+    const URL = 'http://localhost:8080/alimentos/';
+    await makeRequest(URL, Method.PUT, nuevoAlimento, ContentType.JSON, CallType.PRIVATE, successEditarAlimento, errorEditarAlimento);
+    const modal = document.getElementById('cargarAlimento');
+    modal.hide();
+    modal.addEventListener('hidden.bs.modal', function () {
+        document.getElementById('form-alimento').reset();
+        const confirmarAlimentoBtn = document.getElementById('confirmarAlimento');
+        confirmarAlimentoBtn.removeEventListener('click', null);
+    });
+    document.getElementById('form-alimento').reset();
+    location.reload();
 }
