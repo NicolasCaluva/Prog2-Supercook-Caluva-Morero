@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     modal.addEventListener('hidden.bs.modal', function () {
         document.getElementById('form-alimento').reset();
         const confirmarAlimentoBtn = document.getElementById('confirmarAlimento');
-        confirmarAlimentoBtn.removeEventListener('click', null);
+        confirmarAlimentoBtn.replaceWith(confirmarAlimentoBtn.cloneNode(true));
     });
     document.getElementById('pagAnterior').addEventListener('click', () => cambiarPagina(pagActual - 1));
     document.getElementById('pagSiguiente').addEventListener('click', () => cambiarPagina(pagActual + 1));
