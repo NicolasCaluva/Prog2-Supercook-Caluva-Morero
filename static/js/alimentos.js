@@ -35,7 +35,12 @@ document.addEventListener('DOMContentLoaded', async function () {
             await obtenerListaAlimentos();
         };
     });
-
+    const modal = document.getElementById('cargarAlimento');
+    modal.addEventListener('hidden.bs.modal', function () {
+        document.getElementById('form-alimento').reset();
+        const confirmarAlimentoBtn = document.getElementById('confirmarAlimento');
+        confirmarAlimentoBtn.removeEventListener('click', null);
+    });
     document.getElementById('pagAnterior').addEventListener('click', () => cambiarPagina(pagActual - 1));
     document.getElementById('pagSiguiente').addEventListener('click', () => cambiarPagina(pagActual + 1));
 });
@@ -177,6 +182,7 @@ function successObtenerAlimento(alimento) {
 }
 
 function errorObtenerAlimento(status, response) {
+    location.reload();
     alert(response.error);
 }
 
@@ -187,6 +193,8 @@ function successEditarAlimento(response) {
 }
 
 function errorEditarAlimento(status,response) {
+    console.log("Falla:", response);
+    location.reload();
     alert(response.error);
 }
 
