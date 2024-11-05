@@ -61,24 +61,6 @@ function renderizarPagina() {
             <td>${receta.Momento.charAt(0).toUpperCase() + receta.Momento.slice(1)}</td>
         `;
 
-        const botonEditar = document.createElement('button');
-        const iconoEditar = document.createElement('i');
-        iconoEditar.setAttribute('class', 'fa-solid fa-pencil');
-        Object.assign(botonEditar, {
-            className: 'btn btn-primary',
-            value: receta.ID
-        });
-        botonEditar.setAttribute('data-bs-toggle', 'modal');
-        botonEditar.setAttribute('data-bs-target', '#cargarReceta');
-        botonEditar.appendChild(iconoEditar);
-        botonEditar.addEventListener('click', async function () {
-            let idReceta = this.value;
-            const URL = 'http://localhost:8080/recetas/' + idReceta + '/';
-            await makeRequest(URL, Method.GET, null, ContentType.JSON, CallType.PRIVATE, successObtenerReceta, errorObtenerReceta);
-            confirmarRecetaBtn.value = idReceta;
-            confirmarRecetaBtn.addEventListener('click', () => confirmarFormularioReceta('PUT'));
-        });
-
         const botonEliminar = document.createElement('button');
         const iconoEliminar = document.createElement('i');
         Object.assign(botonEliminar, {
@@ -94,7 +76,6 @@ function renderizarPagina() {
         });
 
         const tdBotones = document.createElement('td');
-        tdBotones.appendChild(botonEditar);
         tdBotones.appendChild(botonEliminar);
         tdBotones.setAttribute('class', 'd-flex gap-2');
         tr.appendChild(tdBotones);
@@ -119,27 +100,6 @@ function errorObtenerListaRecetas(status, response) {
     console.log("Falla:", response);
 }
 
-async function successObtenerReceta(response) {
-    nombre.value = response.Nombre;
-    momento.value = response.Momento;
-
-    momento.addEventListener('change', async function () {
-        if (listaAlimentosSeleccionados.hasChildNodes()) {
-            listaAlimentosSeleccionados.innerHTML = '';
-        }
-
-        if (listaAlimentos.hasChildNodes()) {
-            listaAlimentos.innerHTML = '';
-        }
-        await cargarAlimentos(momento.value)
-    });
-    await cargarAlimentos(momento.value);
-    cargarAlimentosReceta(response.Alimentos);
-}
-
-function errorObtenerReceta(status, response) {
-    console.log("Falla:", response);
-}
 
 function successEliminarReceta(response) {
     alert('Receta eliminada');
@@ -157,7 +117,6 @@ function cargarAlimentos(momento) {
 
 function successCargarAlimentos(response) {
     // Recibe todos los alimentos que se pueden agregar a la receta
-
     // Carga las opciones de alimentos en el selector de alimentos según el momento del día recibido
 
     response.forEach(alimento => {
@@ -171,16 +130,6 @@ function successCargarAlimentos(response) {
         listaAlimentos.appendChild(option);
     });
 }
-
-function cargarAlimentosReceta(alimentos) {
-    // Carga los alimentos que ya están en la receta y elimina los que están en la lista de alimentos
-
-    // alimentos son todos los alimentos que están asociados a la receta
-    alimentos.forEach(alimento => {
-        agregarAlimentoAReceta(null, alimento);
-    });
-}
-
 
 function agregarAlimentoAReceta(option, alimento) {
     // Agrega los alimentos a la lista de alimentos seleccionados y permite eliminarlos de la lista de alimentos
@@ -245,7 +194,7 @@ function errorCargarNuevaReceta(status, response) {
 }
 
 
-async function confirmarFormularioReceta(method) {
+async function confirmarFormularioReceta() {
     const lista_inputs = listaAlimentosSeleccionados.querySelectorAll('input');
     const lista_alimentos_seleccionados = [];
     lista_inputs.forEach(input => {
@@ -263,15 +212,8 @@ async function confirmarFormularioReceta(method) {
         Momento: momento.value
     };
 
-    if (method === 'PUT') {
-        // TODO: Veriicar la forma en la que se obtiene el ID de la receta
-        const URL = 'http://localhost:8080/recetas/' + confirmarRecetaBtn.value + '/';
-        await makeRequest(URL, Method.PUT, nuevoReceta, ContentType.JSON, CallType.PRIVATE, successCargarNuevaReceta, errorCargarNuevaReceta);
-    } else {
-        const URL = 'http://localhost:8080/recetas/';
-        await makeRequest(URL, Method.POST, nuevoReceta, ContentType.JSON, CallType.PRIVATE, successCargarNuevaReceta, errorCargarNuevaReceta);
-
-    }
+    const URL = 'http://localhost:8080/recetas/';
+    await makeRequest(URL, Method.POST, nuevoReceta, ContentType.JSON, CallType.PRIVATE, successCargarNuevaReceta, errorCargarNuevaReceta);
     const modal = bootstrap.Modal.getInstance(document.getElementById('cargarReceta'));
     modal.hide();
     location.reload();

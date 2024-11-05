@@ -16,12 +16,12 @@
         <div class="row d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
             <div class="col-1">
                 <a href="index.html" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-                    <img src="../static/logoCompania.jpg" alt="Logo" width="50px" height="50px" style="border-radius: 50%">
+                    <img src="../static/logoCompania.jpg" alt="Logo" class="logo">
                 </a>
             </div>
 
-            <div class="col-8">
-                <ul class="nav mb-2 justify-content-center mb-md-0">
+            <div class="col-10">
+                <ul class="nav mb-2 justify-content-center gap-5 mb-md-0">
                     <li><a href="alimentos.html" class="nav-link px-2 text-white" id="nav-alimentos">Alimentos</a></li>
                     <li><a href="recetas.html" class="nav-link px-2 text-white" id="nav-recetas">Recetas</a></li>
                     <li><a href="compras.html" class="nav-link px-2 text-white" id="nav-compras">Compras</a></li>
@@ -29,21 +29,24 @@
             </div>
 
 
-            <div class="col-3">
+            <div class="col-1">
                 <div class="dropdown">
                     <button class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
-                        <i class="fas fa-user"></i> Perfil
+                        <i class="fas fa-circle-user"></i>
                     </button>
-                    <ul class="dropdown-menu">
-                        <li class="text-center">
-                            <button class="dropdown-item" id="logout">Cerrar sesión</button>
+                    <ul class="dropdown-menu dropdown-menu-end" style="width: 200px">
+                        <li class="px-3">
+                            <i class="fa-regular fa-user"></i> <span id="user-info"></span>
+                        </li>
+                        <li class="px-3">
+                            <i class="fa-regular fa-id-card"></i> <span id="rol"></span>
+                        </li>
+                        <li class="mt-3">
+                            <hr class="dropdown-divider">
                         </li>
                         <li class="text-center">
-                            <span id="user-info"></span>
-                        </li>
-                        <li class="text-center">
-                            <span id="rol"></span>
+                            <button class="dropdown-item" type="button" id="logout">Cerrar sesión</button>
                         </li>
                     </ul>
                 </div>
