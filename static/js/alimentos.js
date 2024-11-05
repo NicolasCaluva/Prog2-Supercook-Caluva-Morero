@@ -7,11 +7,9 @@ let stock = document.getElementById('stock');
 let cantMinimaStock = document.getElementById('cantMinimaStock');
 let tipoAlimento = document.getElementById('tipoAlimento');
 let momentoDelDia = document.getElementById('momentoDelDia');
-
-// Paginación
 let pagActual = 1;
-const itemPorPagina = 10; // Cantidad de alimentos por página
-let paginaTotal = 1; // Total de páginas (actualizado dinámicamente)
+const itemPorPagina = 10;
+let paginaTotal = 1;
 
 // DOM
 document.addEventListener('DOMContentLoaded', async function () {
@@ -48,23 +46,19 @@ function cambiarPagina(page) {
     mostrarPagina();
 }
 
-// Función para mostrar alimentos de la página actual
 function mostrarPagina() {
     const comienzo = (pagActual - 1) * itemPorPagina;
     const final = comienzo + itemPorPagina;
     const alimentosPagina = listaAlimentosData.slice(comienzo, final);
 
-    // Limpiar la tabla antes de agregar los alimentos de la nueva página
     listaAlimentos.innerHTML = '';
     successCargarListaAlimentos(alimentosPagina);
 
-    // Actualizar los botones de paginación
     document.getElementById('numeroPagina').textContent = `Página ${pagActual} de ${paginaTotal}`;
     document.getElementById('pagAnterior').disabled = pagActual === 1;
     document.getElementById('pagSiguiente').disabled = pagActual === paginaTotal;
 }
 
-// Función para cargar alimentos y calcular total de páginas
 async function obtenerListaAlimentos() {
     const url = 'http://localhost:8080/alimentos/';
     await makeRequest(url, Method.GET, null, ContentType.JSON, CallType.PRIVATE, function(response) {
@@ -75,7 +69,6 @@ async function obtenerListaAlimentos() {
     }, errorCargarListaAlimentos);
 }
 
-// Funciones de éxito y error de obtención del listado de alimentos
 function successCargarListaAlimentos(response) {
     response.forEach(alimento => {
         const tr = document.createElement('tr');
@@ -183,8 +176,8 @@ function successObtenerAlimento(alimento) {
     });
 }
 
-function errorObtenerAlimento(response) {
-    alert("Hubo un error al obtener el alimento");
+function errorObtenerAlimento(status, response) {
+    alert(response.error);
 }
 
 // Funciones para la edición de un alimento en el sistema
@@ -193,7 +186,7 @@ function successEditarAlimento(response) {
     obtenerListaAlimentos();
 }
 
-function errorEditarAlimento(response) {
+function errorEditarAlimento(status,response) {
     alert(response.error);
 }
 
@@ -204,6 +197,7 @@ function successEliminarAlimento(response) {
     obtenerListaAlimentos();
 }
 
-function errorEliminarAlimento(response) {
+function errorEliminarAlimento(status,response) {
+    console.log("Falla:", response);
     alert(response.error);
 }

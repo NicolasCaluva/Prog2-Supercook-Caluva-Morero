@@ -19,11 +19,13 @@ type AlimentoInterface interface {
 
 type AlimentoService struct {
 	AlimentoRepositorio Repositories.AlimentoRepositorioInterface
+	RecetaRepositorio   Repositories.RecetaRepositorioInterface
 }
 
-func NuevoAlimentoService(alimentoRepositorio Repositories.AlimentoRepositorioInterface) *AlimentoService {
+func NuevoAlimentoService(alimentoRepositorio Repositories.AlimentoRepositorioInterface, recetaRepositorio Repositories.RecetaRepositorioInterface) *AlimentoService {
 	return &AlimentoService{
 		AlimentoRepositorio: alimentoRepositorio,
+		RecetaRepositorio:   recetaRepositorio,
 	}
 }
 
@@ -95,7 +97,12 @@ func (service *AlimentoService) ActualizarAlimento(alimento *Dto.AlimentoDto) *E
 }
 
 func (service *AlimentoService) EliminarAlimento(idAlimento *string, idUsuario *string) *Errors.ErrorCodigo {
+	errorALimento := service.RecetaRepositorio.VerificarAlimentoExistente(*idAlimento)
+	if errorALimento != nil {
+		return errorALimento
+	}
 	_, err := service.AlimentoRepositorio.EliminarAlimento(idAlimento, idUsuario)
+
 	if err != nil {
 		return err
 	}

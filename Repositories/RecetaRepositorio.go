@@ -15,6 +15,7 @@ type RecetaRepositorioInterface interface {
 	ObtenerRecetas(filtro *[3]string, idUsuario *string) ([]Models.Receta, *Errors.ErrorCodigo)
 	ObtenerRecetaPorID(idReceta *string, idUsuario *string) (Models.Receta, *Errors.ErrorCodigo)
 	EliminarReceta(idReceta *string, idUsuario *string) (*mongo.DeleteResult, *Errors.ErrorCodigo)
+	VerificarAlimentoExistente(idAlimento string) *Errors.ErrorCodigo
 }
 
 type RecetaRepositorio struct {
@@ -109,4 +110,17 @@ func (recetaRepositorio *RecetaRepositorio) EliminarReceta(idReceta *string, idU
 		return nil, Errors.ErrorRecetaNoEncontradoEliminar
 	}
 	return resultado, nil
+}
+func (recetaRepositorio *RecetaRepositorio) VerificarAlimentoExistente(idAlimento string) *Errors.ErrorCodigo {
+	coleccion := recetaRepositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("receta")
+	filtro := bson.M{"alimentos.idAlimento": idAlimento}
+	err := coleccion.FindOne(context.TODO(), filtro).Err()
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil
+		}
+		log.Printf("Error: %v\n", Errors.ErrorConectarBD)
+		return Errors.ErrorConectarBD
+	}
+	return Errors.ErrorNoSePuedeEliminarAlimentoPerteneceaReceta
 }

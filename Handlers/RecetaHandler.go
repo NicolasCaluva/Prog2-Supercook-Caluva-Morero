@@ -21,12 +21,6 @@ func NuevoRecetaHandler(recetaService Services.RecetaInterface) *RecetaHandler {
 
 func (handler *RecetaHandler) ObtenerRecetas(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
-
-	if userInfo == nil {
-		c.Error(Errors.ErrorUsuarioNoAutenticado)
-		return
-	}
-
 	momento := c.Query("momento")
 	nombre := c.Query("nombre")
 	tipoAlimento := c.Query("tipoAlimento")
@@ -42,10 +36,6 @@ func (handler *RecetaHandler) ObtenerRecetas(c *gin.Context) {
 
 func (handler *RecetaHandler) ObtenerRecetaPorID(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
-	if userInfo == nil {
-		c.Error(Errors.ErrorUsuarioNoAutenticado)
-		return
-	}
 	id := c.Param("id")
 	receta, err := handler.RecetaService.ObtenerRecetaPorID(&id, &userInfo.Codigo)
 	if err != nil {
@@ -57,12 +47,6 @@ func (handler *RecetaHandler) ObtenerRecetaPorID(c *gin.Context) {
 
 func (handler *RecetaHandler) CrearReceta(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
-
-	if userInfo == nil {
-		c.Error(Errors.ErrorUsuarioNoAutenticado)
-		return
-	}
-
 	var recetaDto Dto.RecetaDto
 
 	if err := c.BindJSON(&recetaDto); err != nil {
@@ -81,10 +65,6 @@ func (handler *RecetaHandler) CrearReceta(c *gin.Context) {
 
 func (handler *RecetaHandler) EliminarReceta(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
-	if userInfo == nil {
-		c.Error(Errors.ErrorUsuarioNoAutenticado)
-		return
-	}
 	id := c.Param("id")
 	resultado := handler.RecetaService.EliminarReceta(&id, &userInfo.Codigo)
 	if resultado != nil {

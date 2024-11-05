@@ -21,7 +21,7 @@ function successFn(response) {
 
     localStorage.setItem('username', response.username);
     localStorage.setItem('rol', response.rol);
-    window.location = 'alimentos.html';
+    window.location = 'index.html';
   }
   
   function errorFn(status, response) {

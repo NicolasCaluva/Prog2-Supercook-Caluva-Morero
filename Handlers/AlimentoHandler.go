@@ -22,12 +22,6 @@ func NuevoAlimentoHandler(alimentoService Services.AlimentoInterface) *AlimentoH
 }
 func (handler *AlimentoHandler) ObtenerAlimentos(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
-
-	if userInfo == nil {
-		c.Error(Errors.ErrorUsuarioNoAutenticado)
-		return
-	}
-
 	momentosDelDia := c.QueryArray("momentoDelDia")
 	tipoAlimento := c.Query("tipoAlimento")
 	nombre := c.Query("nombre")
@@ -45,10 +39,6 @@ func (handler *AlimentoHandler) ObtenerAlimentos(c *gin.Context) {
 
 func (handler *AlimentoHandler) ObtenerAlimentoPorID(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
-	if userInfo == nil {
-		c.Error(Errors.ErrorUsuarioNoAutenticado)
-		return
-	}
 	id := c.Param("id")
 	alimento, error := handler.AlimentoService.ObtenerAlimentoPorID(&id, &userInfo.Codigo)
 	if error != nil {
@@ -60,10 +50,6 @@ func (handler *AlimentoHandler) ObtenerAlimentoPorID(c *gin.Context) {
 
 func (handler *AlimentoHandler) CrearAlimento(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
-	if userInfo == nil {
-		c.Error(Errors.ErrorUsuarioNoAutenticado)
-		return
-	}
 	var alimentoDto Dto.AlimentoDto
 
 	if err := c.BindJSON(&alimentoDto); err != nil {
@@ -81,10 +67,6 @@ func (handler *AlimentoHandler) CrearAlimento(c *gin.Context) {
 
 func (handler *AlimentoHandler) ActualizarAlimento(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
-	if userInfo == nil {
-		c.Error(Errors.ErrorUsuarioNoAutenticado)
-		return
-	}
 	var alimentoDto Dto.AlimentoDto
 	c.BindJSON(&alimentoDto)
 	alimentoDto.IDUsuario = userInfo.Codigo
@@ -99,10 +81,6 @@ func (handler *AlimentoHandler) ActualizarAlimento(c *gin.Context) {
 
 func (handler *AlimentoHandler) EliminarAlimento(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
-	if userInfo == nil {
-		c.Error(Errors.ErrorUsuarioNoAutenticado)
-		return
-	}
 	id := c.Param("id")
 	error := handler.AlimentoService.EliminarAlimento(&id, &userInfo.Codigo)
 	if error != nil {

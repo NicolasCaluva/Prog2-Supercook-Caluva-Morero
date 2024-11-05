@@ -123,7 +123,6 @@ func (service *RecetaService) EliminarReceta(idReceta *string, idUsuario *string
 	}
 	return nil
 }
-
 func convertirReceta(receta Models.Receta) *Dto.RecetaDto {
 	var listaAlimentosRecetaDto []Dto.AlimentoRecetaDto
 	for _, alimentoReceta := range receta.Alimentos {

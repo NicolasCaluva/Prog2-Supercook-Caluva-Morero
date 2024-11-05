@@ -64,14 +64,12 @@ func dependencias() {
 
 	database = Repositories.NuevaMongoDB()
 	alimentoRepository = Repositories.NuevoAlimentoRepositorio(database)
-	alimentoService = Services.NuevoAlimentoService(alimentoRepository)
-	alimentoHandler = Handlers.NuevoAlimentoHandler(alimentoService)
-
+	recetaRepository = Repositories.NuevoRecetaRepositorio(database)
 	compraRepositorio = Repositories.NuevoCompraRepositorio(database)
+	alimentoService = Services.NuevoAlimentoService(alimentoRepository, recetaRepository)
+	alimentoHandler = Handlers.NuevoAlimentoHandler(alimentoService)
 	compraService = Services.NuevoCompraService(compraRepositorio, alimentoService)
 	compraHandler = Handlers.NuevoCompraHandler(compraService)
-
-	recetaRepository = Repositories.NuevoRecetaRepositorio(database)
 	recetaService = Services.NuevoRecetaService(recetaRepository, alimentoService)
 	recetaHandler = Handlers.NuevoRecetaHandler(recetaService)
 }

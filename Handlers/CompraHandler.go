@@ -20,10 +20,6 @@ func NuevoCompraHandler(compraService Services.CompraInterfaz) *CompraHandler {
 }
 func (handler *CompraHandler) CrearCompra(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
-	if userInfo == nil {
-		c.Error(Errors.ErrorUsuarioNoAutenticado)
-		return
-	}
 	var compraDto Dto.CompraDto
 	err := c.BindJSON(&compraDto)
 	compraDto.IDUsuario = userInfo.Codigo
