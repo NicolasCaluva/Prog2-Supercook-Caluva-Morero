@@ -29,7 +29,7 @@ func NuevoAlimentoRepositorio(db DB) *AlimentoRepositorio {
 	}
 }
 
-func (repositorio AlimentoRepositorio) ObtenerAlimentos(filtro *[4]string, idUsuario *string) ([]Models.Alimento, *Errors.ErrorCodigo) {
+func (repositorio *AlimentoRepositorio) ObtenerAlimentos(filtro *[4]string, idUsuario *string) ([]Models.Alimento, *Errors.ErrorCodigo) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
 	filtros := []bson.M{}
 	filtros = append(filtros, bson.M{"idUsuario": *idUsuario})
@@ -74,13 +74,16 @@ func (repositorio AlimentoRepositorio) ObtenerAlimentos(filtro *[4]string, idUsu
 	return alimentos, nil
 }
 
-func (repositorio AlimentoRepositorio) ObtenerAlimentoPorID(idAlimento *string, idUsuario *string) (Models.Alimento, *Errors.ErrorCodigo) {
+func (repositorio *AlimentoRepositorio) ObtenerAlimentoPorID(idAlimento *string, idUsuario *string) (Models.Alimento, *Errors.ErrorCodigo) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
 	IdObjeto := Utils.GetObjectIDFromStringID(*idAlimento)
-	filtro := bson.M{"_id": IdObjeto, "idUsuario": *idUsuario}
+	filtro := bson.M{"_id": IdObjeto}
 
 	var alimento Models.Alimento
 	err := coleccion.FindOne(context.TODO(), filtro).Decode(&alimento)
+	if alimento.IDUsuario != *idUsuario {
+		return Models.Alimento{}, Errors.ErrorUsuarioNoAutenticado
+	}
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			log.Printf("Error: %v\n", Errors.ErrorAlimentoNoEncontrado)
@@ -93,7 +96,7 @@ func (repositorio AlimentoRepositorio) ObtenerAlimentoPorID(idAlimento *string, 
 	return alimento, nil
 }
 
-func (repositorio AlimentoRepositorio) CrearAlimento(alimento *Models.Alimento) (*mongo.InsertOneResult, *Errors.ErrorCodigo) {
+func (repositorio *AlimentoRepositorio) CrearAlimento(alimento *Models.Alimento) (*mongo.InsertOneResult, *Errors.ErrorCodigo) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
 	resultado, err := coleccion.InsertOne(context.TODO(), alimento)
 	if err != nil {
@@ -104,7 +107,7 @@ func (repositorio AlimentoRepositorio) CrearAlimento(alimento *Models.Alimento) 
 	return resultado, nil
 }
 
-func (repositorio AlimentoRepositorio) ActualizarAlimento(alimento *Models.Alimento) (*mongo.UpdateResult, *Errors.ErrorCodigo) {
+func (repositorio *AlimentoRepositorio) ActualizarAlimento(alimento *Models.Alimento) (*mongo.UpdateResult, *Errors.ErrorCodigo) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
 	filtro := bson.M{"_id": alimento.ID}
 	filtro["idUsuario"] = alimento.IDUsuario
@@ -132,7 +135,7 @@ func (repositorio AlimentoRepositorio) ActualizarAlimento(alimento *Models.Alime
 	return resultado, nil
 }
 
-func (repositorio AlimentoRepositorio) EliminarAlimento(idAlimento *string, idUsuario *string) (*mongo.DeleteResult, *Errors.ErrorCodigo) {
+func (repositorio *AlimentoRepositorio) EliminarAlimento(idAlimento *string, idUsuario *string) (*mongo.DeleteResult, *Errors.ErrorCodigo) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
 	IdObjeto := Utils.GetObjectIDFromStringID(*idAlimento)
 	filtro := bson.M{"_id": IdObjeto}

@@ -54,6 +54,10 @@ func (service *RecetaService) ObtenerRecetas(filtro *[3]string, idUsuario *strin
 			recetasDto = recetasDto[:len(recetasDto)-1]
 		}
 	}
+	if len(recetasDto) == 0 {
+		return nil, Errors.ErrorListaVaciaDeRecetas
+
+	}
 	return recetasDto, nil
 }
 

@@ -2,6 +2,7 @@ package Handlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"supercook/Dto"
 	"supercook/Errors"
@@ -27,10 +28,13 @@ func (handler *CompraHandler) CrearCompra(c *gin.Context) {
 		c.Error(Errors.ErrorJsonInvalidoCompras)
 		return
 	}
+	log.Printf("Iniciando creación de compra con ID: %s, usuario: %s", compraDto.IDUsuario, userInfo)
 	resultado := handler.CompraService.AgregarCompra(&compraDto)
 	if resultado != nil {
+		log.Printf("Error: %v\n", resultado)
 		c.Error(resultado)
 		return
 	}
+	log.Printf("Compra realizada con éxito\n")
 	c.JSON(http.StatusOK, gin.H{"mensaje": "Compra realizada con éxito"})
 }

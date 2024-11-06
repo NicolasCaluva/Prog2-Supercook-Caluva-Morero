@@ -76,9 +76,11 @@ func (recetaRepositorio *RecetaRepositorio) ObtenerRecetaPorID(idReceta *string,
 	coleccion := recetaRepositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("receta")
 	IdObjeto := Utils.GetObjectIDFromStringID(*idReceta)
 	filtro := bson.M{"_id": IdObjeto}
-	filtro["idUsuario"] = *idUsuario
 	var receta Models.Receta
 	err := coleccion.FindOne(context.TODO(), filtro).Decode(&receta)
+	if receta.IDUsuario != *idUsuario {
+		return Models.Receta{}, Errors.ErrorUsuarioNoAutenticado
+	}
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			log.Printf("Error: %v\n", Errors.ErrorRecetaNoEncontrada)

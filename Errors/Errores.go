@@ -19,10 +19,10 @@ func NuevoErrorCodigo(codigo, mensaje string) *ErrorCodigo {
 }
 
 var (
-	ErrorConectarBD          = NuevoErrorCodigo("ERR_500", "Error al conectar a la base de datos")
-	ErrorDecodificarAlimento = NuevoErrorCodigo("ERR_500", "Error al decodificar el alimento desde la Base de Datos")
-	ErrorDecodificarReceta   = NuevoErrorCodigo("ERR_500", "Error al decodificar la receta desde la Base de Datos")
-
+	ErrorConectarBD           = NuevoErrorCodigo("ERR_500", "Error al conectar a la base de datos")
+	ErrorDecodificarAlimento  = NuevoErrorCodigo("ERR_500", "Error al decodificar el alimento desde la Base de Datos")
+	ErrorDecodificarReceta    = NuevoErrorCodigo("ERR_500", "Error al decodificar la receta desde la Base de Datos")
+	ErrorUsuarioInvalido      = NuevoErrorCodigo("ERR_403", "Usuario inválido")
 	ErrorUsuarioNoAutenticado = NuevoErrorCodigo("ERR_401", "Usuario no autenticado")
 
 	ErrorListaVaciaDeAlimentos                     = NuevoErrorCodigo("ERR_404", "Lista vacia de alimentos")
@@ -43,7 +43,6 @@ var (
 
 	ErrorListaVaciaDeRecetas                  = NuevoErrorCodigo("ERR_404", "Lista vacia de recetas")
 	ErrorRecetaNoEncontrada                   = NuevoErrorCodigo("ERR_404", "Receta no encontrada")
-	ErrorRecetaNoEncontradoActualizar         = NuevoErrorCodigo("ERR_404", "Receta no encontrada para actualizar")
 	ErrorRecetaNoEncontradoEliminar           = NuevoErrorCodigo("ERR_404", "Receta no encontrado para eliminar")
 	ErrorRecetaNombreMalIngresado             = NuevoErrorCodigo("ERR_400", "El nombre de la receta no puede estar vacío")
 	ErrorRecetaAlimentosMalIngresados         = NuevoErrorCodigo("ERR_400", "Debe haber al menos un alimento en la receta")
