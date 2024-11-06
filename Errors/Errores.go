@@ -19,10 +19,10 @@ func NuevoErrorCodigo(codigo, mensaje string) *ErrorCodigo {
 }
 
 var (
-	ErrorConectarBD          = NuevoErrorCodigo("ERR_500", "Error al conectar a la base de datos")
-	ErrorDecodificarAlimento = NuevoErrorCodigo("ERR_500", "Error al decodificar el alimento desde la Base de Datos")
-	ErrorDecodificarReceta   = NuevoErrorCodigo("ERR_500", "Error al decodificar la receta desde la Base de Datos")
-
+	ErrorConectarBD           = NuevoErrorCodigo("ERR_500", "Error al conectar a la base de datos")
+	ErrorDecodificarAlimento  = NuevoErrorCodigo("ERR_500", "Error al decodificar el alimento desde la Base de Datos")
+	ErrorDecodificarReceta    = NuevoErrorCodigo("ERR_500", "Error al decodificar la receta desde la Base de Datos")
+	ErrorUsuarioInvalido      = NuevoErrorCodigo("ERR_403", "Usuario inválido")
 	ErrorUsuarioNoAutenticado = NuevoErrorCodigo("ERR_401", "Usuario no autenticado")
 
 	ErrorListaVaciaDeAlimentos                     = NuevoErrorCodigo("ERR_404", "Lista vacia de alimentos")
