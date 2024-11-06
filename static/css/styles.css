@@ -16,14 +16,29 @@
 .bg-custom-border {
     border-radius: 1rem;
     background: #e0e0e0;
-    box-shadow: 15px 15px 30px var(--color-gray),
-    -15px -15px 30px #ffffff;
+    box-shadow: 0 0 15px 2px var(--color-white);
 }
 
 .bg-image {
     background-image: url('../prueba.jpg');
     background-size: cover;
     background-position: center;
+}
+
+.bg-none {
+    background: none;
+}
+
+.border-none {
+    border: none;
+}
+
+.eye-password {
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 60%;
+    transform: translateY(-50%);
 }
 
 .bg-color-primary {
@@ -42,6 +57,10 @@
     background-color: var(--color-brown-dark);
 }
 
+.bg-black {
+    background-color: var(--color-black);
+}
+
 .fc-black {
     color: var(--color-black);
 }
@@ -52,6 +71,10 @@
 
 .fc-white {
     color: var(--color-white);
+}
+
+.custom-title-white {
+    text-shadow: 2px 2px 4px var(--color-primary);
 }
 
 .input-dark {
@@ -86,6 +109,7 @@
 .dropdown-toggle::after {
     display: none !important;
 }
+
 .grafico-container {
     width: 30%;
     height: 300px;
@@ -97,9 +121,51 @@
     background-color: white;
 }
 
-.background {
+.background-receta {
     background-image: url('../asado.jpg');
     background-repeat: no-repeat;
     background-size: cover;
     padding: 0 2rem;
+}
+
+.background-alimento {
+    background-image: url('../helado.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding: 0 2rem;
+}
+
+.background-compras {
+    background-image: url('../compras.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding: 0 2rem;
+}
+
+.radius-sm {
+    border-radius: 0.25rem;
+}
+
+.radius-md {
+    border-radius: 0.5rem;
+}
+
+.radius-lg {
+    border-radius: 1rem;
+}
+
+.radius-left-lg {
+    border-radius: 1rem 0 0 1rem !important;
+}
+
+.radius-right-lg {
+    border-radius: 0 1rem 1rem 0 !important;
+}
+
+.radius-left-md {
+    border-radius: 0.5rem 0 0 0.5rem !important;
+}
+
+.radius-right-md {
+    border-radius: 0 0.5rem 0.5rem 0 !important;
 }
