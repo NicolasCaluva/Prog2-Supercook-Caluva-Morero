@@ -1,6 +1,7 @@
 package Services
 
 import (
+	"fmt"
 	"supercook/Dto"
 	"supercook/Errors"
 	"supercook/Models"
@@ -33,14 +34,24 @@ func (service *RecetaService) ObtenerRecetas(filtro *[3]string, idUsuario *strin
 		return nil, err
 	}
 	var recetasDto []*Dto.RecetaDto
+	var correcto = ""
 	for _, receta := range recetas {
+		if filtro[2] != "" {
+			correcto = "pendiente"
+		}
 		recetasDto = append(recetasDto, convertirReceta(receta))
-		for i, alimento := range recetasDto[len(recetasDto)-1].Alimentos {
+		for i, alimento := range receta.Alimentos {
 			alimento, err := service.AlimentoService.ObtenerAlimentoPorID(&alimento.IDAlimento, idUsuario)
 			if err != nil {
 				return nil, err
 			}
 			recetasDto[len(recetasDto)-1].Alimentos[i].Nombre = alimento.Nombre
+			if fmt.Sprintf("%v", alimento.TipoAlimento) == filtro[2] {
+				correcto = "hecho"
+			}
+		}
+		if correcto == "pendiente" {
+			recetasDto = recetasDto[:len(recetasDto)-1]
 		}
 	}
 	return recetasDto, nil
