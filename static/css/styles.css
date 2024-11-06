@@ -7,6 +7,9 @@
     --color-brown-dark: #3D2B1FD8;
     --color-gray: #707070;
     --color-gray--light: #f5f5f5;
+    --color-black: #000000;
+    --color-red: #FF0000;
+    --color-white: #ffffff;
 }
 
 
@@ -37,6 +40,18 @@
 
 .bg-brown-dark {
     background-color: var(--color-brown-dark);
+}
+
+.fc-black {
+    color: var(--color-black);
+}
+
+.fc-red {
+    color: var(--color-red);
+}
+
+.fc-white {
+    color: var(--color-white);
 }
 
 .input-dark {
@@ -83,9 +98,8 @@
 }
 
 .background {
-    background: var(--color-primary);
-    object-fit: cover;
-    overflow-y: hidden;
-    width: 100vw;
+    background-image: url('../asado.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
     padding: 0 2rem;
 }

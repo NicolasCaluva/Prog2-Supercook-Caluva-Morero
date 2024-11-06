@@ -188,7 +188,6 @@ async function confirmarNuevoAlimento() {
     };
     const URL = 'http://localhost:8080/alimentos/';
     await makeRequest(URL, 'POST', nuevoAlimento, ContentType.JSON, CallType.PRIVATE, successCargarNuevoAlimento, errorCargarNuevoAlimento);
-    modal.hide();
     location.reload();
 }
 
@@ -207,7 +206,6 @@ async function confirmarEdicionAlimento(alimento) {
     const URL = 'http://localhost:8080/alimentos/';
     await makeRequest(URL, Method.PUT, nuevoAlimento, ContentType.JSON, CallType.PRIVATE, successEditarAlimento, errorEditarAlimento);
     const modal = document.getElementById('cargarAlimento');
-    modal.hide();
     modal.addEventListener('hidden.bs.modal', function () {
         document.getElementById('form-alimento').reset();
         const confirmarAlimentoBtn = document.getElementById('confirmarAlimento');

@@ -55,8 +55,8 @@
     </div>
 </header>
 
-<div class="background w-100 min-vh-100">
-    <h1 class="text-center">Recetas</h1>
+<div class="background min-vh-100">
+    <h1 class="text-center fc-white">Recetas</h1>
 
     <div class="card mx-4">
         <div class="card-body">
@@ -88,15 +88,18 @@
                     </select>
                 </div>
 
-                <div class="col-3 d-flex align-items-end">
+                <div class="col-3 d-flex align-items-end gap-2">
                     <button type="button" class="btn btn-primary" id="filtrarRecetas">Filtrar</button>
+                    <a href="recetas.html" class="fc-black text-decoration-none align-self-end mb-2">
+                        <i class="fas fa-trash fc-red"></i> Limpiar filtros
+                    </a>
                 </div>
             </form>
         </div>
     </div>
 
 
-    <div class="table-responsive bg-custom-border mx-4 my-3">
+    <div class="table-responsive bg-custom-border mx-4 mt-5 mb-3">
         <table class="table table-striped">
             <thead class="table-warning">
             <tr>
