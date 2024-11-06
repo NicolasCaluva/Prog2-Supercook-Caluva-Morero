@@ -43,7 +43,6 @@ var (
 
 	ErrorListaVaciaDeRecetas                  = NuevoErrorCodigo("ERR_404", "Lista vacia de recetas")
 	ErrorRecetaNoEncontrada                   = NuevoErrorCodigo("ERR_404", "Receta no encontrada")
-	ErrorRecetaNoEncontradoActualizar         = NuevoErrorCodigo("ERR_404", "Receta no encontrada para actualizar")
 	ErrorRecetaNoEncontradoEliminar           = NuevoErrorCodigo("ERR_404", "Receta no encontrado para eliminar")
 	ErrorRecetaNombreMalIngresado             = NuevoErrorCodigo("ERR_400", "El nombre de la receta no puede estar vacío")
 	ErrorRecetaAlimentosMalIngresados         = NuevoErrorCodigo("ERR_400", "Debe haber al menos un alimento en la receta")
