@@ -188,7 +188,6 @@ async function confirmarNuevoAlimento() {
     };
     const URL = 'http://localhost:8080/alimentos/';
     await makeRequest(URL, 'POST', nuevoAlimento, ContentType.JSON, CallType.PRIVATE, successCargarNuevoAlimento, errorCargarNuevoAlimento);
-    modal.hide();
     location.reload();
 }
 

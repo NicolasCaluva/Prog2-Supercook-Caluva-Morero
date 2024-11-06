@@ -9,13 +9,11 @@ type AlimentoRecetaDto struct {
 }
 
 func (a *AlimentoRecetaDto) ValidarAlimentoRecetaDto() *Errors.ErrorCodigo {
-
 	if a.IDAlimento == "" {
 		return Errors.ErrorAlimentoRecetaIDAlimentoMalIngresado
 	}
 	if a.Cantidad <= 0 {
 		return Errors.ErrorCantidadMenorACero
 	}
-
 	return nil
 }

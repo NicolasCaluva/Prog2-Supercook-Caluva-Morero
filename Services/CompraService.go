@@ -53,8 +53,6 @@ func (service *CompraService) AgregarCompra(compra *Dto.CompraDto) *Errors.Error
 	}
 	return nil
 }
-
-// haceme una funcion para cambiar de dto a model
 func convertirCompra(compra *Dto.CompraDto) *Models.Compra {
 	return &Models.Compra{
 		IDCompra:      compra.IDCompra,
