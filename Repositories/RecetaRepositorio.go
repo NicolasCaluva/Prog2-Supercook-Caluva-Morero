@@ -50,10 +50,6 @@ func (recetaRepositorio *RecetaRepositorio) ObtenerRecetas(filtro *[3]string, id
 	if filtro[1] != "" {
 		filtroBson["nombre"] = bson.M{"$regex": filtro[1], "$options": "i"}
 	}
-	if filtro[2] != "" {
-		filtroBson["alimentos.tipoAlimento"] = bson.M{"$regex": filtro[2], "$options": "i"}
-	}
-
 	cursor, err := coleccion.Find(context.TODO(), filtroBson)
 	if err != nil {
 		log.Printf("Error: %v\n", Errors.ErrorConectarBD)
