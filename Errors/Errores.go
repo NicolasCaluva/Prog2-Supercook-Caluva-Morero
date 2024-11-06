@@ -35,11 +35,11 @@ var (
 	ErrorAlimentoCantMinimaStockMalIngresado       = NuevoErrorCodigo("ERR_400", "La cantidad mínima de stock del alimento no puede ser menor a 0")
 	ErrorAlimentoTipoAlimentoMalIngresado          = NuevoErrorCodigo("ERR_400", "El tipo de alimento no puede estar vacío")
 	ErrorAlimentoMomentoDelDiaMalIngresado         = NuevoErrorCodigo("ERR_400", "El momento del día no puede estar vacío")
-	ErrorJsonInvalidoAlimento                      = NuevoErrorCodigo("ERR_400", "Error en el JSON de alimento")
+	ErrorJsonInvalidoAlimento                      = NuevoErrorCodigo("ERR_500", "Error en el JSON de alimento")
 	ErrorNoSePuedeEliminarAlimentoPerteneceaReceta = NuevoErrorCodigo("ERR_400", "No se puede eliminar el alimento porque pertenece a una receta")
 
 	ErrorListaVaciaDeCompras = NuevoErrorCodigo("ERR_404", "Lista vacia de alimentos a comprar")
-	ErrorJsonInvalidoCompras = NuevoErrorCodigo("ERR_400", "Error en el JSON de compra")
+	ErrorJsonInvalidoCompras = NuevoErrorCodigo("ERR_500", "Error en el JSON de compra")
 
 	ErrorListaVaciaDeRecetas                  = NuevoErrorCodigo("ERR_404", "Lista vacia de recetas")
 	ErrorRecetaNoEncontrada                   = NuevoErrorCodigo("ERR_404", "Receta no encontrada")
@@ -47,7 +47,7 @@ var (
 	ErrorRecetaNombreMalIngresado             = NuevoErrorCodigo("ERR_400", "El nombre de la receta no puede estar vacío")
 	ErrorRecetaAlimentosMalIngresados         = NuevoErrorCodigo("ERR_400", "Debe haber al menos un alimento en la receta")
 	ErrorRecetaMomentoDelDiaMalIngresado      = NuevoErrorCodigo("ERR_400", "Debe haber un momento del día en la receta")
-	ErrorJsonInvalidoReceta                   = NuevoErrorCodigo("ERR_400", "Error en el JSON de receta")
+	ErrorJsonInvalidoReceta                   = NuevoErrorCodigo("ERR_500", "Error en el JSON de receta")
 	ErrorCantidadMenorACero                   = NuevoErrorCodigo("ERR_400", "La cantidad no puede ser menor a 0")
 	ErrorAlimentoRecetaIDAlimentoMalIngresado = NuevoErrorCodigo("ERR_400", "El ID del alimento de la receta no puede estar vacío")
 	ErrorNoHayStock                           = NuevoErrorCodigo("ERR_400", "No hay stock suficiente para el alimento")
