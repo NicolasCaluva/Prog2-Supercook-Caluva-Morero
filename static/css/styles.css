@@ -89,3 +89,27 @@
     width: 100vw;
     padding: 0 2rem;
 }
+.chart-container {
+    border: 2px solid orange;
+    border-radius: 15px;
+    padding: 20px;
+    background-color: #ffe5b4;
+    margin: 10px;
+}
+.chart-row {
+    display: flex;
+    justify-content: space-between;
+}
+.chart-row > div {
+    width: 48%;
+}
+.full-width {
+    width: 98.5%;
+}
+.background-index {
+    background-image: url('../FondoIndex.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding: 0 2rem;
+    min-height: 100vh;
+}
