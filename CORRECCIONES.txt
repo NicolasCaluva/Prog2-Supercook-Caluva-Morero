@@ -1,0 +1,16 @@
+El parametro filtro de AlimentoService.ObtenerAlimentos deberia ser un DTO no un array
+(revisar todos estos casos)
+
+En los handlers cuando hay errores no retorna status codes personalizados
+Ej:
+error := handler.AlimentoService.ActualizarAlimento(&alimentoDto)
+	if error != nil {
+		log.Printf("Error: %v\n", error)
+		c.Error(error)
+		return
+	}
+
+
+La app de front desde Go live no funciona, no encuentra los archivos JS. En caso que haya una manera de ejecutarlo describirla de forma completa en el readme.
+
+En los JS accede a los elementos del DOM antes de que este cargado, mover las variables dentro del evento.
