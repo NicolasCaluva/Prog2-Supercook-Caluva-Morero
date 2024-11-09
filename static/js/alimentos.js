@@ -1,12 +1,6 @@
 // Variables globales
 let listaAlimentos;
 let listaAlimentosData = [];
-let nombreAlimento = document.getElementById('nombreAlimento');
-let precioUnitario = document.getElementById('precioUnitario');
-let stock = document.getElementById('stock');
-let cantMinimaStock = document.getElementById('cantMinimaStock');
-let tipoAlimento = document.getElementById('tipoAlimento');
-let momentoDelDia = document.getElementById('momentoDelDia');
 let pagActual = 1;
 const itemPorPagina = 10;
 let paginaTotal = 1;
@@ -120,7 +114,7 @@ function errorCargarListaAlimentos(status, response) {
 }
 
 // Funciones para la carga de un nuevo alimento en el sistema
-function successCargarNuevoAlimento(response) {
+function successCargarNuevoAlimento() {
     alert("Alimento cargado correctamente");
 }
 
@@ -131,6 +125,13 @@ function errorCargarNuevoAlimento(status, response) {
 
 // Funciones para la obtención de un alimento del sistema
 function successObtenerAlimento(alimento) {
+    let nombreAlimento = document.getElementById('nombreAlimento');
+    let precioUnitario = document.getElementById('precioUnitario');
+    let stock = document.getElementById('stock');
+    let cantMinimaStock = document.getElementById('cantMinimaStock');
+    let tipoAlimento = document.getElementById('tipoAlimento');
+    let momentoDelDia = document.getElementById('momentoDelDia');
+
     nombreAlimento.value = alimento.Nombre;
     precioUnitario.value = alimento.PrecioUnitario;
     stock.value = alimento.Stock;
@@ -157,8 +158,8 @@ function errorObtenerAlimento(status, response) {
 }
 
 // Funciones para la edición de un alimento en el sistema
-function successEditarAlimento(response) {
-    alert("Alimento Editado correctamente");
+function successEditarAlimento() {
+    alert("Alimento editado correctamente");
     obtenerListaAlimentos();
 }
 
@@ -167,7 +168,7 @@ function errorEditarAlimento(status, response) {
 }
 
 // Funciones para la eliminación de un alimento en el sistema
-function successEliminarAlimento(response) {
+function successEliminarAlimento() {
     alert("Alimento eliminado correctamente");
     obtenerListaAlimentos();
 }
@@ -177,6 +178,14 @@ function errorEliminarAlimento(status, response) {
 }
 
 async function confirmarNuevoAlimento() {
+    let nombreAlimento = document.getElementById('nombreAlimento');
+    let precioUnitario = document.getElementById('precioUnitario');
+    let stock = document.getElementById('stock');
+    let cantMinimaStock = document.getElementById('cantMinimaStock');
+    let tipoAlimento = document.getElementById('tipoAlimento');
+    let momentoDelDia = document.getElementById('momentoDelDia');
+
+
     const momentosSeleccionados = Array.from(momentoDelDia.selectedOptions).map(option => option.value);
     const nuevoAlimento = {
         Nombre: nombreAlimento.value,
@@ -192,6 +201,12 @@ async function confirmarNuevoAlimento() {
 }
 
 async function confirmarEdicionAlimento(alimento) {
+    let nombreAlimento = document.getElementById('nombreAlimento');
+    let precioUnitario = document.getElementById('precioUnitario');
+    let stock = document.getElementById('stock');
+    let cantMinimaStock = document.getElementById('cantMinimaStock');
+    let tipoAlimento = document.getElementById('tipoAlimento');
+
     const momentosSeleccionados = Array.from(document.getElementById('momentoDelDia').selectedOptions).map(option => option.value);
     const nuevoAlimento = {
         IdAlimento: alimento.IdAlimento,

@@ -1,16 +1,16 @@
-let listaRecetas;
-let nombre = document.getElementById('nombre');
-let listaAlimentos = document.getElementById('lista-alimentos');
-let momento = document.getElementById('momento');
-let listaAlimentosSeleccionados = document.getElementById('lista-alimentos-seleccionados');
-let confirmarRecetaBtn = document.getElementById('confirmarReceta');
 let listaRecetasData = [];
 let paginaActual = 1;
 const recetasPorPagina = 10;
 
+
 document.addEventListener('DOMContentLoaded', async function () {
+    let nombre = document.getElementById('nombre');
+    let listaAlimentos = document.getElementById('lista-alimentos');
+    let momento = document.getElementById('momento');
+    let listaAlimentosSeleccionados = document.getElementById('lista-alimentos-seleccionados');
+    let confirmarRecetaBtn = document.getElementById('confirmarReceta');
     const agregarRecetaBtn = document.getElementById('agregarNuevaReceta');
-    listaRecetas = document.getElementById('lista-recetas');
+
     try {
         await obtenerListaRecetas();
     } catch (error) {
@@ -49,6 +49,7 @@ function successObtenerListaRecetas(response) {
 }
 
 function renderizarPagina() {
+    let listaRecetas = document.getElementById('lista-recetas');
     listaRecetas.innerHTML = '';
     const inicio = (paginaActual - 1) * recetasPorPagina;
     const fin = inicio + recetasPorPagina;
@@ -120,6 +121,8 @@ function cargarAlimentos(momento) {
 function successCargarAlimentos(response) {
     // Recibe todos los alimentos que se pueden agregar a la receta
     // Carga las opciones de alimentos en el selector de alimentos según el momento del día recibido
+    let listaAlimentosSeleccionados = document.getElementById('lista-alimentos-seleccionados');
+    let listaAlimentos = document.getElementById('lista-alimentos');
 
     response.forEach(alimento => {
         if (Array.from(listaAlimentosSeleccionados.querySelectorAll('input')).find(input => input.id === alimento.IdAlimento)) {
@@ -136,7 +139,9 @@ function successCargarAlimentos(response) {
 function agregarAlimentoAReceta(option, alimento) {
     // Agrega los alimentos a la lista de alimentos seleccionados y permite eliminarlos de la lista de alimentos
     // y agregarlos nuevamente al selector de alimentos
-    console.log(alimento)
+    let listaAlimentosSeleccionados = document.getElementById('lista-alimentos-seleccionados');
+    let listaAlimentos = document.getElementById('lista-alimentos');
+
     if (option) {
         listaAlimentos.removeChild(option);
     }
@@ -197,6 +202,10 @@ function errorCargarNuevaReceta(status, response) {
 
 
 async function confirmarFormularioReceta() {
+    let nombre = document.getElementById('nombre');
+    let listaAlimentosSeleccionados = document.getElementById('lista-alimentos-seleccionados');
+    let momento = document.getElementById('momento');
+
     const lista_inputs = listaAlimentosSeleccionados.querySelectorAll('input');
     const lista_alimentos_seleccionados = [];
     lista_inputs.forEach(input => {
@@ -222,6 +231,10 @@ async function confirmarFormularioReceta() {
 }
 
 async function momentoOnChange() {
+    let listaAlimentosSeleccionados = document.getElementById('lista-alimentos-seleccionados');
+    let momento = document.getElementById('momento');
+    let listaAlimentos = document.getElementById('lista-alimentos');
+
     if (listaAlimentosSeleccionados.hasChildNodes()) {
         listaAlimentosSeleccionados.innerHTML = '';
     }
@@ -232,7 +245,7 @@ async function momentoOnChange() {
     await cargarAlimentos(momento.value)
 }
 
-async function aplicarFiltros(){
+async function aplicarFiltros() {
     const nombre = document.getElementById('filtro-nombre').value;
     const momento = document.getElementById('filtro-momento').value;
     const tipo_alimento = document.getElementById('filtro-tipo-alimento').value;

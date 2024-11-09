@@ -1,4 +1,3 @@
-let listaCompras = document.getElementById('lista-compras');
 let PaginaActual = 1;
 const ItemsPorPagina = 10;
 let comprasData = [];
@@ -19,6 +18,7 @@ function successCargarListaCompras(response) {
 }
 
 function RenderizarPagina(page) {
+    let listaCompras = document.getElementById('lista-compras');
     listaCompras.innerHTML = '';
     const start = (page - 1) * ItemsPorPagina;
     const end = start + ItemsPorPagina;
@@ -109,8 +109,6 @@ async function enviarCompraDto() {
     const compraDto = {
         Alimentos: alimentosComprados
     };
-
-    console.log('CompraDto a enviar:', compraDto);
 
     let url = 'http://localhost:8080/compras/';
     await makeRequest(url, Method.POST, compraDto, ContentType.JSON, CallType.PRIVATE, successEnviarCompra, errorEnviarCompra);
