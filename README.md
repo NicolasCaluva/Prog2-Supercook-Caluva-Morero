@@ -1,6 +1,4 @@
-# Prog2-Supercook-Caluva-Morero
-
-# CocinaMelón
+# Cocinamelon
 
 ## Ejecución
 
