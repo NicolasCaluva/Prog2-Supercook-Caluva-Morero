@@ -22,14 +22,35 @@ func NuevoAlimentoHandler(alimentoService Services.AlimentoInterface) *AlimentoH
 }
 func (handler *AlimentoHandler) ObtenerAlimentos(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
-	momentosDelDia := c.QueryArray("momentoDelDia")
+	var filtro Dto.FiltroAlimentoDto
+	momentosDelDia := strings.Split(c.Query("momentoDelDia"), ",")
+	if len(momentosDelDia) > 0 && momentosDelDia[0] != "" {
+		filtro.MomentoDelDiaDto = make([]Dto.Momento, 0, len(momentosDelDia))
+		for _, momento := range momentosDelDia {
+			switch momento {
+			case string(Dto.Desayuno), string(Dto.Almuerzo), string(Dto.Merienda), string(Dto.Cena):
+				filtro.MomentoDelDiaDto = append(filtro.MomentoDelDiaDto, Dto.Momento(momento))
+			default:
+				log.Printf("Valor de momento no válido en el filtro: %s", Errors.ErrorFiltroMomentoInvalido)
+				c.Error(Errors.ErrorFiltroMomentoInvalido)
+			}
+		}
+	}
 	tipoAlimento := c.Query("tipoAlimento")
-	nombre := c.Query("nombre")
-	StockMenorCantidadMinima := c.Query("StockMenorCantidadMinima")
-	momentosDelDiaStr := strings.Join(momentosDelDia, ",")
-	filtro := [4]string{momentosDelDiaStr, tipoAlimento, nombre, StockMenorCantidadMinima}
+	if tipoAlimento != "" {
+		switch tipoAlimento {
+		case string(Dto.Verdura), string(Dto.Fruta), string(Dto.Lacteo), string(Dto.Carne):
+			filtro.TipoAlimentoDto = Dto.TipoAlimento(tipoAlimento)
+		default:
+			log.Printf("Valor de tipo de alimento no válido en el filtro: %s", Errors.ErrorFiltroAlimentoTipoAlimentoMalIngresado)
+			c.Error(Errors.ErrorFiltroAlimentoTipoAlimentoMalIngresado)
+			return
+		}
+	}
+	filtro.Nombre = c.Query("nombre")
+	filtro.StockMenorCantidadMinima = c.Query("StockMenorCantidadMinima") == "true"
 	log.Printf("Iniciando consulta de alimentos con filtros: momentosDelDia=%s, tipoAlimento=%s, nombre=%s, StockMenorCantidadMinima=%s, usuario=%s",
-		momentosDelDiaStr, tipoAlimento, nombre, StockMenorCantidadMinima, userInfo)
+		filtro.MomentoDelDiaDto, filtro.TipoAlimentoDto, filtro.Nombre, filtro.StockMenorCantidadMinima, userInfo)
 	alimentos, err := handler.AlimentoService.ObtenerAlimentos(&filtro, &userInfo.Codigo)
 	if err != nil {
 		log.Printf("Error: %v\n", err)

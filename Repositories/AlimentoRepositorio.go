@@ -5,14 +5,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
-	"strings"
+	"supercook/Dto"
 	"supercook/Errors"
 	"supercook/Models"
 	"supercook/Utils"
 )
 
 type AlimentoRepositorioInterface interface {
-	ObtenerAlimentos(filtro *[4]string, idUsuario *string) ([]Models.Alimento, *Errors.ErrorCodigo)
+	ObtenerAlimentos(filtro *Dto.FiltroAlimentoDto, idUsuario *string) ([]Models.Alimento, *Errors.ErrorCodigo)
 	ObtenerAlimentoPorID(idAlimento *string, idUsuario *string) (Models.Alimento, *Errors.ErrorCodigo)
 	CrearAlimento(alimento *Models.Alimento) (*mongo.InsertOneResult, *Errors.ErrorCodigo)
 	ActualizarAlimento(alimento *Models.Alimento) (*mongo.UpdateResult, *Errors.ErrorCodigo)
@@ -29,21 +29,20 @@ func NuevoAlimentoRepositorio(db DB) *AlimentoRepositorio {
 	}
 }
 
-func (repositorio *AlimentoRepositorio) ObtenerAlimentos(filtro *[4]string, idUsuario *string) ([]Models.Alimento, *Errors.ErrorCodigo) {
+func (repositorio *AlimentoRepositorio) ObtenerAlimentos(filtro *Dto.FiltroAlimentoDto, idUsuario *string) ([]Models.Alimento, *Errors.ErrorCodigo) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
 	filtros := []bson.M{}
 	filtros = append(filtros, bson.M{"idUsuario": *idUsuario})
-	if filtro[0] != "" {
-		momentos := strings.Split(filtro[0], ",")
-		filtros = append(filtros, bson.M{"momentoDelDia": bson.M{"$in": momentos}})
+	if len(filtro.MomentoDelDiaDto) != 0 {
+		filtros = append(filtros, bson.M{"momentoDelDia": bson.M{"$in": filtro.MomentoDelDiaDto}})
 	}
-	if filtro[1] != "" {
-		filtros = append(filtros, bson.M{"tipoAlimento": bson.M{"$regex": filtro[1], "$options": "i"}})
+	if filtro.TipoAlimentoDto != "" {
+		filtros = append(filtros, bson.M{"tipoAlimento": filtro.TipoAlimentoDto})
 	}
-	if filtro[2] != "" {
-		filtros = append(filtros, bson.M{"nombre": bson.M{"$regex": filtro[2], "$options": "i"}})
+	if filtro.Nombre != "" {
+		filtros = append(filtros, bson.M{"nombre": bson.M{"$regex": filtro.Nombre, "$options": "i"}})
 	}
-	if filtro[3] == "True" {
+	if filtro.StockMenorCantidadMinima {
 		filtros = append(filtros, bson.M{"$expr": bson.M{"$lt": []string{"$stock", "$cantMininaStock"}}})
 	}
 	var filtroBson bson.M

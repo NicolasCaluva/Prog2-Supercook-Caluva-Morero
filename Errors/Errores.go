@@ -30,6 +30,8 @@ var (
 	ErrorAlimentoNoEncontradoActualizar            = NuevoErrorCodigo("ERR_404", "Alimento no encontrado para actualizar")
 	ErrorAlimentoNoEncontradoEliminar              = NuevoErrorCodigo("ERR_404", "Alimento no encontrado para eliminar")
 	ErrorAlimentoNombreMalIngresado                = NuevoErrorCodigo("ERR_400", "El nombre del alimento no puede estar vacío")
+	ErrorFiltroMomentoInvalido                     = NuevoErrorCodigo("ERR_400", "Valor de momento no válido en el filtro")
+	ErrorFiltroAlimentoTipoAlimentoMalIngresado    = NuevoErrorCodigo("ERR_400", "Valor de tipo de alimento no válido en el filtro")
 	ErrorAlimentoPrecioUnitarioMalIngresado        = NuevoErrorCodigo("ERR_400", "El precio unitario del alimento no puede ser menor a 0")
 	ErrorAlimentoStockMalIngresado                 = NuevoErrorCodigo("ERR_400", "El stock del alimento no puede ser menor a 0")
 	ErrorAlimentoCantMinimaStockMalIngresado       = NuevoErrorCodigo("ERR_400", "La cantidad mínima de stock del alimento no puede ser menor a 0")

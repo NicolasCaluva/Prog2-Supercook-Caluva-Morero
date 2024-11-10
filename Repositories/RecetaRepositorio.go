@@ -5,6 +5,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
+	"supercook/Dto"
 	"supercook/Errors"
 	"supercook/Models"
 	"supercook/Utils"
@@ -12,7 +13,7 @@ import (
 
 type RecetaRepositorioInterface interface {
 	CrearReceta(receta *Models.Receta) (*mongo.InsertOneResult, *Errors.ErrorCodigo)
-	ObtenerRecetas(filtro *[3]string, idUsuario *string) ([]Models.Receta, *Errors.ErrorCodigo)
+	ObtenerRecetas(filtro *Dto.FiltroAlimentoDto, idUsuario *string) ([]Models.Receta, *Errors.ErrorCodigo)
 	ObtenerRecetaPorID(idReceta *string, idUsuario *string) (Models.Receta, *Errors.ErrorCodigo)
 	EliminarReceta(idReceta *string, idUsuario *string) (*mongo.DeleteResult, *Errors.ErrorCodigo)
 	VerificarAlimentoExistente(idAlimento string) *Errors.ErrorCodigo
@@ -38,17 +39,25 @@ func (recetaRepositorio *RecetaRepositorio) CrearReceta(receta *Models.Receta) (
 	return resultado, nil
 }
 
-func (recetaRepositorio *RecetaRepositorio) ObtenerRecetas(filtro *[3]string, idUsuario *string) ([]Models.Receta, *Errors.ErrorCodigo) {
+func (recetaRepositorio *RecetaRepositorio) ObtenerRecetas(filtro *Dto.FiltroAlimentoDto, idUsuario *string) ([]Models.Receta, *Errors.ErrorCodigo) {
 	coleccion := recetaRepositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("receta")
 
-	filtroBson := bson.M{}
-
-	filtroBson["idUsuario"] = *idUsuario
-	if filtro[0] != "" {
-		filtroBson["momento"] = bson.M{"$regex": filtro[0], "$options": "i"}
+	filtros := []bson.M{}
+	filtros = append(filtros, bson.M{"idUsuario": *idUsuario})
+	if len(filtro.MomentoDelDiaDto) != 0 {
+		filtros = append(filtros, bson.M{"momento": filtro.MomentoDelDiaDto[0]})
 	}
-	if filtro[1] != "" {
-		filtroBson["nombre"] = bson.M{"$regex": filtro[1], "$options": "i"}
+	if filtro.TipoAlimentoDto != "" {
+		filtros = append(filtros, bson.M{"tipoAlimento": filtro.TipoAlimentoDto})
+	}
+	if filtro.Nombre != "" {
+		filtros = append(filtros, bson.M{"nombre": bson.M{"$regex": filtro.Nombre, "$options": "i"}})
+	}
+	var filtroBson bson.M
+	if len(filtros) > 0 {
+		filtroBson = bson.M{"$and": filtros}
+	} else {
+		filtroBson = bson.M{}
 	}
 	cursor, err := coleccion.Find(context.TODO(), filtroBson)
 	if err != nil {

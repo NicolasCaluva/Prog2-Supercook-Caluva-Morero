@@ -10,7 +10,7 @@ import (
 )
 
 type RecetaInterface interface {
-	ObtenerRecetas(filtro *[3]string, idUsuario *string) ([]*Dto.RecetaDto, *Errors.ErrorCodigo)
+	ObtenerRecetas(filtro *Dto.FiltroAlimentoDto, idUsuario *string) ([]*Dto.RecetaDto, *Errors.ErrorCodigo)
 	ObtenerRecetaPorID(idReceta *string, idUsuario *string) (*Dto.RecetaDto, *Errors.ErrorCodigo)
 	CrearReceta(receta *Dto.RecetaDto) *Errors.ErrorCodigo
 	EliminarReceta(idReceta *string, idUsuario *string) *Errors.ErrorCodigo
@@ -28,7 +28,7 @@ func NuevoRecetaService(recetaRepositorio Repositories.RecetaRepositorioInterfac
 	}
 }
 
-func (service *RecetaService) ObtenerRecetas(filtro *[3]string, idUsuario *string) ([]*Dto.RecetaDto, *Errors.ErrorCodigo) {
+func (service *RecetaService) ObtenerRecetas(filtro *Dto.FiltroAlimentoDto, idUsuario *string) ([]*Dto.RecetaDto, *Errors.ErrorCodigo) {
 	recetas, err := service.RecetaRepositorio.ObtenerRecetas(filtro, idUsuario)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func (service *RecetaService) ObtenerRecetas(filtro *[3]string, idUsuario *strin
 	var recetasDto []*Dto.RecetaDto
 	var correcto = ""
 	for _, receta := range recetas {
-		if filtro[2] != "" {
+		if filtro.TipoAlimentoDto != "" {
 			correcto = "pendiente"
 		}
 		recetasDto = append(recetasDto, convertirReceta(receta))
@@ -46,7 +46,7 @@ func (service *RecetaService) ObtenerRecetas(filtro *[3]string, idUsuario *strin
 				return nil, err
 			}
 			recetasDto[len(recetasDto)-1].Alimentos[i].Nombre = alimento.Nombre
-			if fmt.Sprintf("%v", alimento.TipoAlimento) == filtro[2] {
+			if fmt.Sprintf("%v", alimento.TipoAlimento) == string(filtro.TipoAlimentoDto) {
 				correcto = "hecho"
 			}
 		}

@@ -83,12 +83,12 @@ async function aplicarFiltros() {
         .map(option => `momentoDelDia=${option.value}`)
         .join('&');
 
-    const url = `http://localhost:8080/alimentos/?${momentosSeleccionados}&tipoAlimento=${tipoAlimento}&nombre=${nombre}&StockMenorCantidadMinima=True`;
+    const url = `http://localhost:8080/alimentos/?${momentosSeleccionados}&tipoAlimento=${tipoAlimento}&nombre=${nombre}&StockMenorCantidadMinima=true`;
     await makeRequest(url, Method.GET, null, ContentType.JSON, CallType.PRIVATE, successCargarListaCompras, errorCargarListaAlimentosPocoStock);
 }
 
 async function obtenerListaAlimentosPocoStock() {
-    const url = 'http://localhost:8080/alimentos/?StockMenorCantidadMinima=True';
+    const url = 'http://localhost:8080/alimentos/?StockMenorCantidadMinima=true';
     await makeRequest(url, Method.GET, null, ContentType.JSON, CallType.PRIVATE, successCargarListaCompras, errorCargarListaAlimentosPocoStock);
 }
 

@@ -10,7 +10,7 @@ import (
 )
 
 type AlimentoInterface interface {
-	ObtenerAlimentos(filtro *[4]string, idUsuario *string) ([]*Dto.AlimentoDto, *Errors.ErrorCodigo)
+	ObtenerAlimentos(filtro *Dto.FiltroAlimentoDto, idUsuario *string) ([]*Dto.AlimentoDto, *Errors.ErrorCodigo)
 	ObtenerAlimentoPorID(id *string, idUsuario *string) (*Dto.AlimentoDto, *Errors.ErrorCodigo)
 	CrearAlimento(alimento *Dto.AlimentoDto) *Errors.ErrorCodigo
 	ActualizarAlimento(alimento *Dto.AlimentoDto) *Errors.ErrorCodigo
@@ -29,7 +29,7 @@ func NuevoAlimentoService(alimentoRepositorio Repositories.AlimentoRepositorioIn
 	}
 }
 
-func (service *AlimentoService) ObtenerAlimentos(filtro *[4]string, idUsuario *string) ([]*Dto.AlimentoDto, *Errors.ErrorCodigo) {
+func (service *AlimentoService) ObtenerAlimentos(filtro *Dto.FiltroAlimentoDto, idUsuario *string) ([]*Dto.AlimentoDto, *Errors.ErrorCodigo) {
 	alimentos, error := service.AlimentoRepositorio.ObtenerAlimentos(filtro, idUsuario)
 	if error != nil {
 		return nil, error

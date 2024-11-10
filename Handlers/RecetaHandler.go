@@ -22,12 +22,32 @@ func NuevoRecetaHandler(recetaService Services.RecetaInterface) *RecetaHandler {
 
 func (handler *RecetaHandler) ObtenerRecetas(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
-	momento := c.Query("momento")
-	nombre := c.Query("nombre")
+	var filtro Dto.FiltroAlimentoDto
+	momentosDelDia := c.Query("momento")
+	if momentosDelDia != "" {
+		filtro.MomentoDelDiaDto = make([]Dto.Momento, 0, 1)
+		switch momentosDelDia {
+		case string(Dto.Desayuno), string(Dto.Almuerzo), string(Dto.Merienda), string(Dto.Cena):
+			filtro.MomentoDelDiaDto = append(filtro.MomentoDelDiaDto, Dto.Momento(momentosDelDia))
+		default:
+			log.Printf("Valor de momento no válido en el filtro: %s", Errors.ErrorFiltroMomentoInvalido)
+			c.Error(Errors.ErrorFiltroMomentoInvalido)
+			return
+		}
+	}
 	tipoAlimento := c.Query("tipoAlimento")
-
-	filtro := [3]string{momento, nombre, tipoAlimento}
-	log.Printf("Iniciando consulta de recetas con filtros: momento=%s, nombre=%s, tipoAlimento=%s, usuario=%s")
+	if tipoAlimento != "" {
+		switch tipoAlimento {
+		case string(Dto.Verdura), string(Dto.Fruta), string(Dto.Lacteo), string(Dto.Carne):
+			filtro.TipoAlimentoDto = Dto.TipoAlimento(tipoAlimento)
+		default:
+			log.Printf("Valor de tipo de alimento no válido en el filtro: %s", Errors.ErrorFiltroAlimentoTipoAlimentoMalIngresado)
+			c.Error(Errors.ErrorFiltroAlimentoTipoAlimentoMalIngresado)
+			return
+		}
+	}
+	filtro.Nombre = c.Query("nombre")
+	log.Printf("Iniciando consulta de recetas con filtros: momentosDelDia=%s, tipoAlimento=%s, nombre=%s, usuario=%s", filtro.MomentoDelDiaDto, filtro.TipoAlimentoDto, filtro.Nombre, userInfo)
 	recetas, err := handler.RecetaService.ObtenerRecetas(&filtro, &userInfo.Codigo)
 	if err != nil {
 		log.Printf("Error: %v\n", err)
