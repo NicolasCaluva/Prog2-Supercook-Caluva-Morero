@@ -22,7 +22,6 @@ var (
 	ErrorConectarBD           = NuevoErrorCodigo("ERR_500", "Error al conectar a la base de datos")
 	ErrorDecodificarAlimento  = NuevoErrorCodigo("ERR_500", "Error al decodificar el alimento desde la Base de Datos")
 	ErrorDecodificarReceta    = NuevoErrorCodigo("ERR_500", "Error al decodificar la receta desde la Base de Datos")
-	ErrorUsuarioInvalido      = NuevoErrorCodigo("ERR_403", "Usuario inválido")
 	ErrorUsuarioNoAutenticado = NuevoErrorCodigo("ERR_401", "Usuario no autenticado")
 
 	ErrorListaVaciaDeAlimentos                     = NuevoErrorCodigo("ERR_404", "Lista vacia de alimentos")
@@ -39,6 +38,7 @@ var (
 	ErrorAlimentoMomentoDelDiaMalIngresado         = NuevoErrorCodigo("ERR_400", "El momento del día no puede estar vacío")
 	ErrorJsonInvalidoAlimento                      = NuevoErrorCodigo("ERR_500", "Error en el JSON de alimento")
 	ErrorNoSePuedeEliminarAlimentoPerteneceaReceta = NuevoErrorCodigo("ERR_400", "No se puede eliminar el alimento porque pertenece a una receta")
+	ErrorFiltroVacio                               = NuevoErrorCodigo("ERR_400", "Error filtro vacio")
 
 	ErrorListaVaciaDeCompras = NuevoErrorCodigo("ERR_404", "Lista vacia de alimentos a comprar")
 	ErrorJsonInvalidoCompras = NuevoErrorCodigo("ERR_500", "Error en el JSON de compra")

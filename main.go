@@ -61,7 +61,6 @@ func dependencias() {
 	var compraRepositorio Repositories.CompraRepositorioInterfaz
 	var recetaRepository Repositories.RecetaRepositorioInterface
 	var recetaService Services.RecetaInterface
-
 	database = Repositories.NuevaMongoDB()
 	alimentoRepository = Repositories.NuevoAlimentoRepositorio(database)
 	recetaRepository = Repositories.NuevoRecetaRepositorio(database)

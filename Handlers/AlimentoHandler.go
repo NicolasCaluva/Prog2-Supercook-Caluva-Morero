@@ -22,30 +22,19 @@ func NuevoAlimentoHandler(alimentoService Services.AlimentoInterface) *AlimentoH
 }
 func (handler *AlimentoHandler) ObtenerAlimentos(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
+	var alimento Dto.AlimentoDto
 	var filtro Dto.FiltroAlimentoDto
 	momentosDelDia := strings.Split(c.Query("momentoDelDia"), ",")
-	if len(momentosDelDia) > 0 && momentosDelDia[0] != "" {
-		filtro.MomentoDelDiaDto = make([]Dto.Momento, 0, len(momentosDelDia))
-		for _, momento := range momentosDelDia {
-			switch momento {
-			case string(Dto.Desayuno), string(Dto.Almuerzo), string(Dto.Merienda), string(Dto.Cena):
-				filtro.MomentoDelDiaDto = append(filtro.MomentoDelDiaDto, Dto.Momento(momento))
-			default:
-				log.Printf("Valor de momento no válido en el filtro: %s", Errors.ErrorFiltroMomentoInvalido)
-				c.Error(Errors.ErrorFiltroMomentoInvalido)
-			}
-		}
+	errores := alimento.ValidarFiltroMomentoDelDia(&momentosDelDia)
+	if errores != nil {
+		log.Printf("Valor de momento no válido en el filtro: %s", Errors.ErrorFiltroMomentoInvalido)
+		c.Error(errores)
 	}
 	tipoAlimento := c.Query("tipoAlimento")
-	if tipoAlimento != "" {
-		switch tipoAlimento {
-		case string(Dto.Verdura), string(Dto.Fruta), string(Dto.Lacteo), string(Dto.Carne):
-			filtro.TipoAlimentoDto = Dto.TipoAlimento(tipoAlimento)
-		default:
-			log.Printf("Valor de tipo de alimento no válido en el filtro: %s", Errors.ErrorFiltroAlimentoTipoAlimentoMalIngresado)
-			c.Error(Errors.ErrorFiltroAlimentoTipoAlimentoMalIngresado)
-			return
-		}
+	errores = alimento.ValidarFiltroTipoAlimento(&tipoAlimento)
+	if errores != nil {
+		log.Printf("Valor de tipo de alimento no válido en el filtro: %s", Errors.ErrorFiltroAlimentoTipoAlimentoMalIngresado)
+		c.Error(Errors.ErrorFiltroAlimentoTipoAlimentoMalIngresado)
 	}
 	filtro.Nombre = c.Query("nombre")
 	filtro.StockMenorCantidadMinima = c.Query("StockMenorCantidadMinima") == "true"

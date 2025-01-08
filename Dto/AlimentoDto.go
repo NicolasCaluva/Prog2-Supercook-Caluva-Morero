@@ -1,6 +1,9 @@
 package Dto
 
-import "supercook/Errors"
+import (
+	"log"
+	"supercook/Errors"
+)
 
 type AlimentoDto struct {
 	IdAlimento      string
@@ -33,4 +36,35 @@ func (a *AlimentoDto) ValidarAlimentoDto() *Errors.ErrorCodigo {
 		return Errors.ErrorAlimentoMomentoDelDiaMalIngresado
 	}
 	return nil
+}
+func (a *AlimentoDto) ValidarFiltroMomentoDelDia(momentosDelDia *[]string) *Errors.ErrorCodigo {
+	var filtro FiltroAlimentoDto
+	if len(*momentosDelDia) > 0 {
+		filtro.MomentoDelDiaDto = make([]Momento, 0, len(*momentosDelDia))
+		for _, momento := range *momentosDelDia {
+			switch momento {
+			case string(Desayuno), string(Almuerzo), string(Merienda), string(Cena):
+				filtro.MomentoDelDiaDto = append(filtro.MomentoDelDiaDto, Momento(momento))
+			default:
+				log.Printf("Valor de momento no válido en el filtro: %s", Errors.ErrorFiltroMomentoInvalido)
+				return Errors.ErrorFiltroMomentoInvalido
+			}
+		}
+		return nil
+	}
+	return Errors.ErrorFiltroVacio
+}
+func (a *AlimentoDto) ValidarFiltroTipoAlimento(tipoAlimento *string) *Errors.ErrorCodigo {
+	var filtro FiltroAlimentoDto
+	if *tipoAlimento != "" {
+		switch *tipoAlimento {
+		case string(Verdura), string(Fruta), string(Lacteo), string(Carne):
+			filtro.TipoAlimentoDto = TipoAlimento(*tipoAlimento)
+		default:
+			log.Printf("Valor de tipo de alimento no válido en el filtro: %s", Errors.ErrorFiltroAlimentoTipoAlimentoMalIngresado)
+			return Errors.ErrorFiltroAlimentoTipoAlimentoMalIngresado
+		}
+		return nil
+	}
+	return Errors.ErrorFiltroVacio
 }
