@@ -38,3 +38,18 @@ func (handler *CompraHandler) CrearCompra(c *gin.Context) {
 	log.Printf("Compra realizada con éxito\n")
 	c.JSON(http.StatusOK, gin.H{"mensaje": "Compra realizada con éxito"})
 }
+func (handler *CompraHandler) ObtenerMontoTotalComprasEntreDosFechas(c *gin.Context) {
+	fechaInicio := c.Query("fechaInicio")
+	fechaFin := c.Query("fechaFin")
+	if fechaInicio == "" || fechaFin == "" {
+		c.Error(Errors.ErrorFechasInvalidas)
+		return
+	}
+	montoTotal, error := handler.CompraService.SumarMontoTotalDeComprasEntreDosFechas(fechaInicio, fechaFin)
+	if error != nil {
+		log.Printf("Error: %v\n", error)
+		c.Error(error)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"montoTotal": montoTotal})
+}

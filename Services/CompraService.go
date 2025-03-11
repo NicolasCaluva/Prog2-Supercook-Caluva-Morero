@@ -10,6 +10,7 @@ import (
 
 type CompraInterfaz interface {
 	AgregarCompra(compra *Dto.CompraDto) *Errors.ErrorCodigo
+	SumarMontoTotalDeComprasEntreDosFechas(fechaInicio, fechaFin string) (float64, *Errors.ErrorCodigo)
 }
 
 type CompraService struct {
@@ -70,4 +71,11 @@ func convertirElementoComprado(alimentos []Dto.ElementoCompradoDto) []Models.Ele
 		})
 	}
 	return alimentosModel
+}
+func (service *CompraService) SumarMontoTotalDeComprasEntreDosFechas(fechaInicio, fechaFin string) (float64, *Errors.ErrorCodigo) {
+	montoTotal, err := service.CompraRepositorio.SumarMontoTotalDeComprasEntreDosFechas(fechaInicio, fechaFin)
+	if err != nil {
+		return 0, err
+	}
+	return montoTotal, nil
 }

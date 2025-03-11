@@ -42,6 +42,7 @@ var (
 
 	ErrorListaVaciaDeCompras = NuevoErrorCodigo("ERR_404", "Lista vacia de alimentos a comprar")
 	ErrorJsonInvalidoCompras = NuevoErrorCodigo("ERR_500", "Error en el JSON de compra")
+	ErrorFechasInvalidas     = NuevoErrorCodigo("ERR_400", "Las fechas ingresadas no son válidas")
 
 	ErrorListaVaciaDeRecetas                  = NuevoErrorCodigo("ERR_404", "Lista vacia de recetas")
 	ErrorRecetaNoEncontrada                   = NuevoErrorCodigo("ERR_404", "Receta no encontrada")
