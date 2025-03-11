@@ -39,7 +39,7 @@ func (a *AlimentoDto) ValidarAlimentoDto() *Errors.ErrorCodigo {
 }
 func (a *AlimentoDto) ValidarFiltroMomentoDelDia(momentosDelDia *[]string) *Errors.ErrorCodigo {
 	var filtro FiltroAlimentoDto
-	if len(*momentosDelDia) > 0 {
+	if len(*momentosDelDia) > 0 && (*momentosDelDia)[0] != "" {
 		filtro.MomentoDelDiaDto = make([]Momento, 0, len(*momentosDelDia))
 		for _, momento := range *momentosDelDia {
 			switch momento {
@@ -50,9 +50,8 @@ func (a *AlimentoDto) ValidarFiltroMomentoDelDia(momentosDelDia *[]string) *Erro
 				return Errors.ErrorFiltroMomentoInvalido
 			}
 		}
-		return nil
 	}
-	return Errors.ErrorFiltroVacio
+	return nil
 }
 func (a *AlimentoDto) ValidarFiltroTipoAlimento(tipoAlimento *string) *Errors.ErrorCodigo {
 	var filtro FiltroAlimentoDto
@@ -64,7 +63,6 @@ func (a *AlimentoDto) ValidarFiltroTipoAlimento(tipoAlimento *string) *Errors.Er
 			log.Printf("Valor de tipo de alimento no válido en el filtro: %s", Errors.ErrorFiltroAlimentoTipoAlimentoMalIngresado)
 			return Errors.ErrorFiltroAlimentoTipoAlimentoMalIngresado
 		}
-		return nil
 	}
-	return Errors.ErrorFiltroVacio
+	return nil
 }

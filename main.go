@@ -34,7 +34,6 @@ func rutas() {
 	router.Use(authMiddleware.ValidateToken)
 
 	group := router.Group("/alimentos")
-	//group.Use(authMiddleware.ValidateToken)
 	group.Use(Middlewares.CORSMiddleware())
 	group.GET("/", alimentoHandler.ObtenerAlimentos)
 	group.GET("/:id/", alimentoHandler.ObtenerAlimentoPorID)
@@ -46,11 +45,12 @@ func rutas() {
 	groupCompra.POST("/", compraHandler.CrearCompra)
 
 	groupReceta := router.Group("/recetas")
-	// groupReceta.Use(Middlewares.CORSMiddleware())
 	groupReceta.GET("/", recetaHandler.ObtenerRecetas)
 	groupReceta.GET("/:id/", recetaHandler.ObtenerRecetaPorID)
 	groupReceta.POST("/", recetaHandler.CrearReceta)
 	groupReceta.DELETE("/:id/", recetaHandler.EliminarReceta)
+	groupReceta.GET("/contarRecetasPorMomento/", recetaHandler.ContarRecetasPorMomento)
+	groupReceta.GET("/contarRecetasPorTipoAlimento/", recetaHandler.ContarCantidadDeRecetasPorTipoAlimento)
 }
 
 func dependencias() {

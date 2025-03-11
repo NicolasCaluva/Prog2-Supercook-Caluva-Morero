@@ -24,7 +24,7 @@ func (handler *RecetaHandler) ObtenerRecetas(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
 	var alimentoDto Dto.AlimentoDto
 	var filtro Dto.FiltroAlimentoDto
-	var momentoDelDia []string
+	var momentoDelDia = make([]string, 1)
 	momentoDelDia[0] = c.Query("momento")
 	errores := alimentoDto.ValidarFiltroMomentoDelDia(&momentoDelDia)
 	if errores != nil {
@@ -94,4 +94,28 @@ func (handler *RecetaHandler) EliminarReceta(c *gin.Context) {
 	}
 	log.Printf("Receta eliminada correctamente\n")
 	c.JSON(http.StatusOK, gin.H{"mensaje": "Receta eliminada correctamente"})
+}
+func (handler *RecetaHandler) ContarRecetasPorMomento(c *gin.Context) {
+	userInfo := Utils.GetUserInfoFromContext(c)
+	log.Printf("Iniciando conteo de recetas por momento, usuario: %s", userInfo)
+	recetas, err := handler.RecetaService.ContarRecetasPorMomento(&userInfo.Codigo)
+	if err != nil {
+		log.Printf("Error: %v\n", err)
+		c.Error(err)
+		return
+	}
+	log.Printf("Recetas contadas: %v\n", recetas)
+	c.JSON(http.StatusOK, recetas)
+}
+func (handler *RecetaHandler) ContarCantidadDeRecetasPorTipoAlimento(c *gin.Context) {
+	userInfo := Utils.GetUserInfoFromContext(c)
+	log.Printf("Iniciando conteo de recetas por tipo de alimento, usuario: %s", userInfo)
+	recetas, err := handler.RecetaService.ContarCantidadDeRecetasPorTipoAlimento(&userInfo.Codigo)
+	if err != nil {
+		log.Printf("Error: %v\n", err)
+		c.Error(err)
+		return
+	}
+	log.Printf("Recetas contadas: %v\n", recetas)
+	c.JSON(http.StatusOK, recetas)
 }

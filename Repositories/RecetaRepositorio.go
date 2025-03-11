@@ -17,6 +17,7 @@ type RecetaRepositorioInterface interface {
 	ObtenerRecetaPorID(idReceta *string, idUsuario *string) (Models.Receta, *Errors.ErrorCodigo)
 	EliminarReceta(idReceta *string, idUsuario *string) (*mongo.DeleteResult, *Errors.ErrorCodigo)
 	VerificarAlimentoExistente(idAlimento string) *Errors.ErrorCodigo
+	ContarRecetasPorMomento(idUsuario *string) (map[string]int, *Errors.ErrorCodigo)
 }
 
 type RecetaRepositorio struct {
@@ -84,12 +85,9 @@ func (recetaRepositorio *RecetaRepositorio) ObtenerRecetas(filtro *Dto.FiltroAli
 func (recetaRepositorio *RecetaRepositorio) ObtenerRecetaPorID(idReceta *string, idUsuario *string) (Models.Receta, *Errors.ErrorCodigo) {
 	coleccion := recetaRepositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("receta")
 	IdObjeto := Utils.GetObjectIDFromStringID(*idReceta)
-	filtro := bson.M{"_id": IdObjeto}
+	filtro := bson.M{"_id": IdObjeto, "idUsuario": *idUsuario}
 	var receta Models.Receta
 	err := coleccion.FindOne(context.TODO(), filtro).Decode(&receta)
-	if receta.IDUsuario != *idUsuario {
-		return Models.Receta{}, Errors.ErrorUsuarioNoAutenticado
-	}
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			log.Printf("Error: %v\n", Errors.ErrorRecetaNoEncontrada)
@@ -130,4 +128,34 @@ func (recetaRepositorio *RecetaRepositorio) VerificarAlimentoExistente(idAliment
 		return Errors.ErrorConectarBD
 	}
 	return Errors.ErrorNoSePuedeEliminarAlimentoPerteneceaReceta
+}
+func (recetaRepositorio *RecetaRepositorio) ContarRecetasPorMomento(idUsuario *string) (map[string]int, *Errors.ErrorCodigo) {
+	coleccion := recetaRepositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("receta")
+
+	consulta := mongo.Pipeline{
+		{{"$match", bson.D{{"idUsuario", *idUsuario}}}},
+		{{"$group", bson.D{
+			{"_id", "$momento"},
+			{"count", bson.D{{"$sum", 1}}},
+		}}},
+	}
+	cursor, err := coleccion.Aggregate(context.Background(), consulta)
+	if err != nil {
+		log.Printf("Error: %v\n", Errors.ErrorConectarBD)
+		return nil, Errors.ErrorConectarBD
+	}
+	defer cursor.Close(context.Background())
+	resultado := make(map[string]int)
+	for cursor.Next(context.Background()) {
+		var cantRecetasPorMomento struct {
+			momento  string `bson:"_id"`
+			Contador int    `bson:"count"`
+		}
+		err := cursor.Decode(&cantRecetasPorMomento)
+		if err != nil {
+			log.Printf("Error: %v\n", Errors.ErrorDecodificarAlimento)
+		}
+		resultado[cantRecetasPorMomento.momento] = cantRecetasPorMomento.Contador
+	}
+	return resultado, nil
 }

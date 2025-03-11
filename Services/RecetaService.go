@@ -14,6 +14,8 @@ type RecetaInterface interface {
 	ObtenerRecetaPorID(idReceta *string, idUsuario *string) (*Dto.RecetaDto, *Errors.ErrorCodigo)
 	CrearReceta(receta *Dto.RecetaDto) *Errors.ErrorCodigo
 	EliminarReceta(idReceta *string, idUsuario *string) *Errors.ErrorCodigo
+	ContarRecetasPorMomento(idUsuario *string) (map[string]int, *Errors.ErrorCodigo)
+	ContarCantidadDeRecetasPorTipoAlimento(idUsuario *string) (map[string]int, *Errors.ErrorCodigo)
 }
 
 type RecetaService struct {
@@ -137,6 +139,49 @@ func (service *RecetaService) EliminarReceta(idReceta *string, idUsuario *string
 		}
 	}
 	return nil
+}
+func (service *RecetaService) ContarRecetasPorMomento(idUsuario *string) (map[string]int, *Errors.ErrorCodigo) {
+	recetas, err := service.RecetaRepositorio.ContarRecetasPorMomento(idUsuario)
+	if err != nil {
+		return nil, err
+	}
+	return recetas, nil
+}
+func (service *RecetaService) ContarCantidadDeRecetasPorTipoAlimento(idUsuario *string) (map[string]int, *Errors.ErrorCodigo) {
+	resultado := make(map[string]int)
+	recetas, err := service.RecetaRepositorio.ObtenerRecetas(nil, idUsuario)
+	if err != nil {
+		return nil, err
+	}
+	for _, receta := range recetas {
+		banderaFruta := true
+		banderaVerdura := true
+		banderaLacteo := true
+		banderaCarne := true
+		for _, alimento := range receta.Alimentos {
+			alimentoObtenido, err := service.AlimentoService.ObtenerAlimentoPorID(&alimento.IDAlimento, idUsuario)
+			if err != nil {
+				return nil, err
+			}
+			if banderaFruta && alimentoObtenido.TipoAlimento == Dto.Fruta {
+				resultado[string(Models.Fruta)]++
+				banderaFruta = false
+			}
+			if banderaVerdura && alimentoObtenido.TipoAlimento == Dto.Verdura {
+				resultado[string(Models.Verdura)]++
+				banderaVerdura = false
+			}
+			if banderaLacteo && alimentoObtenido.TipoAlimento == Dto.Lacteo {
+				resultado[string(Models.Lacteo)]++
+				banderaLacteo = false
+			}
+			if banderaCarne && alimentoObtenido.TipoAlimento == Dto.Carne {
+				resultado[string(Models.Carne)]++
+				banderaCarne = false
+			}
+		}
+	}
+	return resultado, nil
 }
 func convertirReceta(receta Models.Receta) *Dto.RecetaDto {
 	var listaAlimentosRecetaDto []Dto.AlimentoRecetaDto
