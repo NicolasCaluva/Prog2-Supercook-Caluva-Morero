@@ -1,6 +1,7 @@
 // Variables globales
+// noinspection LanguageDetectionInspection
+
 let listaAlimentos;
-let listaAlimentosData = [];
 let pagActual = 1;
 const itemPorPagina = 10;
 let paginaTotal = 1;
@@ -9,6 +10,7 @@ let paginaTotal = 1;
 document.addEventListener('DOMContentLoaded', async function () {
     listaAlimentos = document.getElementById('lista-alimentos');
     const modal = document.getElementById('cargarAlimento');
+
     await obtenerListaAlimentos();
 
     const agregarAlimentoBtn = document.getElementById('agregarNuevoAlimento');
@@ -33,7 +35,9 @@ function cambiarPagina(page) {
     mostrarPagina();
 }
 
-function mostrarPagina() {
+// TODO: Hay un error acá, el parámetro nunca se está pasando cuando se llama a la función
+// TODO: Revisar si debe recibir un parámetro o no
+function mostrarPagina(listaAlimentosData) {
     const comienzo = (pagActual - 1) * itemPorPagina;
     const final = comienzo + itemPorPagina;
     const alimentosPagina = listaAlimentosData.slice(comienzo, final);
@@ -48,24 +52,25 @@ function mostrarPagina() {
 
 async function obtenerListaAlimentos() {
     const URL = 'http://localhost:8080/alimentos/';
+    let listaAlimentosData = [];
     await makeRequest(URL, Method.GET, null, ContentType.JSON, CallType.PRIVATE, function (response) {
         listaAlimentosData = response;
         paginaTotal = Math.ceil(listaAlimentosData.length / itemPorPagina);
         pagActual = 1;
-        mostrarPagina();
-    }, errorCargarListaAlimentos);
+        mostrarPagina(listaAlimentosData);
+    }, (error) => console.error('Error', error));
 }
 
 function successCargarListaAlimentos(response) {
     response.forEach(alimento => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-                            <td>${alimento.Nombre}</td>
-                            <td>$${alimento.PrecioUnitario}</td>
-                            <td>${alimento.Stock}</td>
-                            <td>${alimento.CantMinimaStock}</td>
-                            <td>${alimento.TipoAlimento.charAt(0).toUpperCase() + alimento.TipoAlimento.slice(1)}</td>
-                            <td>${alimento.MomentoDelDia.map(momento => momento.charAt(0).toUpperCase() + momento.slice(1)).join(' - ')}</td>
+                            <td class="text-secondary text-sm text-center">${alimento.Nombre}</td>
+                            <td class="text-secondary text-sm text-center">$${alimento.PrecioUnitario}</td>
+                            <td class="text-secondary text-sm text-center">${alimento.Stock}</td>
+                            <td class="text-secondary text-sm text-center">${alimento.CantMinimaStock}</td>
+                            <td class="text-secondary text-sm text-center">${alimento.TipoAlimento.charAt(0).toUpperCase() + alimento.TipoAlimento.slice(1)}</td>
+                            <td class="text-secondary text-sm text-center">${alimento.MomentoDelDia.map(momento => momento.charAt(0).toUpperCase() + momento.slice(1)).join(' - ')}</td>
                         `;
         const botonEditar = document.createElement('button');
         const iconoEditar = document.createElement('i');
@@ -107,10 +112,6 @@ function successCargarListaAlimentos(response) {
         tr.appendChild(tdBotones);
         listaAlimentos.appendChild(tr);
     });
-}
-
-function errorCargarListaAlimentos(status, response) {
-    console.log("Falla:", response);
 }
 
 // Funciones para la carga de un nuevo alimento en el sistema

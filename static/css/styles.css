@@ -12,6 +12,16 @@
     --color-white: #ffffff;
 }
 
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--color-gray--light);
+    color: var(--color-black);
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
 
 .bg-custom-border {
     border-radius: 1rem;
@@ -31,6 +41,12 @@
 
 .border-none {
     border: none;
+}
+
+.simple-border {
+    border: 2px dotted var(--color-gray);
+    padding: .5rem;
+    border-radius: .75rem;
 }
 
 .eye-password {
@@ -59,6 +75,10 @@
 
 .bg-black {
     background-color: var(--color-black);
+}
+
+.bg-gray {
+    background-color: var(--color-gray--light);
 }
 
 .fc-black {
@@ -94,12 +114,6 @@
     }
 }
 
-.active {
-    background-color: var(--color-primary) !important;
-    border-radius: 5px;
-    color: white;
-}
-
 .logo {
     width: 50px;
     height: 50px;
@@ -123,13 +137,6 @@
 
 .background-receta {
     background-image: url('../asado.jpg');
-    background-repeat: no-repeat;
-    background-size: cover;
-    padding: 0 2rem;
-}
-
-.background-alimento {
-    background-image: url('../helado.jpg');
     background-repeat: no-repeat;
     background-size: cover;
     padding: 0 2rem;
@@ -169,6 +176,7 @@
 .radius-right-md {
     border-radius: 0 0.5rem 0.5rem 0 !important;
 }
+
 .chart-container {
     border: 2px solid orange;
     border-radius: 15px;
@@ -176,20 +184,28 @@
     background-color: #ffe5b4;
     margin: 10px;
 }
+
 .chart-row {
     display: flex;
     justify-content: space-between;
 }
+
 .chart-row > div {
     width: 48%;
 }
+
 .full-width {
     width: 98.5%;
 }
+
 .background-index {
     background-image: url('../FondoIndex.jpg');
     background-repeat: no-repeat;
     background-size: cover;
     padding: 0 2rem;
     min-height: 100vh;
+}
+
+#lista-alimentos {
+
 }

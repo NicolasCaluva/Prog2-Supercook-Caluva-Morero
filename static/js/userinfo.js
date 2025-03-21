@@ -7,21 +7,21 @@ document.addEventListener('DOMContentLoaded', async function () {
     const userinfo = document.getElementById('user-info');
     const rol = document.getElementById('rol');
     const logout = document.getElementById('logout');
-    userinfo.innerHTML = localStorage.getItem('username');
-    rol.innerHTML = localStorage.getItem('rol');
-    logout.addEventListener('click', () => {
+    //userinfo.innerHTML = localStorage.getItem('username');
+    //rol.innerHTML = localStorage.getItem('rol');
+    /*logout.addEventListener('click', () => {
         localStorage.clear();
         location.href = LOGIN_URL;
-    });
+    });*/
 
     const lastSegment = location.href.split('/').pop();
     if (lastSegment.includes('alimentos.html')) {
-        nav_alimentos.classList.add('active');
+        nav_alimentos.classList.add('nav-link', 'active', 'bg-gradient-dark', 'text-white');
     }
     if (lastSegment.includes('recetas.html')) {
-        nav_recetas.classList.add('active');
+        nav_recetas.classList.add('nav-link', 'active', 'bg-gradient-dark', 'text-white');
     }
     if (lastSegment.includes('compras.html')) {
-        nav_compras.classList.add('active');
+        nav_compras.classList.add('nav-link', 'active', 'bg-gradient-dark', 'text-white');
     }
 });
