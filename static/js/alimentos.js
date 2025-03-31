@@ -35,8 +35,9 @@ function cambiarPagina(page) {
     mostrarPagina();
 }
 
-// TODO: Hay un error acá, el parámetro nunca se está pasando cuando se llama a la función
-// TODO: Revisar si debe recibir un parámetro o no
+//TODO: Cuando se llama a la función desde cambiarPagina no se le está pasando ningún parámetro
+// Ver si en algún lado se guarda la lista de alimentos que se obtuvo al cargar la página
+// OPCIONAL: Usar alpine.js y almacenar la lista en una variable
 function mostrarPagina(listaAlimentosData) {
     const comienzo = (pagActual - 1) * itemPorPagina;
     const final = comienzo + itemPorPagina;
@@ -45,7 +46,7 @@ function mostrarPagina(listaAlimentosData) {
     listaAlimentos.innerHTML = '';
     successCargarListaAlimentos(alimentosPagina);
 
-    document.getElementById('numeroPagina').textContent = `Página ${pagActual} de ${paginaTotal}`;
+    document.getElementById('numeroPagina').textContent = `${pagActual} de ${paginaTotal}`;
     document.getElementById('pagAnterior').disabled = pagActual === 1;
     document.getElementById('pagSiguiente').disabled = pagActual === paginaTotal;
 }
@@ -53,12 +54,12 @@ function mostrarPagina(listaAlimentosData) {
 async function obtenerListaAlimentos() {
     const URL = 'http://localhost:8080/alimentos/';
     let listaAlimentosData = [];
-    await makeRequest(URL, Method.GET, null, ContentType.JSON, CallType.PRIVATE, function (response) {
+    await makeRequest(URL, Method.GET, null, ContentType.JSON, CallType.PRIVATE, (response) => {
         listaAlimentosData = response;
         paginaTotal = Math.ceil(listaAlimentosData.length / itemPorPagina);
         pagActual = 1;
         mostrarPagina(listaAlimentosData);
-    }, (error) => console.error('Error', error));
+    }, errorObtenerListaAlimentos);
 }
 
 function successCargarListaAlimentos(response) {
@@ -114,17 +115,6 @@ function successCargarListaAlimentos(response) {
     });
 }
 
-// Funciones para la carga de un nuevo alimento en el sistema
-function successCargarNuevoAlimento() {
-    alert("Alimento cargado correctamente");
-}
-
-function errorCargarNuevoAlimento(status, response) {
-    console.log("Falla:", response);
-    alert(response.error);
-}
-
-// Funciones para la obtención de un alimento del sistema
 function successObtenerAlimento(alimento) {
     let nombreAlimento = document.getElementById('nombreAlimento');
     let precioUnitario = document.getElementById('precioUnitario');
@@ -154,11 +144,14 @@ function successObtenerAlimento(alimento) {
     confirmarAlimentoBtn.addEventListener('click', () => confirmarEdicionAlimento(alimento));
 }
 
+function errorObtenerListaAlimentos(status, response) {
+    console.error('Error: ', response.error);
+}
+
 function errorObtenerAlimento(status, response) {
     alert(response.error);
 }
 
-// Funciones para la edición de un alimento en el sistema
 function successEditarAlimento() {
     alert("Alimento editado correctamente");
     obtenerListaAlimentos();
@@ -168,7 +161,6 @@ function errorEditarAlimento(status, response) {
     alert(response.error);
 }
 
-// Funciones para la eliminación de un alimento en el sistema
 function successEliminarAlimento() {
     alert("Alimento eliminado correctamente");
     obtenerListaAlimentos();
@@ -197,7 +189,11 @@ async function confirmarNuevoAlimento() {
         MomentoDelDia: momentosSeleccionados
     };
     const URL = 'http://localhost:8080/alimentos/';
-    await makeRequest(URL, 'POST', nuevoAlimento, ContentType.JSON, CallType.PRIVATE, successCargarNuevoAlimento, errorCargarNuevoAlimento);
+    await makeRequest(URL, 'POST', nuevoAlimento, ContentType.JSON, CallType.PRIVATE, () => {
+        alert("Alimento cargado correctamente");
+    }, () => {
+        alert("Error al cargar el alimento");
+    });
     location.reload();
 }
 
