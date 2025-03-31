@@ -114,12 +114,3 @@ async function obtenerRecetasPorBeneficio() {
         console.error('Error consultado:', response);
     });
 }
-
-document.addEventListener('DOMContentLoaded', function () {
-    obtenerRecetasPorMomento();
-    obtenerRecetasPorTipoDeAlimento();
-    obtenerRecetasPorBeneficio();
-
-    let botonEnviar = document.getElementById('botonEnviar');
-    botonEnviar.addEventListener('click', obtenerRecetasPorBeneficio);
-});
