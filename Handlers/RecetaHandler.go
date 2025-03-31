@@ -97,14 +97,12 @@ func (handler *RecetaHandler) EliminarReceta(c *gin.Context) {
 }
 func (handler *RecetaHandler) ContarRecetasPorMomento(c *gin.Context) {
 	userInfo := Utils.GetUserInfoFromContext(c)
-	log.Printf("Iniciando conteo de recetas por momento, usuario: %s", userInfo)
 	recetas, err := handler.RecetaService.ContarRecetasPorMomento(&userInfo.Codigo)
 	if err != nil {
 		log.Printf("Error: %v\n", err)
 		c.Error(err)
 		return
 	}
-	log.Printf("Recetas contadas: %v\n", recetas)
 	c.JSON(http.StatusOK, recetas)
 }
 func (handler *RecetaHandler) ContarCantidadDeRecetasPorTipoAlimento(c *gin.Context) {

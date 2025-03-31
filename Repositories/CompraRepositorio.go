@@ -7,11 +7,12 @@ import (
 	"log"
 	"supercook/Errors"
 	"supercook/Models"
+	"time"
 )
 
 type CompraRepositorioInterfaz interface {
 	AgregarCompra(compra *Models.Compra) (*mongo.InsertOneResult, *Errors.ErrorCodigo)
-	SumarMontoTotalDeComprasEntreDosFechas(fechaInicio, fechaFin string) (float64, *Errors.ErrorCodigo)
+	SumarMontoTotalDeComprasEntreDosFechasDividoPorMes(fechaInicio, fechaFin time.Time, idUsuario string) (map[string]float64, *Errors.ErrorCodigo)
 }
 type CompraRepositorio struct {
 	db DB
@@ -31,21 +32,28 @@ func (compraRepositorio *CompraRepositorio) AgregarCompra(compra *Models.Compra)
 	}
 	return resultado, nil
 }
-func (CompraRepositorio *CompraRepositorio) SumarMontoTotalDeComprasEntreDosFechas(fechaInicio, fechaFin string) (float64, *Errors.ErrorCodigo) {
+func (CompraRepositorio *CompraRepositorio) SumarMontoTotalDeComprasEntreDosFechasDividoPorMes(fechaInicio, fechaFin time.Time, idUsuario string) (map[string]float64, *Errors.ErrorCodigo) {
 	coleccion := CompraRepositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("compra")
-	cursor, err := coleccion.Find(context.Background(), bson.M{"fecha": bson.M{"$gte": fechaInicio, "$lte": fechaFin}})
+	var filtro bson.M
+	if fechaInicio.IsZero() || fechaFin.IsZero() {
+		filtro = bson.M{"idUsuario": idUsuario}
+	} else {
+		filtro = bson.M{"idUsuario": idUsuario, "fecha": bson.M{"$gte": fechaInicio, "$lte": fechaFin}}
+	}
+	cursor, err := coleccion.Find(context.Background(), filtro)
 	if err != nil {
 		log.Printf("Error: %v\n", Errors.ErrorConectarBD)
-		return 0, Errors.ErrorConectarBD
+		return nil, Errors.ErrorConectarBD
 	}
 	var compras []Models.Compra
 	if err = cursor.All(context.Background(), &compras); err != nil {
 		log.Printf("Error: %v\n", Errors.ErrorConectarBD)
-		return 0, Errors.ErrorConectarBD
+		return nil, Errors.ErrorConectarBD
 	}
-	var montoTotal float64
+	montoTotalPorMes := make(map[string]float64)
 	for _, compra := range compras {
-		montoTotal += compra.MontoTotal
+		mes := compra.FechaCreacion.Month().String()
+		montoTotalPorMes[mes] = montoTotalPorMes[mes] + compra.MontoTotal
 	}
-	return montoTotal, nil
+	return montoTotalPorMes, nil
 }

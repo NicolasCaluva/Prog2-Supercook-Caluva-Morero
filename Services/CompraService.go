@@ -1,6 +1,7 @@
 package Services
 
 import (
+	"log"
 	"supercook/Dto"
 	"supercook/Errors"
 	"supercook/Models"
@@ -10,7 +11,7 @@ import (
 
 type CompraInterfaz interface {
 	AgregarCompra(compra *Dto.CompraDto) *Errors.ErrorCodigo
-	SumarMontoTotalDeComprasEntreDosFechas(fechaInicio, fechaFin string) (float64, *Errors.ErrorCodigo)
+	SumarMontoTotalDeComprasEntreDosFechas(fechaInicio, fechaFin string, idUsuario string) (map[string]float64, *Errors.ErrorCodigo)
 }
 
 type CompraService struct {
@@ -72,10 +73,28 @@ func convertirElementoComprado(alimentos []Dto.ElementoCompradoDto) []Models.Ele
 	}
 	return alimentosModel
 }
-func (service *CompraService) SumarMontoTotalDeComprasEntreDosFechas(fechaInicio, fechaFin string) (float64, *Errors.ErrorCodigo) {
-	montoTotal, err := service.CompraRepositorio.SumarMontoTotalDeComprasEntreDosFechas(fechaInicio, fechaFin)
+func (service *CompraService) SumarMontoTotalDeComprasEntreDosFechas(fechaInicio, fechaFin string, idUsuario string) (map[string]float64, *Errors.ErrorCodigo) {
+	fechaInicial := time.Time{}
+	fechaFinal := time.Time{}
+	if fechaInicio != "" || fechaFin != "" {
+		fechaInicial1, err1 := time.Parse("2006-01-02", fechaInicio)
+		if err1 != nil {
+			return nil, Errors.ErrorFechasInvalidas
+		}
+		fechaFinal1, err2 := time.Parse("2006-01-02", fechaFin)
+		if err2 != nil {
+			return nil, Errors.ErrorFechasInvalidas
+		}
+		if fechaFinal.Before(fechaInicial) {
+			return nil, Errors.ErrorFechasInvalidas
+		}
+		fechaInicial = fechaInicial1
+		fechaFinal = fechaFinal1
+	}
+	montoTotal, err := service.CompraRepositorio.SumarMontoTotalDeComprasEntreDosFechasDividoPorMes(fechaInicial, fechaFinal, idUsuario)
+	log.Printf("Monto total de compras entre %s y %s: %v\n", fechaInicial, fechaFinal, montoTotal)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 	return montoTotal, nil
 }
