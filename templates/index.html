@@ -60,14 +60,17 @@
             <canvas id="graficoBarraTipoUso"></canvas>
         </div>
         <div class="chart-container">
-            <h2>Cantidades de recetas por tipos de alimentos:</h2>
-            <i class="fa-solid fa-person-digging d-flex justify-content-center align-items-center h-75" style="font-size: 5rem"></i>
+            <h2>Cant. de recetas por tipos de alimentos:</h2>
             <canvas id="graficoBarraTipoAlimentos"></canvas>
         </div>
     </div>
     <div class="chart-container full-width">
         <h2>Montos totales de beneficio en un rango de fechas:</h2>
-        <i class="fa-solid fa-person-digging d-flex justify-content-center align-items-center h-25" style="font-size: 5rem"></i>
+        <label for="FechaInicial">Fecha Inicial:</label>
+        <input type="date" id="FechaInicial" class="form-control mb-2">
+        <label for="FechaFinal">Fecha Final:</label>
+        <input type="date" id="FechaFinal" class="form-control mb-2">
+        <button id="botonEnviar" type="button" class="btn btn-primary mt-2">Enviar</button>
         <canvas id="graficoBarraBeneficio"></canvas>
     </div>
 </div>
@@ -79,3 +82,4 @@
 <script src="https://kit.fontawesome.com/0d85862334.js" crossorigin="anonymous"></script>
 <script src="../static/js/userinfo.js"></script>
 <script type="module" src="../static/js/index.js"></script>
+<script src="../static/js/request.js"></script>

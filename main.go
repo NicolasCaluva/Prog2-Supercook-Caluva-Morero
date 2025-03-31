@@ -43,6 +43,7 @@ func rutas() {
 
 	groupCompra := router.Group("/compras")
 	groupCompra.POST("/", compraHandler.CrearCompra)
+	groupCompra.GET("/montoTotalEntreFechas/", compraHandler.ObtenerMontoTotalComprasEntreDosFechas)
 
 	groupReceta := router.Group("/recetas")
 	groupReceta.GET("/", recetaHandler.ObtenerRecetas)

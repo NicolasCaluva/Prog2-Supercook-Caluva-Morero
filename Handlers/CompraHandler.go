@@ -41,11 +41,8 @@ func (handler *CompraHandler) CrearCompra(c *gin.Context) {
 func (handler *CompraHandler) ObtenerMontoTotalComprasEntreDosFechas(c *gin.Context) {
 	fechaInicio := c.Query("fechaInicio")
 	fechaFin := c.Query("fechaFin")
-	if fechaInicio == "" || fechaFin == "" {
-		c.Error(Errors.ErrorFechasInvalidas)
-		return
-	}
-	montoTotal, error := handler.CompraService.SumarMontoTotalDeComprasEntreDosFechas(fechaInicio, fechaFin)
+	idUsuario := Utils.GetUserInfoFromContext(c).Codigo
+	montoTotal, error := handler.CompraService.SumarMontoTotalDeComprasEntreDosFechas(fechaInicio, fechaFin, idUsuario)
 	if error != nil {
 		log.Printf("Error: %v\n", error)
 		c.Error(error)

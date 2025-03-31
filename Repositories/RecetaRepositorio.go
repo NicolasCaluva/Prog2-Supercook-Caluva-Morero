@@ -45,7 +45,7 @@ func (recetaRepositorio *RecetaRepositorio) ObtenerRecetas(filtro *Dto.FiltroAli
 
 	filtros := []bson.M{}
 	filtros = append(filtros, bson.M{"idUsuario": *idUsuario})
-	if len(filtro.MomentoDelDiaDto) != 0 {
+	if len(filtro.MomentoDelDiaDto) > 0 {
 		filtros = append(filtros, bson.M{"momento": filtro.MomentoDelDiaDto[0]})
 	}
 	if filtro.TipoAlimentoDto != "" {
@@ -131,31 +131,40 @@ func (recetaRepositorio *RecetaRepositorio) VerificarAlimentoExistente(idAliment
 }
 func (recetaRepositorio *RecetaRepositorio) ContarRecetasPorMomento(idUsuario *string) (map[string]int, *Errors.ErrorCodigo) {
 	coleccion := recetaRepositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("receta")
-
 	consulta := mongo.Pipeline{
-		{{"$match", bson.D{{"idUsuario", *idUsuario}}}},
-		{{"$group", bson.D{
-			{"_id", "$momento"},
-			{"count", bson.D{{"$sum", 1}}},
+		{{Key: "$match", Value: bson.D{{Key: "idUsuario", Value: *idUsuario}}}},
+		{{Key: "$group", Value: bson.D{
+			{Key: "_id", Value: "$momento"},
+			{Key: "count", Value: bson.D{{Key: "$sum", Value: 1}}},
+		}}},
+		{{Key: "$project", Value: bson.D{
+			{Key: "_id", Value: 0},
+			{Key: "momento", Value: "$_id"},
+			{Key: "count", Value: 1},
 		}}},
 	}
 	cursor, err := coleccion.Aggregate(context.Background(), consulta)
 	if err != nil {
-		log.Printf("Error: %v\n", Errors.ErrorConectarBD)
+		log.Printf("Error al ejecutar la consulta: %v\n", err)
 		return nil, Errors.ErrorConectarBD
 	}
 	defer cursor.Close(context.Background())
 	resultado := make(map[string]int)
 	for cursor.Next(context.Background()) {
 		var cantRecetasPorMomento struct {
-			momento  string `bson:"_id"`
+			Momento  string `bson:"momento"`
 			Contador int    `bson:"count"`
 		}
 		err := cursor.Decode(&cantRecetasPorMomento)
 		if err != nil {
-			log.Printf("Error: %v\n", Errors.ErrorDecodificarAlimento)
+			log.Printf("Error al decodificar el documento: %v\n", err)
+			return nil, Errors.ErrorDecodificarAlimento
 		}
-		resultado[cantRecetasPorMomento.momento] = cantRecetasPorMomento.Contador
+		resultado[cantRecetasPorMomento.Momento] = cantRecetasPorMomento.Contador
+	}
+	if err := cursor.Err(); err != nil {
+		log.Printf("Error en el cursor: %v\n", err)
+		return nil, Errors.ErrorConectarBD
 	}
 	return resultado, nil
 }
