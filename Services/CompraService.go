@@ -76,7 +76,7 @@ func convertirElementoComprado(alimentos []Dto.ElementoCompradoDto) []Models.Ele
 func (service *CompraService) SumarMontoTotalDeComprasEntreDosFechas(fechaInicio, fechaFin string, idUsuario string) (map[string]float64, *Errors.ErrorCodigo) {
 	fechaInicial := time.Time{}
 	fechaFinal := time.Time{}
-	if fechaInicio != "" || fechaFin != "" {
+	if fechaInicio != "" && fechaFin != "" {
 		fechaInicial1, err1 := time.Parse("2006-01-02", fechaInicio)
 		if err1 != nil {
 			return nil, Errors.ErrorFechasInvalidas
