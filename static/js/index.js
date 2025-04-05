@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     botonEnviar.addEventListener('click', obtenerRecetasPorBeneficio);
 });
 let myChart;
+
 async function obtenerRecetasPorMomento() {
     const URL = 'http://localhost:8080/recetas/contarRecetasPorMomento/';
     await makeRequest(URL, Method.GET, null, ContentType.JSON, CallType.PRIVATE, function (response) {
@@ -37,6 +38,7 @@ async function obtenerRecetasPorMomento() {
         console.error('Error consultado:', response);
     });
 }
+
 async function obtenerRecetasPorTipoDeAlimento() {
     const URL = 'http://localhost:8080/recetas/contarRecetasPorTipoAlimento/';
     await makeRequest(URL, Method.GET, null, ContentType.JSON, CallType.PRIVATE, function (response) {
@@ -70,6 +72,7 @@ async function obtenerRecetasPorTipoDeAlimento() {
         console.error('Error consultado:', response);
     });
 }
+
 async function obtenerRecetasPorBeneficio() {
     let fechaInicio = document.getElementById('FechaInicial').value;
     let fechaFinal = document.getElementById('FechaFinal').value;

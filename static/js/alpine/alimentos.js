@@ -4,11 +4,19 @@ document.addEventListener('alpine:init', () => {
 
         // init
         async init() {
-            const URL = '/alimentos/';
-            await makeRequest(URL, Method.GET, null, ContentType.JSON, CallType.PUBLIC, this.successObtenerAlimentos, this.errorObtenerAlimentos);
+           await this.obtenerAlimentos()
         },
 
-        // obtener alimentos
+        // methods
+        async obtenerAlimentos() {
+            const URL = url.ALIMENTOS;
+            await makeRequest(URL, Method.GET, null, ContentType.JSON, CallType.PRIVATE, (response) => {
+                this.alimentos = response;
+                },
+                () => {
+                    console.error("Error al obtener la lista de alimentos");
+                });
+        },
 
     }));
 });
