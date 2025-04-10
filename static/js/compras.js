@@ -29,12 +29,12 @@ function RenderizarPagina(page) {
         tr.dataset.idAlimento = compra.IdAlimento;
 
         tr.innerHTML = `
-            <td>${compra.Nombre}</td>
-            <td>$${compra.PrecioUnitario}</td>
-            <td>${compra.Stock}</td>
-            <td>${compra.CantMinimaStock}</td>
-            <td>${compra.TipoAlimento.charAt(0).toUpperCase() + compra.TipoAlimento.slice(1)}</td>
-            <td>${compra.MomentoDelDia.map(momento => momento.charAt(0).toUpperCase() + momento.slice(1)).join(' - ')}</td>
+            <td class="text-secondary text-sm text-center">${compra.Nombre}</td>
+            <td class="text-secondary text-sm text-center">$${compra.PrecioUnitario}</td>
+            <td class="text-secondary text-sm text-center">${compra.Stock}</td>
+            <td class="text-secondary text-sm text-center">${compra.CantMinimaStock}</td>
+            <td class="text-secondary text-sm text-center">${compra.TipoAlimento.charAt(0).toUpperCase() + compra.TipoAlimento.slice(1)}</td>
+            <td class="text-secondary text-sm text-center">${compra.MomentoDelDia.map(momento => momento.charAt(0).toUpperCase() + momento.slice(1)).join(' - ')}</td>
         `;
 
         const tdAcciones = document.createElement('td');
@@ -42,7 +42,7 @@ function RenderizarPagina(page) {
         inputCantidad.type = 'number';
         inputCantidad.min = '1';
         inputCantidad.placeholder = 'Cantidad';
-        inputCantidad.className = 'form-control';
+        inputCantidad.className = 'form-control form-control-sm custom-border';
         tdAcciones.appendChild(inputCantidad);
         tr.appendChild(tdAcciones);
         listaCompras.appendChild(tr);

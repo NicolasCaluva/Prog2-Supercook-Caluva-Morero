@@ -58,9 +58,9 @@ function renderizarPagina() {
     recetasActuales.forEach(receta => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${receta.Nombre}</td>
-            <td>${receta.Alimentos.map(alimento => alimento.Nombre).join(', ')}</td>
-            <td>${receta.Momento.charAt(0).toUpperCase() + receta.Momento.slice(1)}</td>
+            <td class="text-secondary text-sm text-center">${receta.Nombre}</td>
+            <td class="text-secondary text-sm text-center">${receta.Alimentos.map(alimento => alimento.Nombre).join(', ')}</td>
+            <td class="text-secondary text-sm text-center">${receta.Momento.charAt(0).toUpperCase() + receta.Momento.slice(1)}</td>
         `;
 
         const botonEliminar = document.createElement('button');
@@ -79,7 +79,7 @@ function renderizarPagina() {
 
         const tdBotones = document.createElement('td');
         tdBotones.appendChild(botonEliminar);
-        tdBotones.setAttribute('class', 'd-flex gap-2');
+        tdBotones.setAttribute('class', 'd-flex justify-content-center align-items-center pt-2 pb-0 mb-0');
         tr.appendChild(tdBotones);
         listaRecetas.appendChild(tr);
     });

@@ -35,7 +35,7 @@
 
 <div class="row w-100 m-0" x-data="recetas">
     <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-lg fixed-start ms-2  bg-white my-2"
-           id="sidenav-main">
+           id="sidenav-main" style="z-index: 2">
         <div class="sidenav-header">
             <i class="fas fa-times p-3 cursor-pointer text-dark opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
                aria-hidden="true" id="iconSidenav"></i>
@@ -91,14 +91,12 @@
 
     <div class="col-2 bg-gray"></div>
     <div class="col-10 d-flex flex-column bg-gray min-vh-100">
-        <h1 class="text-center mb-4">Recetas</h1>
-
-        <div class="card mx-4 bg-custom-border">
+        <div class="card rounded-3 shadow-sm mt-4 pb-3 pt-2">
             <div class="card-body">
                 <form action="" class="row">
                     <div class="col-3">
                         <label for="filtro-nombre">Nombre</label>
-                        <input type="text" class="form-control form-control-sm" id="filtro-nombre">
+                        <input type="text" class="form-control form-control-sm w-100 custom-border" id="filtro-nombre">
                     </div>
 
                     <div class="col-3">
@@ -123,9 +121,9 @@
                         </select>
                     </div>
 
-                    <div class="col-3 d-flex align-items-end gap-2">
-                        <button type="button" class="btn btn-primary" id="filtrarRecetas">Filtrar</button>
-                        <a href="recetas.html" class="fc-black text-decoration-none align-self-end mb-2">
+                    <div class="col-3 d-flex align-items-end gap-3">
+                        <button type="button" class="btn btn-primary mb-0" id="filtrarRecetas">Filtrar</button>
+                        <a href="recetas.html" class="fc-black text-decoration-none">
                             <i class="fas fa-trash fc-red"></i> Limpiar filtros
                         </a>
                     </div>
@@ -134,20 +132,42 @@
         </div>
 
 
-        <div class="table-responsive bg-custom-border mx-4 mt-5 mb-3">
-            <table class="table table-striped">
-                <thead class="table-warning">
-                <tr>
-                    <th>Nombre</th>
-                    <th>Alimentos</th>
-                    <th>Momento</th>
-                    <th>Acciones</th>
-                </tr>
-                </thead>
-                <tbody id="lista-recetas">
+        <div class="container-fluid py-2">
+            <div class="row bg-white rounded-3 shadow-sm mt-4 py-4 px-2">
+                <div class="col-12">
+                    <div class="card my-4">
+                        <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                            <div class="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3">
+                                <h6 class="text-white text-capitalize ps-3">Recetas</h6>
+                            </div>
+                        </div>
+                        <div class="table-responsive p-0">
+                            <table class="table table-sm align-items-center mb-0 table-striped">
+                                <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-md text-center font-weight-bolder opacity-7">
+                                        Nombre
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-md text-center font-weight-bolder opacity-7">
+                                        Alimentos
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-md text-center font-weight-bolder opacity-7">
+                                        Momento
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-md text-center font-weight-bolder opacity-7">
+                                        Acciones
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody id="lista-recetas">
 
-                </tbody>
-            </table>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
         </div>
 
         <nav class="d-flex justify-content-center my-3">
@@ -165,8 +185,8 @@
         </nav>
 
         <div class="row pb-4">
-            <div class="col-12">
-                <button type="button" class="btn btn-primary ms-4" data-bs-toggle="modal" data-bs-target="#cargarReceta"
+            <div class="col-12 d-flex justify-content-end">
+                <button type="button" class="btn btn-primary me-5" data-bs-toggle="modal" data-bs-target="#cargarReceta"
                         id="agregarNuevaReceta">
                     Agregar receta
                 </button>

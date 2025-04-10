@@ -35,7 +35,7 @@
 
 <div class="row w-100 m-0">
     <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-lg fixed-start ms-2  bg-white my-2"
-           id="sidenav-main">
+           id="sidenav-main" style="z-index: 2">
         <div class="sidenav-header">
             <i class="fas fa-times p-3 cursor-pointer text-dark opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
                aria-hidden="true" id="iconSidenav"></i>
@@ -91,9 +91,7 @@
 
     <div class="col-2 bg-gray"></div>
     <div class="col-10 d-flex flex-column bg-gray min-vh-100">
-        <h1 class="text-center">Compras</h1>
-
-        <div class="card mx-4 bg-custom-border">
+        <div class="card rounded-3 shadow-sm mt-4 pb-3 pt-2">
             <div class="card-body">
                 <form id="filtros-form" class="row">
                     <div class="col-md-4">
@@ -118,7 +116,7 @@
                     </div>
                     <div class="col-md-4">
                         <label for="nombre" class="form-label">Nombre</label>
-                        <input type="text" id="nombre" class="form-control form-control-sm"
+                        <input type="text" id="nombre" class="form-control form-control-sm custom-border"
                                placeholder="Buscar por nombre">
                     </div>
                     <div class="col-12">
@@ -133,23 +131,52 @@
             </div>
         </div>
 
-        <div class="table-responsive bg-custom-border mx-4 mt-5 mb-3">
-            <table class="table table-striped">
-                <thead class="table-warning">
-                <tr>
-                    <th>Nombre</th>
-                    <th>Precio unitario</th>
-                    <th>Stock</th>
-                    <th>Cant. mínima de stock</th>
-                    <th>Tipo de alimento</th>
-                    <th>Momentos del día</th>
-                    <th>Acciones</th>
-                </tr>
-                </thead>
-                <tbody id="lista-compras">
+        <div class="container-fluid py-2">
+            <div class="row bg-white rounded-3 shadow-sm mt-4 py-4 px-2">
+                <div class="col-12">
+                    <div class="card my-4">
+                        <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                            <div class="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3">
+                                <h6 class="text-white text-capitalize ps-3">
+                                    Compras
+                                </h6>
+                            </div>
+                        </div>
+                        <div class="table-responsive p-0">
+                            <table class="table table-sm align-items-center mb-0 table-striped">
+                                <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-md text-center font-weight-bolder opacity-7">
+                                        Nombre
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-md text-center font-weight-bolder opacity-7">
+                                        Precio unitario
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-md text-center font-weight-bolder opacity-7">
+                                        Stock
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-md text-center font-weight-bolder opacity-7">
+                                        Stock min.
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-md text-center font-weight-bolder opacity-7">
+                                        Tipo de alimento
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-md text-center font-weight-bolder opacity-7">
+                                        Momentos del día
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-md text-center font-weight-bolder opacity-7">
+                                        Acciones
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody id="lista-compras">
 
-                </tbody>
-            </table>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <nav class="d-flex justify-content-center my-3">
@@ -167,8 +194,8 @@
         </nav>
 
         <div class="row">
-            <div class="col-12">
-                <button type="button" class="btn btn-primary" id="cargarNuevaCompra">
+            <div class="col-12 d-flex justify-content-end">
+                <button type="button" class="btn btn-primary me-5" id="cargarNuevaCompra">
                     Cargar nueva compra
                 </button>
             </div>

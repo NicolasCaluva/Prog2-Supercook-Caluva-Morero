@@ -36,7 +36,7 @@
 
 <div class="row w-100 m-0" x-data="alimentos">
     <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-lg fixed-start ms-2  bg-white my-2"
-           id="sidenav-main">
+           id="sidenav-main" style="z-index: 2">
         <div class="sidenav-header">
             <i class="fas fa-times p-3 cursor-pointer text-dark opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
                aria-hidden="true" id="iconSidenav"></i>
@@ -93,7 +93,7 @@
     <div class="col-2 bg-gray"></div>
     <div class="col-10 d-flex flex-column bg-gray min-vh-100">
         <div class="container-fluid py-2">
-            <div class="row">
+            <div class="row bg-white rounded-3 shadow-sm mt-4 py-4 px-2">
                 <div class="col-12">
                     <div class="card my-4">
                         <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
@@ -103,7 +103,7 @@
                         </div>
                         <div class="card-body px-0 pb-2">
                             <div class="table-responsive p-0">
-                                <table class="table table-sm align-items-center mb-0">
+                                <table class="table table-sm align-items-center mb-0 table-striped">
                                     <thead>
                                     <tr>
                                         <th class="text-uppercase text-secondary text-md text-center font-weight-bolder opacity-7">
@@ -156,8 +156,8 @@
         </nav>
 
         <div class="row pb-4">
-            <div class="col-12">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cargarAlimento"
+            <div class="col-12 d-flex justify-content-end">
+                <button type="button" class="btn btn-primary me-5" data-bs-toggle="modal" data-bs-target="#cargarAlimento"
                         id="agregarNuevoAlimento">
                     Agregar alimento
                 </button>
