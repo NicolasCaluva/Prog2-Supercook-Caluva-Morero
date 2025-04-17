@@ -31,12 +31,15 @@ func (handler *RecetaHandler) ObtenerRecetas(c *gin.Context) {
 		log.Printf("Valor de momento no válido en el filtro: %s", Errors.ErrorFiltroMomentoInvalido)
 		c.Error(errores)
 	}
+	filtro.MomentoDelDiaDto = convertirAListaDeMomentos(momentoDelDia)
+
 	tipoAlimento := c.Query("tipoAlimento")
 	errores = alimentoDto.ValidarFiltroTipoAlimento(&tipoAlimento)
 	if errores != nil {
 		log.Printf("Valor de tipo de alimento no válido en el filtro: %s", Errors.ErrorFiltroAlimentoTipoAlimentoMalIngresado)
 		c.Error(Errors.ErrorFiltroAlimentoTipoAlimentoMalIngresado)
 	}
+	filtro.TipoAlimentoDto = Dto.TipoAlimento(tipoAlimento)
 	filtro.Nombre = c.Query("nombre")
 	log.Printf("Iniciando consulta de recetas con filtros: momentosDelDia=%s, tipoAlimento=%s, nombre=%s, usuario=%s", filtro.MomentoDelDiaDto, filtro.TipoAlimentoDto, filtro.Nombre, userInfo)
 	recetas, err := handler.RecetaService.ObtenerRecetas(&filtro, &userInfo.Codigo)
@@ -116,4 +119,13 @@ func (handler *RecetaHandler) ContarCantidadDeRecetasPorTipoAlimento(c *gin.Cont
 	}
 	log.Printf("Recetas contadas: %v\n", recetas)
 	c.JSON(http.StatusOK, recetas)
+}
+
+// Mover a utils
+func convertirAListaDeMomentos(momentoDelDia []string) []Dto.Momento {
+	var momentos []Dto.Momento
+	for _, momento := range momentoDelDia {
+		momentos = append(momentos, Dto.Momento(momento))
+	}
+	return momentos
 }
