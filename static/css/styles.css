@@ -24,7 +24,7 @@ body {
 }
 
 
-.custom-border {
+.custom-border, .custom-border:focus, .custom-border:active, .custom-border:focus-visible {
     border: 1px solid var(--color-grey--light) !important;
 }
 
@@ -46,6 +46,16 @@ body {
     border: 2px dotted var(--color-gray);
     padding: .5rem;
     border-radius: .75rem;
+}
+
+.fs-7 {
+    font-size: 0.875rem !important;
+}
+.fs-8 {
+    font-size: 0.75rem !important;
+}
+.fs-9 {
+    font-size: 0.625rem !important;
 }
 
 .eye-password {

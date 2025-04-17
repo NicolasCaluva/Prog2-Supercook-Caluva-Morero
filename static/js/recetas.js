@@ -99,8 +99,7 @@ function cambiarPagina(direction) {
 }
 
 function errorObtenerListaRecetas(status, response) {
-    alert(response.error)
-    location.reload()
+    console.error("Falla al cargar la lista:", response);
 }
 
 
@@ -149,25 +148,25 @@ function agregarAlimentoAReceta(option, alimento) {
     const div = document.createElement('div');
     div.setAttribute('class', 'row mt-3');
     const div2 = document.createElement('div');
-    div2.setAttribute('class', 'col-2 d-flex align-items-center');
+    div2.setAttribute('class', 'col-2 d-flex align-items-center justify-content-center');
 
     const label = document.createElement('label');
     label.innerText = alimento.Nombre;
     label.setAttribute('for', alimento.IdAlimento);
-    label.setAttribute('class', 'col-10');
+    label.setAttribute('class', 'col-9 d-flex flex-column');
 
     const input = document.createElement('input');
     input.setAttribute('type', 'number');
     input.setAttribute('id', alimento.IdAlimento);
     input.setAttribute('min', 1);
     input.setAttribute('value', alimento.Cantidad ? alimento.Cantidad : 1);
-    input.setAttribute('class', 'form-control form-control-sm');
+    input.setAttribute('class', 'form-control form-control-sm custom-border');
     input.setAttribute('required', true);
 
     const botonEliminarSeleccionado = document.createElement('button');
     const iconoEliminar = document.createElement('i');
-    botonEliminarSeleccionado.setAttribute('class', 'btn btn-danger btn-sm');
-    iconoEliminar.setAttribute('class', 'fa-solid fa-trash');
+    botonEliminarSeleccionado.setAttribute('class', 'btn btn-danger btn-sm mb-0');
+    iconoEliminar.setAttribute('class', 'fa-solid fa-trash fs-8');
     botonEliminarSeleccionado.appendChild(iconoEliminar);
     botonEliminarSeleccionado.setAttribute('value', alimento.IdAlimento);
     botonEliminarSeleccionado.addEventListener('click', function () {
