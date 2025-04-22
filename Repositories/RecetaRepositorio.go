@@ -45,11 +45,8 @@ func (recetaRepositorio *RecetaRepositorio) ObtenerRecetas(filtro *Dto.FiltroAli
 
 	filtros := []bson.M{}
 	filtros = append(filtros, bson.M{"idUsuario": *idUsuario})
-	if len(filtro.MomentoDelDiaDto) > 0 {
+	if filtro.MomentoDelDiaDto[0] != "" {
 		filtros = append(filtros, bson.M{"momento": filtro.MomentoDelDiaDto[0]})
-	}
-	if filtro.TipoAlimentoDto != "" {
-		filtros = append(filtros, bson.M{"tipoAlimento": filtro.TipoAlimentoDto})
 	}
 	if filtro.Nombre != "" {
 		filtros = append(filtros, bson.M{"nombre": bson.M{"$regex": filtro.Nombre, "$options": "i"}})
