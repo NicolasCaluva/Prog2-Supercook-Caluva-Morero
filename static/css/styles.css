@@ -11,6 +11,8 @@
     --color-red: #FF0000;
     --color-white: #ffffff;
     --color-grey--light: #d2d6da;
+    --color-orange: #FFA500FF;
+    --color-orange--light: #ffe5b4;
 }
 
 body {
@@ -27,6 +29,11 @@ body {
 .custom-border, .custom-border:focus, .custom-border:active, .custom-border:focus-visible {
     border: 1px solid var(--color-grey--light) !important;
 }
+
+.custom-border-dark, .custom-border-dark:focus, .custom-border-dark:active, .custom-border-dark:focus-visible {
+    border: 1px solid var(--color-black) !important;
+}
+
 
 .bg-image {
     background-image: url('../prueba.jpg');
@@ -51,9 +58,11 @@ body {
 .fs-7 {
     font-size: 0.875rem !important;
 }
+
 .fs-8 {
     font-size: 0.75rem !important;
 }
+
 .fs-9 {
     font-size: 0.625rem !important;
 }
@@ -187,10 +196,10 @@ body {
 }
 
 .chart-container {
-    border: 2px solid orange;
+    border: 2px solid var(--color-orange);
     border-radius: 15px;
     padding: 20px;
-    background-color: #ffe5b4;
+    background-color: var(--color-orange--light);
     margin: 10px;
 }
 
@@ -213,4 +222,8 @@ body {
     background-size: cover;
     padding: 0 2rem;
     min-height: 100vh;
+}
+
+#userinfo {
+    background-color: unset !important;
 }

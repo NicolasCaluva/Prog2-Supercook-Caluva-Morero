@@ -4,10 +4,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     const nav_recetas = document.getElementById('nav-recetas');
     const nav_compras = document.getElementById('nav-compras');
     const userinfo = document.getElementById('user-info');
-    const rol = document.getElementById('rol');
     const logout = document.getElementById('logout');
-    //userinfo.innerHTML = localStorage.getItem('username');
-    //rol.innerHTML = localStorage.getItem('rol');
+    userinfo.innerHTML = localStorage.getItem('username');
     logout.addEventListener('click', () => {
         localStorage.clear();
         location.href = LOGIN_URL;

@@ -73,11 +73,12 @@
                     <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Account
                         pages</h6>
                 </li>
+
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="../pages/profile.html">
+                    <span class="nav-link text-dark" id="userinfo">
                         <i class="material-symbols-rounded opacity-5">person</i>
-                        <span class="nav-link-text ms-1">Profile</span>
-                    </a>
+                        <span class="nav-link-text ms-1" id="user-info"></span>
+                    </span>
                 </li>
 
                 <li class="nav-item">
@@ -157,7 +158,8 @@
 
         <div class="row pb-4">
             <div class="col-12 d-flex justify-content-end">
-                <button type="button" class="btn btn-primary me-5" data-bs-toggle="modal" data-bs-target="#cargarAlimento"
+                <button type="button" class="btn btn-primary me-5" data-bs-toggle="modal"
+                        data-bs-target="#cargarAlimento"
                         id="agregarNuevoAlimento">
                     Agregar alimento
                 </button>
@@ -177,12 +179,14 @@
                 <form id="form-alimento" class="row">
                     <div class="mb-3 col-12">
                         <label for="nombreAlimento" class="form-label">Nombre del alimento</label>
-                        <input type="text" class="form-control form-control-sm custom-border" id="nombreAlimento" required>
+                        <input type="text" class="form-control form-control-sm custom-border" id="nombreAlimento"
+                               required>
                     </div>
 
                     <div class="mb-3 col-md-6 col-12">
                         <label for="precioUnitario" class="form-label">Precio unitario</label>
-                        <input type="number" step="0.01" class="form-control form-control-sm custom-border" id="precioUnitario" required>
+                        <input type="number" step="0.01" class="form-control form-control-sm custom-border"
+                               id="precioUnitario" required>
                     </div>
 
                     <div class="mb-3 col-md-6 col-12">
@@ -192,7 +196,8 @@
 
                     <div class="mb-3 col-md-6 col-12">
                         <label for="cantMinimaStock" class="form-label">Cantidad mínima de stock</label>
-                        <input type="number" class="form-control form-control-sm custom-border" id="cantMinimaStock" required>
+                        <input type="number" class="form-control form-control-sm custom-border" id="cantMinimaStock"
+                               required>
                     </div>
 
                     <div class="mb-3 col-md-6 col-12">
