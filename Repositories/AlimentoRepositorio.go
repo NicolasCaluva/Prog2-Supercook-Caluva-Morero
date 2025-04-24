@@ -4,7 +4,9 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
+	"math"
 	"supercook/Dto"
 	"supercook/Errors"
 	"supercook/Models"
@@ -12,7 +14,7 @@ import (
 )
 
 type AlimentoRepositorioInterface interface {
-	ObtenerAlimentos(filtro *Dto.FiltroAlimentoDto, idUsuario *string) ([]Models.Alimento, *Errors.ErrorCodigo)
+	ObtenerAlimentos(filtro *Dto.FiltroAlimentoDto, idUsuario *string) ([]Models.Alimento, *Errors.ErrorCodigo, *Dto.PaginadoAlimentoDto)
 	ObtenerAlimentoPorID(idAlimento *string, idUsuario *string) (Models.Alimento, *Errors.ErrorCodigo)
 	CrearAlimento(alimento *Models.Alimento) (*mongo.InsertOneResult, *Errors.ErrorCodigo)
 	ActualizarAlimento(alimento *Models.Alimento) (*mongo.UpdateResult, *Errors.ErrorCodigo)
@@ -29,7 +31,7 @@ func NuevoAlimentoRepositorio(db DB) *AlimentoRepositorio {
 	}
 }
 
-func (repositorio *AlimentoRepositorio) ObtenerAlimentos(filtro *Dto.FiltroAlimentoDto, idUsuario *string) ([]Models.Alimento, *Errors.ErrorCodigo) {
+func (repositorio *AlimentoRepositorio) ObtenerAlimentos(filtro *Dto.FiltroAlimentoDto, idUsuario *string) ([]Models.Alimento, *Errors.ErrorCodigo, *Dto.PaginadoAlimentoDto) {
 	coleccion := repositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("alimento")
 	filtros := []bson.M{}
 	filtros = append(filtros, bson.M{"idUsuario": *idUsuario})
@@ -45,16 +47,28 @@ func (repositorio *AlimentoRepositorio) ObtenerAlimentos(filtro *Dto.FiltroAlime
 	if filtro.StockMenorCantidadMinima {
 		filtros = append(filtros, bson.M{"$expr": bson.M{"$lt": []string{"$stock", "$cantMininaStock"}}})
 	}
+
+	nroRegistrosPorPagina := 10
+	var opcionesConsulta options.FindOptions
+	if filtro.NroPagina > 0 {
+		opcionesConsulta.SetSkip(int64((filtro.NroPagina - 1) * nroRegistrosPorPagina))
+		opcionesConsulta.SetLimit(int64(nroRegistrosPorPagina))
+	}
 	var filtroBson bson.M
 	if len(filtros) > 0 {
 		filtroBson = bson.M{"$and": filtros}
 	} else {
 		filtroBson = bson.M{}
 	}
-	cursor, err := coleccion.Find(context.TODO(), filtroBson)
+	totalRegistros, err := coleccion.CountDocuments(context.TODO(), filtroBson)
+	if err != nil {
+		log.Printf("Error al contar documentos: %v\n", Errors.ErrorConectarBD)
+		return nil, Errors.ErrorConectarBD, nil
+	}
+	cursor, err := coleccion.Find(context.TODO(), filtroBson, &opcionesConsulta)
 	if err != nil {
 		log.Printf("Error: %v\n", Errors.ErrorConectarBD)
-		return nil, Errors.ErrorConectarBD
+		return nil, Errors.ErrorConectarBD, nil
 	}
 	defer cursor.Close(context.Background())
 	var alimentos []Models.Alimento
@@ -63,14 +77,23 @@ func (repositorio *AlimentoRepositorio) ObtenerAlimentos(filtro *Dto.FiltroAlime
 		err := cursor.Decode(&alimento)
 		if err != nil {
 			log.Printf("Error: %v\n", Errors.ErrorDecodificarReceta)
-			return nil, Errors.ErrorDecodificarReceta
+			return nil, Errors.ErrorDecodificarReceta, nil
 		}
 		alimentos = append(alimentos, alimento)
 	}
 	if len(alimentos) == 0 {
-		return nil, Errors.ErrorListaVaciaDeAlimentos
+		return nil, Errors.ErrorListaVaciaDeAlimentos, nil
 	}
-	return alimentos, nil
+	var nroPaginaDto Dto.PaginadoAlimentoDto
+	if filtro.NroPagina > 0 {
+		totalPaginas := int(math.Ceil(float64(totalRegistros) / float64(nroRegistrosPorPagina)))
+		nroPaginaDto.PaginasTotales = totalPaginas
+		nroPaginaDto.NroPagina = filtro.NroPagina
+	} else {
+		nroPaginaDto.PaginasTotales = 0
+		nroPaginaDto.NroPagina = 0
+	}
+	return alimentos, nil, &nroPaginaDto
 }
 
 func (repositorio *AlimentoRepositorio) ObtenerAlimentoPorID(idAlimento *string, idUsuario *string) (Models.Alimento, *Errors.ErrorCodigo) {

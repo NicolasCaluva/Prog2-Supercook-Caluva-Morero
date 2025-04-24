@@ -5,4 +5,5 @@ type FiltroAlimentoDto struct {
 	TipoAlimentoDto          TipoAlimento
 	Nombre                   string
 	StockMenorCantidadMinima bool
+	NroPagina                int
 }

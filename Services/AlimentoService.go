@@ -10,7 +10,7 @@ import (
 )
 
 type AlimentoInterface interface {
-	ObtenerAlimentos(filtro *Dto.FiltroAlimentoDto, idUsuario *string) ([]*Dto.AlimentoDto, *Errors.ErrorCodigo)
+	ObtenerAlimentos(filtro *Dto.FiltroAlimentoDto, idUsuario *string) (*Dto.PaginadoAlimentoDto, *Errors.ErrorCodigo)
 	ObtenerAlimentoPorID(id *string, idUsuario *string) (*Dto.AlimentoDto, *Errors.ErrorCodigo)
 	CrearAlimento(alimento *Dto.AlimentoDto) *Errors.ErrorCodigo
 	ActualizarAlimento(alimento *Dto.AlimentoDto) *Errors.ErrorCodigo
@@ -29,8 +29,8 @@ func NuevoAlimentoService(alimentoRepositorio Repositories.AlimentoRepositorioIn
 	}
 }
 
-func (service *AlimentoService) ObtenerAlimentos(filtro *Dto.FiltroAlimentoDto, idUsuario *string) ([]*Dto.AlimentoDto, *Errors.ErrorCodigo) {
-	alimentos, error := service.AlimentoRepositorio.ObtenerAlimentos(filtro, idUsuario)
+func (service *AlimentoService) ObtenerAlimentos(filtro *Dto.FiltroAlimentoDto, idUsuario *string) (*Dto.PaginadoAlimentoDto, *Errors.ErrorCodigo) {
+	alimentos, error, paginas := service.AlimentoRepositorio.ObtenerAlimentos(filtro, idUsuario)
 	if error != nil {
 		return nil, error
 	}
@@ -38,7 +38,8 @@ func (service *AlimentoService) ObtenerAlimentos(filtro *Dto.FiltroAlimentoDto, 
 	for _, alimento := range alimentos {
 		alimentosDto = append(alimentosDto, convertirAlimento(alimento))
 	}
-	return alimentosDto, nil
+	paginas.AlimentosDto = convertirSliceAPunteros(alimentosDto)
+	return paginas, nil
 }
 
 func (service *AlimentoService) ObtenerAlimentoPorID(idAlimento *string, idUsuario *string) (*Dto.AlimentoDto, *Errors.ErrorCodigo) {
@@ -137,4 +138,11 @@ func convertirMomentoaModel(momentoLista []Dto.Momento) []Models.Momento {
 		modelMomentoLista = append(modelMomentoLista, Models.Momento(momento))
 	}
 	return modelMomentoLista
+}
+func convertirSliceAPunteros(alimentos []*Dto.AlimentoDto) []Dto.AlimentoDto {
+	var alimentosSinPunteros []Dto.AlimentoDto
+	for _, alimento := range alimentos {
+		alimentosSinPunteros = append(alimentosSinPunteros, *alimento)
+	}
+	return alimentosSinPunteros
 }

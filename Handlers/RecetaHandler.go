@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"strconv"
 	"supercook/Dto"
 	"supercook/Errors"
 	"supercook/Services"
@@ -41,6 +42,13 @@ func (handler *RecetaHandler) ObtenerRecetas(c *gin.Context) {
 	}
 	filtro.TipoAlimentoDto = Dto.TipoAlimento(tipoAlimento)
 	filtro.Nombre = c.Query("nombre")
+	nroPaginaStr := c.Query("page")
+	erorres := alimentoDto.ValidarFiltroNroPagina(&nroPaginaStr)
+	if erorres != nil {
+		log.Printf("Valor de número de página no válido en el filtro: %s", Errors.ErrorFiltroNroPaginaMalIngresado)
+		c.Error(Errors.ErrorFiltroNroPaginaMalIngresado)
+	}
+	filtro.NroPagina, _ = strconv.Atoi(nroPaginaStr)
 	log.Printf("Iniciando consulta de recetas con filtros: momentosDelDia=%s, tipoAlimento=%s, nombre=%s, usuario=%s", filtro.MomentoDelDiaDto, filtro.TipoAlimentoDto, filtro.Nombre, userInfo)
 	recetas, err := handler.RecetaService.ObtenerRecetas(&filtro, &userInfo.Codigo)
 	if err != nil {

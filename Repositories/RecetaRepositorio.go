@@ -4,7 +4,9 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
+	"math"
 	"supercook/Dto"
 	"supercook/Errors"
 	"supercook/Models"
@@ -13,7 +15,7 @@ import (
 
 type RecetaRepositorioInterface interface {
 	CrearReceta(receta *Models.Receta) (*mongo.InsertOneResult, *Errors.ErrorCodigo)
-	ObtenerRecetas(filtro *Dto.FiltroAlimentoDto, idUsuario *string) ([]Models.Receta, *Errors.ErrorCodigo)
+	ObtenerRecetas(filtro *Dto.FiltroAlimentoDto, idUsuario *string) ([]Models.Receta, *Errors.ErrorCodigo, *Dto.PaginadoRecetasDto)
 	ObtenerRecetaPorID(idReceta *string, idUsuario *string) (Models.Receta, *Errors.ErrorCodigo)
 	EliminarReceta(idReceta *string, idUsuario *string) (*mongo.DeleteResult, *Errors.ErrorCodigo)
 	VerificarAlimentoExistente(idAlimento string) *Errors.ErrorCodigo
@@ -40,7 +42,7 @@ func (recetaRepositorio *RecetaRepositorio) CrearReceta(receta *Models.Receta) (
 	return resultado, nil
 }
 
-func (recetaRepositorio *RecetaRepositorio) ObtenerRecetas(filtro *Dto.FiltroAlimentoDto, idUsuario *string) ([]Models.Receta, *Errors.ErrorCodigo) {
+func (recetaRepositorio *RecetaRepositorio) ObtenerRecetas(filtro *Dto.FiltroAlimentoDto, idUsuario *string) ([]Models.Receta, *Errors.ErrorCodigo, *Dto.PaginadoRecetasDto) {
 	coleccion := recetaRepositorio.db.ObtenerCliente().Database("mongodb-SuperCook").Collection("receta")
 
 	filtros := []bson.M{}
@@ -51,16 +53,27 @@ func (recetaRepositorio *RecetaRepositorio) ObtenerRecetas(filtro *Dto.FiltroAli
 	if filtro.Nombre != "" {
 		filtros = append(filtros, bson.M{"nombre": bson.M{"$regex": filtro.Nombre, "$options": "i"}})
 	}
+	nroRegistrosPorPagina := 10
+	var opcionesConsulta options.FindOptions
+	if filtro.NroPagina > 0 {
+		opcionesConsulta.SetSkip(int64((filtro.NroPagina - 1) * nroRegistrosPorPagina))
+		opcionesConsulta.SetLimit(int64(nroRegistrosPorPagina))
+	}
 	var filtroBson bson.M
 	if len(filtros) > 0 {
 		filtroBson = bson.M{"$and": filtros}
 	} else {
 		filtroBson = bson.M{}
 	}
+	totalRegistros, err := coleccion.CountDocuments(context.TODO(), filtroBson)
+	if err != nil {
+		log.Printf("Error al contar documentos: %v\n", Errors.ErrorConectarBD)
+		return nil, Errors.ErrorConectarBD, nil
+	}
 	cursor, err := coleccion.Find(context.TODO(), filtroBson)
 	if err != nil {
 		log.Printf("Error: %v\n", Errors.ErrorConectarBD)
-		return nil, Errors.ErrorConectarBD
+		return nil, Errors.ErrorConectarBD, nil
 	}
 	defer cursor.Close(context.Background())
 
@@ -74,9 +87,18 @@ func (recetaRepositorio *RecetaRepositorio) ObtenerRecetas(filtro *Dto.FiltroAli
 		recetas = append(recetas, receta)
 	}
 	if len(recetas) == 0 {
-		return nil, Errors.ErrorListaVaciaDeRecetas
+		return nil, Errors.ErrorListaVaciaDeRecetas, nil
 	}
-	return recetas, nil
+	var nroPaginaDto Dto.PaginadoRecetasDto
+	if filtro.NroPagina > 0 {
+		totalPaginas := int(math.Ceil(float64(totalRegistros) / float64(nroRegistrosPorPagina)))
+		nroPaginaDto.PaginasTotales = totalPaginas
+		nroPaginaDto.NroPagina = filtro.NroPagina
+	} else {
+		nroPaginaDto.PaginasTotales = 0
+		nroPaginaDto.NroPagina = 0
+	}
+	return recetas, nil, &nroPaginaDto
 }
 
 func (recetaRepositorio *RecetaRepositorio) ObtenerRecetaPorID(idReceta *string, idUsuario *string) (Models.Receta, *Errors.ErrorCodigo) {

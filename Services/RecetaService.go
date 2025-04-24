@@ -10,7 +10,7 @@ import (
 )
 
 type RecetaInterface interface {
-	ObtenerRecetas(filtro *Dto.FiltroAlimentoDto, idUsuario *string) ([]*Dto.RecetaDto, *Errors.ErrorCodigo)
+	ObtenerRecetas(filtro *Dto.FiltroAlimentoDto, idUsuario *string) (*Dto.PaginadoRecetasDto, *Errors.ErrorCodigo)
 	ObtenerRecetaPorID(idReceta *string, idUsuario *string) (*Dto.RecetaDto, *Errors.ErrorCodigo)
 	CrearReceta(receta *Dto.RecetaDto) *Errors.ErrorCodigo
 	EliminarReceta(idReceta *string, idUsuario *string) *Errors.ErrorCodigo
@@ -30,8 +30,8 @@ func NuevoRecetaService(recetaRepositorio Repositories.RecetaRepositorioInterfac
 	}
 }
 
-func (service *RecetaService) ObtenerRecetas(filtro *Dto.FiltroAlimentoDto, idUsuario *string) ([]*Dto.RecetaDto, *Errors.ErrorCodigo) {
-	recetas, err := service.RecetaRepositorio.ObtenerRecetas(filtro, idUsuario)
+func (service *RecetaService) ObtenerRecetas(filtro *Dto.FiltroAlimentoDto, idUsuario *string) (*Dto.PaginadoRecetasDto, *Errors.ErrorCodigo) {
+	recetas, err, paginas := service.RecetaRepositorio.ObtenerRecetas(filtro, idUsuario)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,8 @@ func (service *RecetaService) ObtenerRecetas(filtro *Dto.FiltroAlimentoDto, idUs
 		return nil, Errors.ErrorListaVaciaDeRecetas
 
 	}
-	return recetasDto, nil
+	paginas.RecetaDto = convertirSliceAPunterosRecetas(recetasDto)
+	return paginas, nil
 }
 
 func (service *RecetaService) ObtenerRecetaPorID(idReceta *string, idUsuario *string) (*Dto.RecetaDto, *Errors.ErrorCodigo) {
@@ -152,7 +153,7 @@ func (service *RecetaService) ContarCantidadDeRecetasPorTipoAlimento(idUsuario *
 	filtro := &Dto.FiltroAlimentoDto{
 		TipoAlimentoDto: "",
 	}
-	recetas, err := service.RecetaRepositorio.ObtenerRecetas(filtro, idUsuario)
+	recetas, err, _ := service.RecetaRepositorio.ObtenerRecetas(filtro, idUsuario)
 	if err != nil {
 		return nil, err
 	}
@@ -218,4 +219,11 @@ func convertirAlimentoRecetaAModel(alimentoRecetaDto Dto.AlimentoRecetaDto) Mode
 
 func convertirMomentoaDto(momento Models.Momento) Dto.Momento {
 	return Dto.Momento(momento)
+}
+func convertirSliceAPunterosRecetas(recetas []*Dto.RecetaDto) []Dto.RecetaDto {
+	var recetasDto []Dto.RecetaDto
+	for _, receta := range recetas {
+		recetasDto = append(recetasDto, *receta)
+	}
+	return recetasDto
 }

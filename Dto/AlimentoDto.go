@@ -2,6 +2,7 @@ package Dto
 
 import (
 	"log"
+	"strconv"
 	"supercook/Errors"
 )
 
@@ -62,6 +63,20 @@ func (a *AlimentoDto) ValidarFiltroTipoAlimento(tipoAlimento *string) *Errors.Er
 		default:
 			log.Printf("Valor de tipo de alimento no válido en el filtro: %s", Errors.ErrorFiltroAlimentoTipoAlimentoMalIngresado)
 			return Errors.ErrorFiltroAlimentoTipoAlimentoMalIngresado
+		}
+	}
+	return nil
+}
+func (a *AlimentoDto) ValidarFiltroNroPagina(nroPagina *string) *Errors.ErrorCodigo {
+	if *nroPagina != "" {
+		nroPaginaInt, err := strconv.Atoi(*nroPagina)
+		if err != nil {
+			log.Printf("El número de página no puede ser menor a 0: %s", Errors.ErrorFiltroNroPaginaMalIngresado)
+			return Errors.ErrorFiltroNroPaginaMalIngresado
+		}
+		if nroPaginaInt < 0 {
+			log.Printf("El número de página no puede ser menor a 0: %s", Errors.ErrorFiltroNroPaginaMalIngresado)
+			return Errors.ErrorFiltroNroPaginaMalIngresado
 		}
 	}
 	return nil

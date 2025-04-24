@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"supercook/Dto"
 	"supercook/Errors"
@@ -38,8 +39,10 @@ func (handler *AlimentoHandler) ObtenerAlimentos(c *gin.Context) {
 	}
 	filtro.Nombre = c.Query("nombre")
 	filtro.StockMenorCantidadMinima = c.Query("StockMenorCantidadMinima") == "true"
-	log.Printf("Iniciando consulta de alimentos con filtros: momentosDelDia=%s, tipoAlimento=%s, nombre=%s, StockMenorCantidadMinima=%s, usuario=%s",
-		filtro.MomentoDelDiaDto, filtro.TipoAlimentoDto, filtro.Nombre, filtro.StockMenorCantidadMinima, userInfo)
+	strNroPagina := c.Query("page")
+	errores = alimento.ValidarFiltroNroPagina(&strNroPagina)
+	filtro.NroPagina, _ = strconv.Atoi(strNroPagina)
+	log.Printf("Iniciando consulta de alimentos con filtros: momentosDelDia=%s, tipoAlimento=%s, nombre=%s, StockMenorCantidadMinima=%s, usuario=%s, nroPagina=%d", momentosDelDia, tipoAlimento, filtro.Nombre, filtro.StockMenorCantidadMinima, userInfo, filtro.NroPagina)
 	alimentos, err := handler.AlimentoService.ObtenerAlimentos(&filtro, &userInfo.Codigo)
 	if err != nil {
 		log.Printf("Error: %v\n", err)

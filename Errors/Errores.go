@@ -54,4 +54,5 @@ var (
 	ErrorCantidadMenorACero                   = NuevoErrorCodigo("ERR_400", "La cantidad no puede ser menor a 0")
 	ErrorAlimentoRecetaIDAlimentoMalIngresado = NuevoErrorCodigo("ERR_400", "El ID del alimento de la receta no puede estar vacío")
 	ErrorNoHayStock                           = NuevoErrorCodigo("ERR_400", "No hay stock suficiente para el alimento")
+	ErrorFiltroNroPaginaMalIngresado          = NuevoErrorCodigo("ERR_400", "El número de página no puede ser menor a 0")
 )
