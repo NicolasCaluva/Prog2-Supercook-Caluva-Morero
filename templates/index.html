@@ -76,10 +76,10 @@
                 </li>
 
                 <li class="nav-item form-check form-switch">
-                    <label class="form-check-label" for="graphic-type">
+                    <label class="form-check-label ms-2" for="graphic-type">
                         Modo torta
                     </label>
-                    <input class="form-check-input ms-4" type="checkbox" role="switch" id="graphic-type">
+                    <input class="form-check-input ms-4 mt-1" type="checkbox" role="switch" id="graphic-type">
                 </li>
 
                 <li class="nav-item mt-3">
@@ -106,18 +106,18 @@
     <div class="col-2 bg-gray"></div>
     <div class="col-10 d-flex flex-column bg-gray min-vh-100">
         <div class="chart-row">
-            <div class="chart-container">
+            <div class="chart-container chart-6">
                 <h3>Cantidades de recetas por tipo de uso:</h3>
                 <canvas id="graficoBarraTipoUso"></canvas>
             </div>
 
-            <div class="chart-container">
+            <div class="chart-container chart-6">
                 <h3>Cant. de recetas por tipos de alimentos:</h3>
                 <canvas id="graficoBarraTipoAlimentos"></canvas>
             </div>
         </div>
 
-        <div class="chart-container full-width">
+        <div class="chart-container chart-6" style="margin-left: 25%;">
             <h3>Montos totales de beneficio en un rango de fechas:</h3>
             <div class="row border-2">
                 <label for="FechaInicial" class="col-4 text-dark">
@@ -130,8 +130,8 @@
                     <input type="date" id="FechaFinal" class="form-control form-control-sm mb-2 custom-border-dark" pattern="\d{2}/\d{2}/\d{4}">
                 </label>
 
-                <div class="col-2">
-                    <button id="botonEnviar" type="button" class="btn btn-primary mt-2">Enviar</button>
+                <div class="col-2 d-flex align-items-end">
+                    <button id="botonEnviar" type="button" class="btn btn-primary">Enviar</button>
                 </div>
             </div>
             <canvas id="graficoBarraBeneficio"></canvas>

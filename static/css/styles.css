@@ -196,10 +196,10 @@ body {
 }
 
 .chart-container {
-    border: 2px solid var(--color-orange);
+    border: 2px solid var(--color-gray);
     border-radius: 15px;
     padding: 20px;
-    background-color: var(--color-orange--light);
+    background-color: var(--color-white);
     margin: 10px;
 }
 
@@ -208,7 +208,7 @@ body {
     justify-content: space-between;
 }
 
-.chart-row > div {
+.chart-6 {
     width: 48%;
 }
 
