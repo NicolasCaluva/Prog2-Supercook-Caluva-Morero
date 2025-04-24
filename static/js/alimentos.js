@@ -107,9 +107,11 @@ function successCargarListaAlimentos(response) {
         });
 
         const tdBotones = document.createElement('td');
-        tdBotones.appendChild(botonEditar);
-        tdBotones.appendChild(botonEliminar);
-        tdBotones.setAttribute('class', 'd-flex gap-2');
+        const divBotones = document.createElement('div');
+        divBotones.setAttribute('class', 'd-flex gap-2 pt-3');
+        tdBotones.appendChild(divBotones);
+        divBotones.appendChild(botonEditar);
+        divBotones.appendChild(botonEliminar);
         tr.appendChild(tdBotones);
         listaAlimentos.appendChild(tr);
     });

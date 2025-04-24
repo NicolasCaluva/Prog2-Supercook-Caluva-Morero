@@ -70,18 +70,31 @@
                 </li>
 
                 <li class="nav-item mt-3">
+                    <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">
+                        Visualización de datos
+                    </h6>
+                </li>
+
+                <li class="nav-item form-check form-switch">
+                    <label class="form-check-label ms-2" for="graphic-type">
+                        Modo torta
+                    </label>
+                    <input class="form-check-input ms-4 mt-1" type="checkbox" role="switch" id="graphic-type">
+                </li>
+
+                <li class="nav-item mt-3">
                     <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Account
                         pages</h6>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="">
+                    <span class="nav-link text-dark" id="userinfo">
                         <i class="material-symbols-rounded opacity-5">person</i>
-                        <span class="nav-link-text ms-1">Profile</span>
-                    </a>
+                        <span class="nav-link-text ms-1" id="user-info"></span>
+                    </span>
                 </li>
 
                 <li class="nav-item">
-                    <a href="" class="nav-link text-dark">
+                    <a href="" class="nav-link text-dark" id="logout">
                         <i class="material-symbols-rounded opacity-5">logout</i>
                         <span class="nav-link-text ms-1">Cerrar sesión</span>
                     </a>
@@ -93,32 +106,32 @@
     <div class="col-2 bg-gray"></div>
     <div class="col-10 d-flex flex-column bg-gray min-vh-100">
         <div class="chart-row">
-            <div class="chart-container">
+            <div class="chart-container chart-6">
                 <h3>Cantidades de recetas por tipo de uso:</h3>
                 <canvas id="graficoBarraTipoUso"></canvas>
             </div>
 
-            <div class="chart-container">
+            <div class="chart-container chart-6">
                 <h3>Cant. de recetas por tipos de alimentos:</h3>
                 <canvas id="graficoBarraTipoAlimentos"></canvas>
             </div>
         </div>
 
-        <div class="chart-container full-width">
+        <div class="chart-container chart-6" style="margin-left: 25%;">
             <h3>Montos totales de beneficio en un rango de fechas:</h3>
             <div class="row border-2">
-                <label for="FechaInicial" class="col-4">
+                <label for="FechaInicial" class="col-4 text-dark">
                     Fecha Inicial:
-                    <input type="date" id="FechaInicial" class="form-control mb-2" pattern="\d{2}/\d{2}/\d{4}">
+                    <input type="date" id="FechaInicial" class="form-control form-control-sm mb-2 custom-border-dark" pattern="\d{2}/\d{2}/\d{4}">
                 </label>
 
-                <label for="FechaFinal" class="col-4">
+                <label for="FechaFinal" class="col-4 text-dark">
                     Fecha Final:
-                    <input type="date" id="FechaFinal" class="form-control mb-2" pattern="\d{2}/\d{2}/\d{4}">
+                    <input type="date" id="FechaFinal" class="form-control form-control-sm mb-2 custom-border-dark" pattern="\d{2}/\d{2}/\d{4}">
                 </label>
 
-                <div class="col-2">
-                    <button id="botonEnviar" type="button" class="btn btn-primary mt-2">Enviar</button>
+                <div class="col-2 d-flex align-items-end">
+                    <button id="botonEnviar" type="button" class="btn btn-primary">Enviar</button>
                 </div>
             </div>
             <canvas id="graficoBarraBeneficio"></canvas>

@@ -78,7 +78,11 @@ function renderizarPagina() {
         });
 
         const tdBotones = document.createElement('td');
-        tdBotones.appendChild(botonEliminar);
+        const divBotones = document.createElement('div');
+
+        tdBotones.appendChild(divBotones);
+        divBotones.appendChild(botonEliminar);
+        divBotones.setAttribute('class', 'd-flex align-items-center');
         tdBotones.setAttribute('class', 'd-flex justify-content-center align-items-center pt-2 pb-0 mb-0');
         tr.appendChild(tdBotones);
         listaRecetas.appendChild(tr);
