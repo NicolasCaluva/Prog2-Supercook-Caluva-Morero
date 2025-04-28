@@ -26,6 +26,7 @@ func (handler *AlimentoHandler) ObtenerAlimentos(c *gin.Context) {
 	var alimento Dto.AlimentoDto
 	var filtro Dto.FiltroAlimentoDto
 	momentosDelDia := strings.Split(c.Query("momentoDelDia"), ",")
+	filtro.MomentoDelDiaDto = []Dto.Momento{Dto.Momento(momentosDelDia[0])}
 	errores := alimento.ValidarFiltroMomentoDelDia(&momentosDelDia)
 	if errores != nil {
 		log.Printf("Valor de momento no válido en el filtro: %s", Errors.ErrorFiltroMomentoInvalido)
