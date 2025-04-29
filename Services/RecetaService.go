@@ -151,7 +151,8 @@ func (service *RecetaService) ContarRecetasPorMomento(idUsuario *string) (map[st
 func (service *RecetaService) ContarCantidadDeRecetasPorTipoAlimento(idUsuario *string) (map[string]int, *Errors.ErrorCodigo) {
 	resultado := make(map[string]int)
 	filtro := &Dto.FiltroAlimentoDto{
-		TipoAlimentoDto: "",
+		TipoAlimentoDto:  "",
+		MomentoDelDiaDto: []Dto.Momento{Dto.Momento("")},
 	}
 	recetas, err, _ := service.RecetaRepositorio.ObtenerRecetas(filtro, idUsuario)
 	if err != nil {

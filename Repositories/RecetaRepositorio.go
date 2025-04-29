@@ -70,7 +70,7 @@ func (recetaRepositorio *RecetaRepositorio) ObtenerRecetas(filtro *Dto.FiltroAli
 		log.Printf("Error al contar documentos: %v\n", Errors.ErrorConectarBD)
 		return nil, Errors.ErrorConectarBD, nil
 	}
-	cursor, err := coleccion.Find(context.TODO(), filtroBson)
+	cursor, err := coleccion.Find(context.TODO(), filtroBson, &opcionesConsulta)
 	if err != nil {
 		log.Printf("Error: %v\n", Errors.ErrorConectarBD)
 		return nil, Errors.ErrorConectarBD, nil

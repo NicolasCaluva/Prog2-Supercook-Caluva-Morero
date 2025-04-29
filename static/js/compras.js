@@ -1,5 +1,3 @@
-let PaginaActual = 1;
-const ItemsPorPagina = 10;
 let comprasData = [];
 
 document.addEventListener('DOMContentLoaded', async function () {
@@ -8,23 +6,18 @@ document.addEventListener('DOMContentLoaded', async function () {
     const confirmarButton = document.getElementById('cargarNuevaCompra');
     confirmarButton.addEventListener('click', enviarCompraDto);
     document.getElementById('aplicarFiltros').addEventListener('click', aplicarFiltros);
-    document.getElementById('pagAnterior').addEventListener('click', IrPaginaPrevia);
-    document.getElementById('pagSiguiente').addEventListener('click', IrPaginaSiguiente);
 });
 
 function successCargarListaCompras(response) {
     comprasData = response;
-    RenderizarPagina(PaginaActual);
+    RenderizarLista();
 }
 
-function RenderizarPagina(page) {
+function RenderizarLista() {
     let listaCompras = document.getElementById('lista-compras');
     listaCompras.innerHTML = '';
-    const start = (page - 1) * ItemsPorPagina;
-    const end = start + ItemsPorPagina;
-    const pageItems = comprasData.slice(start, end);
 
-    pageItems.forEach(compra => {
+    comprasData.AlimentosDto.forEach(compra => {
         const tr = document.createElement('tr');
         tr.dataset.idAlimento = compra.IdAlimento;
 
@@ -47,28 +40,6 @@ function RenderizarPagina(page) {
         tr.appendChild(tdAcciones);
         listaCompras.appendChild(tr);
     });
-
-    document.getElementById('indicadorPagina').textContent = `Página ${PaginaActual}`;
-    updatePaginationButtons();
-}
-
-function updatePaginationButtons() {
-    document.getElementById('pagAnterior').disabled = PaginaActual === 1;
-    document.getElementById('pagSiguiente').disabled = PaginaActual * ItemsPorPagina >= comprasData.length;
-}
-
-function IrPaginaPrevia() {
-    if (PaginaActual > 1) {
-        PaginaActual--;
-        RenderizarPagina(PaginaActual);
-    }
-}
-
-function IrPaginaSiguiente() {
-    if (PaginaActual * ItemsPorPagina < comprasData.length) {
-        PaginaActual++;
-        RenderizarPagina(PaginaActual);
-    }
 }
 
 function errorCargarListaAlimentosPocoStock(status, response) {
