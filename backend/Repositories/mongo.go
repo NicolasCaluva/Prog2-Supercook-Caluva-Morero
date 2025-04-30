@@ -23,8 +23,7 @@ func (mongoDB *MongoDB) ObtenerCliente() *mongo.Client {
 }
 
 func (mongoDB *MongoDB) Conectar() error {
-	// TODO: Cambiar la url de la conexión cuando se publique el proyecto en producción
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	clientOptions := options.Client().ApplyURI("mongodb://mongodb:27017")
 
 	client, err := mongo.Connect(context.Background(), clientOptions)
 
